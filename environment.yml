@@ -1,0 +1,45 @@
+# Bootstrap environment for the NSCLC brain-metastasis GeoMx reanalysis.
+#
+#   conda env create -f environment.yml
+#   conda activate nsclc_bm_spatial
+#
+# SCOPE: this env exists to *drive* the workflow and to support ad-hoc data
+# inspection. It is deliberately NOT the analysis environment.
+#
+# The analysis packages live in workflow/envs/{r-geomx,r-stats,py-analysis}.yaml
+# and are created by Snakemake itself (`--software-deployment-method conda`,
+# PROJECT_PLAN.md §4.3). Do not install scanpy, gseapy, scikit-survival, lme4,
+# GeomxTools, etc. here — duplicating them is how this env and py-analysis.yaml
+# silently drift apart, which is the failure mode §4.4 warns about.
+#
+# Lock before Phase 6 clean-room reproduction (§4.4, P6-T1):
+#   conda-lock lock -f environment.yml -p osx-arm64 -p linux-64
+
+name: nsclc_bm_spatial
+
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults        # keep the Anaconda `defaults` channel out: conda-forge/
+                      # bioconda only, so the solve is reproducible elsewhere
+
+dependencies:
+  - python=3.12       # snakemake 8 needs >=3.11; system python is 3.9.6
+
+  # --- orchestration -------------------------------------------------------
+  - snakemake=8.*     # PROJECT_PLAN.md §4.3
+  - conda-lock        # §4.4: commit the locks
+  - pyyaml            # config.yaml / signatures.yaml / compartment_map.yaml
+  - jsonschema        # schemas/*.schema.yaml validation at Snakefile top
+
+  # --- notebooks (§4.5: marimo only, no .ipynb) ---------------------------
+  - marimo
+  - uv                # marimo --sandbox resolves PEP 723 deps into a uv env
+
+  # --- ad-hoc inspection only, NOT the analysis stack ---------------------
+  - pandas            # Q1 (is the matrix raw/Q3/log?), P0-T2 (parse AOI titles)
+  - matplotlib
+  - anndata           # read the Phase 0 handoff .h5ad without a full env
+  - requests          # GEO downloads
+
+  - pip
