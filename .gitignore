@@ -1,1 +1,9 @@
 PROJECT_PLAN.md
+
+# Claude Code skills: installed via `npx skills`, pinned by skills-lock.json.
+# Restore with: npx skills experimental_install
+.agents/skills/
+.claude/skills/
+
+# Machine-local Claude Code settings (project settings.json stays tracked)
+.claude/settings.local.json
