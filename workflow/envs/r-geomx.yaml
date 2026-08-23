@@ -1,0 +1,20 @@
+# Phase 0: GeoMx QC + normalisation (PROJECT_PLAN.md §4.4).
+# Created by Snakemake via --software-deployment-method conda. Do not install by hand.
+#
+# NOTE: zellkonverter is deliberately absent. It pulls basilisk + reticulate,
+# which provision a private Python env at runtime that conda-lock cannot pin —
+# a hermeticity hole that would surface at P6-T1 clean-room reproduction.
+# The .h5ad handoff is now R -> TSV -> Python/anndata instead.
+# See docs/decisions/0001-anndata-handoff-without-zellkonverter.md
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - r-base=4.4
+  - bioconductor-geomxtools
+  - bioconductor-standr
+  - bioconductor-spatialdecon
+  - bioconductor-summarizedexperiment
+  - bioconductor-limma
+  - bioconductor-edger

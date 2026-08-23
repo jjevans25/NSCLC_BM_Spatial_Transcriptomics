@@ -1,0 +1,27 @@
+name: py-analysis
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.12
+  - anndata
+  - scanpy
+  - umap-learn
+  - numpy
+  - scipy
+  - pandas
+  - pyarrow
+  - statsmodels
+  - gseapy
+  - scikit-survival
+  - networkx
+  - matplotlib
+  - seaborn
+  - pyyaml
+  - jsonschema
+  # marimo: app-tier notebooks are exported headlessly by a rule (§4.5),
+  # so marimo must be inside the analysis env, not just on the dev PATH.
+  - marimo
+  - pip
+  - pip:
+      - rocrate

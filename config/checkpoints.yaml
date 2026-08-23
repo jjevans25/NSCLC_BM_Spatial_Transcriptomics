@@ -1,0 +1,5 @@
+# ---------------------------------------------------------------------------
+# Immune-checkpoint gene panel, one rationale per gene (PROJECT_PLAN §5.2).
+# Populated in Phase 3.
+# ---------------------------------------------------------------------------
+checkpoints: {}

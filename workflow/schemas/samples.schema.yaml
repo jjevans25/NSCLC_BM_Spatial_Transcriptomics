@@ -1,0 +1,27 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: >
+  One row per AOI, produced by P0-T3 from the GEO sample titles (§A.1) and
+  then committed. Validated per-row by snakemake.utils.validate() against the
+  loaded dataframe. Catches the "someone edited samples.tsv by hand" class.
+type: object
+required: [gsm_id, sample_title, aoi_code, patient_id, site, compartment, replicate_flag]
+properties:
+  gsm_id:
+    type: string
+    pattern: "^GSM[0-9]+$"
+  sample_title:
+    type: string
+  aoi_code:
+    type: string
+    enum: [L, LB, mLN, TBME, "TIME-L", "TIME-B", BC]
+  patient_id:
+    type: string
+  site:
+    type: string
+    enum: [lung, brain, lymph_node]
+  compartment:
+    type: string
+    enum: [tumour, glial_stroma, immune, normal_control]
+  replicate_flag:
+    type: boolean
+    description: true where a patient contributes more than one AOI of this code.

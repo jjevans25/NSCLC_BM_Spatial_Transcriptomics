@@ -1,0 +1,44 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "identifier": "nsclc-brainmet-time",
+  "name": "Compartment-Resolved Spatial Transcriptomics of the NSCLC Tumour Immune Microenvironment",
+  "description": "A reproducible Snakemake workflow reanalysing NanoString GeoMx DSP WTA profiles (GEO GSE200563) to compare the tumour immune microenvironment of primary NSCLC lung tumours with matched brain metastases, resolved by tissue compartment.",
+  "version": "0.1.0",
+  "dateCreated": "2026-08-22",
+  "dateModified": "2026-08-23",
+  "license": "https://spdx.org/licenses/MIT",
+  "codeRepository": "https://github.com/jjevans25/nsclc-brainmet-time",
+  "programmingLanguage": [
+    { "@type": "ComputerLanguage", "name": "Python" },
+    { "@type": "ComputerLanguage", "name": "R" }
+  ],
+  "runtimePlatform": ["Snakemake 8.x", "conda"],
+  "developmentStatus": "wip",
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Jarrett",
+      "familyName": "Evans",
+      "email": "jevans2532@gmail.com"
+    }
+  ],
+  "keywords": [
+    "spatial transcriptomics",
+    "GeoMx DSP",
+    "non-small cell lung cancer",
+    "brain metastasis",
+    "tumour immune microenvironment",
+    "Snakemake",
+    "FAIR"
+  ],
+  "referencePublication": {
+    "@type": "ScholarlyArticle",
+    "identifier": "PMID:36216799"
+  },
+  "isBasedOn": {
+    "@type": "Dataset",
+    "identifier": "GEO:GSE200563",
+    "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE200563"
+  }
+}

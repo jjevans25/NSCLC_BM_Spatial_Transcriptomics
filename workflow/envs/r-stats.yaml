@@ -1,0 +1,12 @@
+# Phases 2-3: mixed-model DE (PROJECT_PLAN.md §4.4).
+# Random intercept for patient is mandatory here, not stylistic (§2.3).
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - r-base=4.4
+  - r-lme4
+  - r-lmertest
+  - r-emmeans
+  - r-broom.mixed
