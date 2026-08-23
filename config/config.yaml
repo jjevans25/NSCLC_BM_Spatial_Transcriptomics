@@ -1,0 +1,62 @@
+# ---------------------------------------------------------------------------
+# nsclc-brainmet-time — pipeline configuration
+#
+# This file is the single source of truth for paths, thresholds and switches.
+# Nothing here may be overridden from inside a notebook (PROJECT_PLAN §4.5):
+# notebooks are where a threshold is *chosen*, this file is where it *lives*.
+# Validated against workflow/schemas/config.schema.yaml at Snakefile load.
+# ---------------------------------------------------------------------------
+
+project:
+  code: nsclc-brainmet-time
+  geo_accession: GSE200563
+  source_pmid: "36216799"
+
+paths:
+  resources: resources
+  raw: resources/raw
+  reference: resources/reference
+  interim: results/interim
+  tables: results/tables
+  figures: results/figures
+  logs: results/logs
+  benchmarks: results/benchmarks
+  reports: results/reports
+
+samples:
+  # Written by P0-T3, then committed. Absent until then; the Snakefile
+  # validates it only if it exists.
+  tsv: config/samples.tsv
+  compartment_map: config/compartment_map.yaml
+  expected_n_aoi: 120
+
+# Stochastic steps take their seed from here and pass it explicitly.
+# No implicit RNG anywhere in the workflow (PROJECT_PLAN §4.3).
+seed: 20260823
+
+qc:
+  # PLACEHOLDER — the real value is chosen at the P0-T5 gate in
+  # notebooks/review/qc_review.py and written back here with an ADR.
+  # Until that ADR exists, treat this number as unset, not as a decision.
+  min_gene_detection_rate: null
+  min_library_size: null
+  flag_only: true          # never silently drop an AOI; log it and carry on
+
+normalisation:
+  # Resolved by Q1 (P0-T4): if the GEO matrix is already Q3-normalised this
+  # becomes "verify" rather than "apply".
+  method: q3
+  log_base: 2
+  pseudocount: 1
+
+phases:
+  # Target-rule switches, so `all` can run a slice without editing the Snakefile.
+  acquire: false        # P0-T2 flips this to true
+  annotate: false
+  qc: false
+  landscape: false
+  contexture: false
+  checkpoints: false
+  crosstalk: false
+  survival: false          # gated on Q5 (P0-T4)
+  fair: false

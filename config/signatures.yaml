@@ -1,0 +1,6 @@
+# ---------------------------------------------------------------------------
+# Gene signatures, versioned, with a source per set (PROJECT_PLAN §5.2).
+# Populated in Phase 2. Adding a gene to a signature is a "stop and ask"
+# decision, not an implementation detail.
+# ---------------------------------------------------------------------------
+signatures: {}

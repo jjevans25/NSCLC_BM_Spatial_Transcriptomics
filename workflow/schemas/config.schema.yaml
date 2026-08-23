@@ -1,0 +1,55 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: >
+  Configuration for the nsclc-brainmet-time workflow. Enforced via
+  snakemake.utils.validate() at Snakefile load time, so a hand-edit that
+  breaks the contract fails at parse rather than three rules later.
+type: object
+required: [project, paths, samples, seed, qc, normalisation, phases]
+additionalProperties: false
+properties:
+  project:
+    type: object
+    required: [code, geo_accession, source_pmid]
+    properties:
+      code: {type: string}
+      geo_accession: {type: string, pattern: "^GSE[0-9]+$"}
+      source_pmid: {type: string, pattern: "^[0-9]+$"}
+  paths:
+    type: object
+    required: [resources, raw, reference, interim, tables, figures, logs, benchmarks, reports]
+    additionalProperties: {type: string}
+  samples:
+    type: object
+    required: [tsv, compartment_map, expected_n_aoi]
+    properties:
+      tsv: {type: string}
+      compartment_map: {type: string}
+      expected_n_aoi: {type: integer, minimum: 1}
+  seed:
+    type: integer
+    description: Single source of randomness for every stochastic step.
+  qc:
+    type: object
+    required: [min_gene_detection_rate, min_library_size, flag_only]
+    properties:
+      min_gene_detection_rate:
+        type: [number, "null"]
+        minimum: 0
+        maximum: 1
+        description: null until the P0-T5 gate chooses it and an ADR records why.
+      min_library_size:
+        type: [number, "null"]
+        minimum: 0
+      flag_only:
+        type: boolean
+        description: AOIs are flagged with a reason, never silently dropped.
+  normalisation:
+    type: object
+    required: [method, log_base, pseudocount]
+    properties:
+      method: {type: string, enum: [q3, none, verify]}
+      log_base: {type: number}
+      pseudocount: {type: number, minimum: 0}
+  phases:
+    type: object
+    additionalProperties: {type: boolean}

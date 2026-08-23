@@ -343,6 +343,12 @@
       "skillPath": "skills/iso-standards-readiness/SKILL.md",
       "computedHash": "c007f8307f5773b6c7dda660604f9cbb20faa6319985fd03110d81612f6f0bea"
     },
+    "jupyter-to-marimo": {
+      "source": "marimo-team/skills",
+      "sourceType": "github",
+      "skillPath": "skills/jupyter-to-marimo/SKILL.md",
+      "computedHash": "b137ebc02fe012aea935d8367749eb1bfca5ec79450336ca6c01996184ea0c2c"
+    },
     "lab-hardware-cad": {
       "source": "K-Dense-AI/scientific-agent-skills",
       "sourceType": "github",
@@ -384,6 +390,18 @@
       "sourceType": "github",
       "skillPath": "skills/literature-review/SKILL.md",
       "computedHash": "364a51949fc9ba4d394103212ab0859de54f66f92641a56e15df8568892e2c04"
+    },
+    "marimo-notebook": {
+      "source": "marimo-team/skills",
+      "sourceType": "github",
+      "skillPath": "skills/marimo-notebook/SKILL.md",
+      "computedHash": "d843af038a49245369d9a91b8dda531a0d58882bc06623604b673cb144588edd"
+    },
+    "marimo-pair": {
+      "source": "marimo-team/marimo-pair",
+      "sourceType": "github",
+      "skillPath": "skills/marimo-pair/SKILL.md",
+      "computedHash": "0686fcc0854e7b3723087c0fc67831dc7122ffe696163c8e5e5a74e0222e1db2"
     },
     "markdown-mermaid-writing": {
       "source": "K-Dense-AI/scientific-agent-skills",
@@ -751,6 +769,12 @@
       "skillPath": "skills/research-lookup/SKILL.md",
       "computedHash": "c1aecf222a2afa1e32f8199f9c91d4e9d5bcf481cc147cd656b81c5809cbf787"
     },
+    "retro-marimo-pair": {
+      "source": "marimo-team/marimo-pair",
+      "sourceType": "github",
+      "skillPath": "skills/retro-marimo-pair/SKILL.md",
+      "computedHash": "1f89f0999518297d5a0928528c87fc082da9645cac554b0101049042ec661d7b"
+    },
     "rowan": {
       "source": "K-Dense-AI/scientific-agent-skills",
       "sourceType": "github",
@@ -954,6 +978,12 @@
       "sourceType": "github",
       "skillPath": "skills/venue-templates/SKILL.md",
       "computedHash": "cd3318a26de87210f3b7cdab4948e7a4259ad0cf11f135aae4cc79178aebe95d"
+    },
+    "wasm-compatibility": {
+      "source": "marimo-team/skills",
+      "sourceType": "github",
+      "skillPath": "skills/wasm-compatibility/SKILL.md",
+      "computedHash": "8e195f9fa3248782c59fa834fef9a00cb1eba6cec7e3700ecfc3957d12147bbf"
     },
     "waypoint-bio": {
       "source": "K-Dense-AI/scientific-agent-skills",

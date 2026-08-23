@@ -1,0 +1,55 @@
+# ---------------------------------------------------------------------------
+# AOI code -> site + compartment (PROJECT_PLAN §A.2)
+#
+# `compartment` is the plan's own labelling. Whether these are genuinely
+# antibody-segmented compartments or descriptively-named geometric ROIs is
+# OPEN QUESTION Q2 (§3) — the highest-impact unknown in the project. If Q2
+# resolves to "geometric", every `compartment` key here becomes `region` and
+# Aim A4's framing is rewritten before Phase 2. Do not harden anything against
+# this vocabulary until docs/data-provenance.md answers Q2.
+#
+# ontology_* fields are filled in during P0-T3/§7.2, not guessed here.
+# ---------------------------------------------------------------------------
+
+L:
+  site: lung
+  compartment: tumour
+  tumour_present: "yes"
+  notes: primary
+  expected_aoi: 30
+LB:
+  site: brain
+  compartment: tumour
+  tumour_present: "yes"
+  notes: brain metastasis
+  expected_aoi: 27
+mLN:
+  site: lymph_node
+  compartment: tumour
+  tumour_present: "yes"
+  notes: nodal metastasis; out of scope for the core comparison
+  expected_aoi: 13
+TBME:
+  site: brain
+  compartment: glial_stroma
+  tumour_present: adjacent
+  notes: GFAP+ tumour-brain microenvironment
+  expected_aoi: 20
+TIME-L:
+  site: lung
+  compartment: immune
+  tumour_present: adjacent
+  notes: CD45+
+  expected_aoi: 15
+TIME-B:
+  site: brain
+  compartment: immune
+  tumour_present: adjacent
+  notes: CD45+; n=8 is the binding constraint on the whole project
+  expected_aoi: 8
+BC:
+  site: brain
+  compartment: normal_control
+  tumour_present: "no"
+  notes: non-tumour brain control
+  expected_aoi: 7

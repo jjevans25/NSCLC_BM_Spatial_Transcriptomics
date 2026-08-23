@@ -3,7 +3,13 @@ PROJECT_PLAN.md
 # Claude Code skills: installed via `npx skills`, pinned by skills-lock.json.
 # Restore with: npx skills experimental_install
 .agents/skills/
-.claude/skills/
+.claude/skills/*
+
+# ...except the project-local skill, which is source rather than an installed
+# dependency: nothing in skills-lock.json can restore it. Note the parent
+# pattern above must be `.claude/skills/*`, not `.claude/skills/` — git cannot
+# re-include anything beneath an excluded *directory*.
+!.claude/skills/geomx-dsp-analysis/
 
 # Machine-local Claude Code settings (project settings.json stays tracked)
 .claude/settings.local.json
@@ -12,3 +18,39 @@ PROJECT_PLAN.md
 # Bulky and fully derived — a trivial test run alone produced 160 MB of
 # .snakemake/conda. Reproducibility lives in workflow/envs/*.yaml + the locks.
 .snakemake/
+
+# Raw data is downloaded by the P0-T2 rule and verified against
+# resources/checksums.sha256 — the checksums are the provenance record, the
+# bytes are re-fetchable. Keep the directory, not its contents.
+resources/raw/*
+!resources/raw/.gitkeep
+resources/reference/*
+!resources/reference/.gitkeep
+
+# Derived and re-creatable. Deleting results/ and re-running must reproduce
+# everything (§4.2) — so nothing in here is a source of truth.
+results/interim/*
+!results/interim/.gitkeep
+results/logs/*
+!results/logs/.gitkeep
+results/benchmarks/*
+!results/benchmarks/.gitkeep
+results/figures/*
+!results/figures/.gitkeep
+results/reports/*
+!results/reports/.gitkeep
+# results/tables/ IS committed when small — that is where the design matrix,
+# QC exclusions and power table live.
+
+# marimo
+__marimo__/
+.marimo.toml
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# Editor
+.vscode/
+.DS_Store

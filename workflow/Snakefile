@@ -1,0 +1,66 @@
+# ===========================================================================
+# nsclc-brainmet-time — Compartment-resolved spatial transcriptomics of the
+# NSCLC tumour immune microenvironment: primary lung vs. brain metastasis.
+#
+# GEO GSE200563 (NanoString GeoMx DSP WTA, 120 AOIs). See Markdowns/PROJECT_PLAN.md.
+#
+# Conventions (§4.3):
+#   - Snakemake 8.x, one conda env per language boundary.
+#   - Every rule declares log:, benchmark:, conda: and threads:.
+#   - resources/ is READ-ONLY. Every output is derived; deleting results/ and
+#     re-running must reproduce everything.
+#   - Seeds come from config["seed"] and are passed explicitly. No implicit RNG.
+#   - Target rules: all, qc_only, phase2, phase3, fair.
+# ===========================================================================
+
+from snakemake.utils import min_version, validate
+
+min_version("8.0")
+
+
+configfile: "config/config.yaml"
+
+
+validate(config, "schemas/config.schema.yaml")
+
+
+include: "rules/common.smk"
+
+
+# Each .smk owns one phase. They are currently stubs; a phase's target
+# collector returns [] until its rules land, which is what keeps `snakemake -n`
+# honest on a partially-built workflow.
+include: "rules/00_acquire.smk"
+include: "rules/01_annotate.smk"
+include: "rules/02_qc.smk"
+include: "rules/03_landscape.smk"
+include: "rules/04_contexture.smk"
+include: "rules/05_checkpoints.smk"
+include: "rules/06_crosstalk.smk"
+include: "rules/07_survival.smk"
+include: "rules/99_fair.smk"
+
+
+rule all:
+    input:
+        targets(*ALL_PHASES),
+
+
+rule qc_only:
+    input:
+        targets("acquire", "annotate", "qc"),
+
+
+rule phase2:
+    input:
+        targets("acquire", "annotate", "qc", "landscape", "contexture"),
+
+
+rule phase3:
+    input:
+        targets("acquire", "annotate", "qc", "landscape", "contexture", "checkpoints"),
+
+
+rule fair:
+    input:
+        targets(*ALL_PHASES),
