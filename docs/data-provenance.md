@@ -30,7 +30,7 @@ records, as marked. Nothing here is paraphrase.
 
 ## Q1 — Is the GEO matrix raw counts, Q3-normalised, or already log-transformed?
 
-**Status: Provisional — Q3-normalised. Confirm empirically at P0-T4.**
+**Status: Resolved — Q3-normalised. Confirmed against the file by P0-T4.**
 
 Every one of the 120 GSM records carries the same two `!Sample_data_processing`
 lines:
@@ -50,14 +50,35 @@ So `GSE200563_processed_data.txt.gz` is **Q3-normalised, not raw counts, and not
 log-transformed**. Raw counts are separately available as per-AOI `.dcc` files
 inside `GSE200563_RAW.tar` (see Q3).
 
-Confirm at P0-T4 with the checks §3 names — values non-integer, no negatives,
-distribution right-skewed rather than symmetric, and the column-wise third
-quartile near-constant across AOIs (that last one is the direct test: Q3 scaling
-is exactly the operation that makes it so).
+P0-T4 checked this against the file itself
+(`results/tables/normalisation_check_summary.json`,
+`results/figures/normalisation_check.png`), and the metadata is correct:
 
-**Consequence, once confirmed:** `config.yaml → normalisation.method` moves
-`q3` → `verify`; the schema already permits that value. Do not make the change
-on the metadata alone — the point of Q1 is to look at the file.
+| §3 test | Observed | Reads as |
+|---|---|---|
+| all values integer | **0.67%** integer | not raw counts |
+| value range | 2.12 – 3.39 × 10⁵ | not log-transformed |
+| **column-wise Q3 across AOIs** | **CV 0.059%** (mean 91.03) | **Q3-normalised** |
+| library-size CV, for contrast | 13.4% | the flat Q3 is not an artefact of uniform input |
+| minimum non-zero value | 2.12 | fractional, not a count |
+
+The third row is the decisive one: Q3 normalisation is precisely the operation
+that equalises each AOI's third quartile, and nothing else would leave library
+size varying at 13% while Q3 sits still at 0.06%.
+
+**Consequence, applied:** `config.yaml → normalisation.method` is now `verify`,
+not `q3`. Note this is forced rather than chosen — **raw gene-level counts are
+not recoverable at all.** The DCCs hold raw counts per *probe* (RTS ids), and
+mapping those to genes needs a PKC that GEO does not carry, so re-normalising
+from raw is impossible in principle, not merely inconvenient.
+
+### There are no zeros
+
+Every one of the 18,694 × 120 = 2,243,280 values is strictly positive, minimum
+**2.12**. This is ordinary for GeoMx — background hybridisation means nothing
+reads as truly absent — but it has a hard consequence for P0-T5: **"detected"
+cannot mean "non-zero".** Detection has to be defined against the negative
+probe, which is why `NegProbe-WTX` being present in the matrix matters.
 
 ## Q2 — Antibody-segmented compartments, or geometric ROIs with descriptive names?
 

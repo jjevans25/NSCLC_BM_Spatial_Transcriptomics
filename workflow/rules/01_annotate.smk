@@ -36,7 +36,65 @@ rule p0t3_parse_samples:
         "../scripts/parse_samples.py"
 
 
+rule p0t7_export_tsv:
+    """R/Python boundary as plain files (ADR 0001): write the handoff TSVs."""
+    input:
+        matrix=f"{PATHS['raw']}/GSE200563_processed_data.txt.gz",
+        qc_metrics=f"{PATHS['tables']}/qc_metrics.tsv",
+        samples=config["samples"]["tsv"],
+    output:
+        expr=f"{PATHS['interim']}/expr_normalised.tsv",
+        expr_q3=f"{PATHS['interim']}/expr_q3.tsv",
+        obs=f"{PATHS['interim']}/obs.tsv",
+        var=f"{PATHS['interim']}/var.tsv",
+        uns=f"{PATHS['interim']}/uns.json",
+    params:
+        norm_method=config["normalisation"]["method"],
+        log_base=config["normalisation"]["log_base"],
+        pseudocount=config["normalisation"]["pseudocount"],
+        background_multiple=config["qc"]["detection_background_multiple"],
+    log:
+        f"{PATHS['logs']}/p0t7_export_tsv.log",
+    benchmark:
+        f"{PATHS['benchmarks']}/p0t7_export_tsv.tsv"
+    conda:
+        "../envs/py-analysis.yaml"
+    threads: 1
+    script:
+        "../scripts/export_tsv.py"
+
+
+rule p0t7_assemble_h5ad:
+    """Assemble the .h5ad and assert the float round-trip is exact (§6)."""
+    input:
+        expr=f"{PATHS['interim']}/expr_normalised.tsv",
+        expr_q3=f"{PATHS['interim']}/expr_q3.tsv",
+        obs=f"{PATHS['interim']}/obs.tsv",
+        var=f"{PATHS['interim']}/var.tsv",
+        uns=f"{PATHS['interim']}/uns.json",
+        samples=config["samples"]["tsv"],
+        config="config/config.yaml",
+    output:
+        h5ad=f"{PATHS['interim']}/aoi_normalised.h5ad",
+        summary=f"{PATHS['tables']}/h5ad_summary.json",
+    params:
+        project_code=config["project"]["code"],
+        geo_accession=config["project"]["geo_accession"],
+        source_pmid=config["project"]["source_pmid"],
+    log:
+        f"{PATHS['logs']}/p0t7_assemble_h5ad.log",
+    benchmark:
+        f"{PATHS['benchmarks']}/p0t7_assemble_h5ad.tsv"
+    conda:
+        "../envs/py-analysis.yaml"
+    threads: 1
+    script:
+        "../scripts/assemble_h5ad.py"
+
+
 TARGETS_ANNOTATE = [
+    f"{PATHS['interim']}/aoi_normalised.h5ad",
+    f"{PATHS['tables']}/h5ad_summary.json",
     config["samples"]["tsv"],
     f"{PATHS['tables']}/design_matrix.tsv",
     f"{PATHS['tables']}/batch_crosstab.tsv",

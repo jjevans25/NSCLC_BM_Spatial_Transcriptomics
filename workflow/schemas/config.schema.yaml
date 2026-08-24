@@ -30,7 +30,7 @@ properties:
     description: Single source of randomness for every stochastic step.
   qc:
     type: object
-    required: [min_gene_detection_rate, min_library_size, flag_only]
+    required: [min_gene_detection_rate, min_library_size, min_sequencing_saturation, detection_background_multiple, flag_only]
     properties:
       min_gene_detection_rate:
         type: [number, "null"]
@@ -40,6 +40,22 @@ properties:
       min_library_size:
         type: [number, "null"]
         minimum: 0
+        description: >
+          Raw sequencing reads from the DCC header, NOT the sum of the
+          Q3-normalised matrix — that sum is post-normalisation and near
+          constant by construction, so it measures nothing.
+      min_sequencing_saturation:
+        type: [number, "null"]
+        minimum: 0
+        maximum: 1
+        description: null until P0-T5 chooses it. The source paper claims no ROI below 0.50.
+      detection_background_multiple:
+        type: [number, "null"]
+        minimum: 0
+        description: >
+          A gene counts as detected in an AOI when its value exceeds this
+          multiple of that AOI's NegProbe-WTX level. The matrix has no zeros
+          (Q1), so detection must be background-relative. null until chosen.
       flag_only:
         type: boolean
         description: AOIs are flagged with a reason, never silently dropped.

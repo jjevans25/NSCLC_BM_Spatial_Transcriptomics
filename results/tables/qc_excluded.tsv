@@ -1,0 +1,6 @@
+aoi_label	gsm_id	aoi_code	patient_id	qc_reason	action
+LB35	GSM6573800	LB	P35	raw sequencing reads below threshold (9.044e+05 < 1e+06)	flagged_retained
+TBME13	GSM6573739	TBME	P13	gene detection rate below threshold (0.02134 < 0.05)	flagged_retained
+TBME17	GSM6573752	TBME	P17	gene detection rate below threshold (0.03969 < 0.05)	flagged_retained
+TBME20	GSM6573759	TBME	P20	gene detection rate below threshold (0.03472 < 0.05)	flagged_retained
+TBME09	GSM6573725	TBME	P9	raw sequencing reads below threshold (6.637e+05 < 1e+06)	flagged_retained

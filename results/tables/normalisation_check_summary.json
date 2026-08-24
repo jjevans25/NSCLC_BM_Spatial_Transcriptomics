@@ -1,0 +1,17 @@
+{
+  "n_genes": 18694,
+  "n_aoi": 120,
+  "negprobe_present": true,
+  "fraction_integer": 0.006719,
+  "n_negative_values": 0,
+  "n_exact_zeros": 0,
+  "min_nonzero": 2.12,
+  "max": 339200.0,
+  "col_q3_mean": 91.034542,
+  "col_q3_cv": 0.00058802,
+  "library_size_cv": 0.134436,
+  "verdict": "q3_normalised",
+  "reason": "column-wise Q3 is constant to within CV 0.059% while library size varies by CV 13.4% \u2014 the signature of per-AOI Q3 scaling",
+  "geo_metadata_expected": "q3_normalised",
+  "agrees_with_metadata": true
+}

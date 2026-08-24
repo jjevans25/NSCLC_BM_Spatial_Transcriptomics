@@ -12,16 +12,24 @@ learning and methods project, not a publication. The full plan lives in
 `Markdowns/PROJECT_PLAN.md` — when this file and the plan disagree, the plan
 wins, and the disagreement is a bug in this file.
 
-**Current phase: Phase 0 (acquisition, annotation, QC).** P0-T1, P0-T2, P0-T3
-and P0-T6 are complete. Q2–Q5 are answered (`docs/data-provenance.md`); Q1 is
-provisional pending P0-T4.
+**Phase 0 is complete (P0-T1 … P0-T8).** All five open questions are answered
+(`docs/data-provenance.md`), and `docs/limitations.md` records what the design
+cannot support.
 
 **All three GATE 0 conditions are met:** the marker sanity check passed 4/4
 (`results/tables/marker_sanity_verdict.tsv`), the design table matches §2.1
-exactly, and Q2 resolved to antibody segmentation — so Aim A4 stands as
-written. The gate itself is a human call; the evidence is in place.
+exactly (120 AOIs), and Q2 resolved to antibody segmentation — so Aim A4 stands
+as written. The gate itself is a human call; the evidence is in place.
 
-Remaining in Phase 0: P0-T4, P0-T5, P0-T7, P0-T8.
+Phase 0 output: `results/interim/aoi_normalised.h5ad` — 120 AOIs × 18,694
+genes, `X` = log2(Q3 + 1), `layers['q3']` the untransformed values, 36 `obs`
+columns, git SHA and config hash in `uns`.
+
+**The number to keep in view:** with `TIME-B` n = 8, the lung-vs-brain immune
+contrast detects roughly **1.1–1.3 SD** at 80% power (P0-T8). A null result in
+Phase 2 is uninformative, not negative.
+
+Next: Gate 0 decision, then Phase 1.
 
 ## The design table — use these numbers, never estimates
 
@@ -143,7 +151,7 @@ before anything is hardened against it.
 
 | # | Question | Status |
 |---|---|---|
-| Q1 | Is the GEO matrix raw counts, Q3-normalised, or already log-transformed? | **Provisional — Q3-normalised**, not raw, not logged. Confirm at P0-T4 |
+| Q1 | Is the GEO matrix raw counts, Q3-normalised, or already log-transformed? | **Resolved — Q3-normalised.** Column Q3 CV 0.059% vs library-size CV 13.4%. No zeros (min 2.12), so detection is background-relative |
 | Q2 | Antibody-segmented compartments or geometric ROIs? | **Resolved — segmented.** PanCK+/PanCK− UV-cleavage within marker-guided ROIs |
 | Q3 | Is slide / TMA / batch identifiable per AOI? | **Resolved — yes, from DCC filenames.** Two DSP runs (91/29), in `samples.tsv`. **`mLN`, `TBME`, `BC` are each wholly within one run** — batch inseparable from biology there |
 | Q4 | Does per-AOI nuclei count / surface area survive into GEO metadata? | **Resolved — no.** `cell type` is GEO's only characteristics field |

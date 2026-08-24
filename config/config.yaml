@@ -35,17 +35,27 @@ samples:
 seed: 20260823
 
 qc:
-  # PLACEHOLDER — the real value is chosen at the P0-T5 gate in
-  # notebooks/review/qc_review.py and written back here with an ADR.
-  # Until that ADR exists, treat this number as unset, not as a decision.
-  min_gene_detection_rate: null
-  min_library_size: null
+  # Chosen at the P0-T5 gate in notebooks/review/qc_review.py; ADR 0007.
+  # A gene detection rate below 5% (at 2x background) marks an AOI as
+  # low-signal. Flags 3 TBME AOIs at 2.1-4.0%.
+  min_gene_detection_rate: 0.05
+  # Raw reads from the DCC header, not the normalised matrix sum (which is
+  # post-Q3 and near-constant by construction, so it measures nothing).
+  min_library_size: 1000000
+  min_sequencing_saturation: 0.50
+  # A gene is "detected" in an AOI when it exceeds this multiple of that AOI's
+  # NegProbe-WTX level. The matrix has no zeros at all (Q1), so detection is
+  # necessarily background-relative.
+  detection_background_multiple: 2.0
   flag_only: true          # never silently drop an AOI; log it and carry on
 
 normalisation:
-  # Resolved by Q1 (P0-T4): if the GEO matrix is already Q3-normalised this
-  # becomes "verify" rather than "apply".
-  method: q3
+  # Q1 RESOLVED (P0-T4, 2026-08-24): the GEO matrix arrives already
+  # Q3-normalised — column-wise Q3 is constant to CV 0.059% while library size
+  # varies at CV 13.4%. So this is "verify", not "apply". Raw gene-level counts
+  # are not recoverable (the DCCs are probe-level and GEO carries no PKC), so
+  # re-normalising from raw is not an option even in principle.
+  method: verify
   log_base: 2
   pseudocount: 1
 

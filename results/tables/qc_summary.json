@@ -1,0 +1,30 @@
+{
+  "n_aoi": 120,
+  "thresholds": {
+    "min_gene_detection_rate": 0.05,
+    "min_library_size": 1000000,
+    "min_sequencing_saturation": 0.5
+  },
+  "detection_background_multiple": 2.0,
+  "thresholds_unset": [],
+  "flag_only": true,
+  "n_flagged": 5,
+  "normalisation_method": "verify",
+  "column_q3_cv": 0.00058802,
+  "normalisation_verified": true,
+  "raw_reads_median": 8076965.0,
+  "raw_reads_min": 663669.0,
+  "saturation_median": 0.705863,
+  "saturation_min": 0.613869,
+  "detection_curve_multiples": [
+    1.0,
+    1.25,
+    1.5,
+    1.75,
+    2.0,
+    2.5,
+    3.0,
+    4.0,
+    5.0
+  ]
+}

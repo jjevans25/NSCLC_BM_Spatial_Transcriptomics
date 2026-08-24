@@ -16,9 +16,15 @@ its three action items were done or superseded.
 - **`phases.*` switches start `false`.** Each is flipped on in the *same commit*
   that adds its rules and populates the matching `TARGETS_*` list. Either alone
   contributes nothing — `targets()` in `workflow/rules/common.smk` requires both.
-- **Env locks are provisional.** `environment.yml`'s header intends locking at
-  P6-T1, but `workflow/envs/*.conda-lock.yml` were generated early. Regenerate
-  them if any `workflow/envs/*.yaml` changes; treat them as unpinned until P6-T1.
+- **Env locks are provisional, and `py-analysis` is now KNOWN STALE.**
+  `environment.yml`'s header intends locking at P6-T1, but
+  `workflow/envs/*.conda-lock.yml` were generated early. **P0-T5 added `xarray`
+  to `py-analysis.yaml` (see session notes on the sys.path fall-through) and the
+  lock was not regenerated — `conda-lock` is not installed on this machine.** So
+  `py-analysis.conda-lock.yml` does not describe the env the Phase 0 results were
+  produced in. Regenerating it is a P6-T1 prerequisite, not an optional tidy-up:
+  a clean-room reproduction from the current lock would rebuild an env without
+  xarray and fail at `p0t7_assemble_h5ad`.
 
 ## Tooling
 
@@ -48,6 +54,21 @@ its three action items were done or superseded.
   the slash-separated form of `"True"` and `"False"` is reported as
   `Absolute path "/"False"`. Harmless, but the lint must stay clean, so phrase
   around it rather than chasing a real path bug that isn't there.
+- **A conda env must be self-sufficient for *transitive optional* imports.**
+  Snakemake appends its own interpreter's site-packages to `sys.path` (so the
+  job can import the snakemake shim). Measured order inside a `script:` rule:
+  position 5 is the conda env, **position 6 is `/opt/anaconda3/.../site-packages`**.
+  So the env wins for anything it has, and anything it *lacks* silently falls
+  through to the base install. `anndata` does a conditional `import xarray`;
+  xarray was missing from `py-analysis`, so it loaded the base one, which was
+  built against numpy 2.0.2 and met the env's 2.5.2 — surfacing as
+  `ValueError: numpy.dtype size changed`, which points nowhere near the cause.
+  Fix is to pin the missing package into the env, not to chase the numpy error.
+- **Changing an env re-triggers every rule**, including P0-T2's `protected()`
+  downloads, which then abort the DAG build. Remedy:
+  `snakemake --cleanup-metadata resources/raw/* results/interim/acquire/*.json`
+  before re-running — Snakemake's own answer for an env change that cannot
+  change the result.
 - **`--list-params-changes` over-reports.** It will name a file immediately
   after a clean run with no edits, while `snakemake -n` correctly reports
   nothing to do. Do not use it to diagnose a rerun; read the `reason:` line in
