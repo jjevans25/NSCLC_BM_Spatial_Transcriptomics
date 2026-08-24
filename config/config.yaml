@@ -51,7 +51,7 @@ normalisation:
 
 phases:
   # Target-rule switches, so `all` can run a slice without editing the Snakefile.
-  acquire: false        # P0-T2 flips this to true
+  acquire: true         # P0-T2
   annotate: false
   qc: false
   landscape: false
@@ -60,3 +60,36 @@ phases:
   crosstalk: false
   survival: false          # gated on Q5 (P0-T4)
   fair: false
+
+acquire:
+  # P0-T2 source manifest. Fetched into paths.raw; resources/ is read-only
+  # afterwards (outputs are protected(), ADR 0005).
+  base_url: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE200nnn/GSE200563
+  artifacts:
+    processed_matrix:
+      # Q3-normalised expression, 120 AOIs x 18,694 genes (Q1).
+      remote: suppl/GSE200563_processed_data.txt.gz
+      dest: GSE200563_processed_data.txt.gz
+      stability: fixed
+      sha256: "ee2caf0549cb48049c6937b34fe3f1e3a589c7f7241b769809a80555bad8c29c"
+    raw_dcc_archive:
+      # 120 per-AOI .dcc.gz. The only source of raw counts, and the only route
+      # to the DSP-run batch variable (Q3). Needs a PKC for GeomxTools; GEO
+      # does not carry one — see docs/data-provenance.md, raised at P0-T5.
+      remote: suppl/GSE200563_RAW.tar
+      dest: GSE200563_RAW.tar
+      stability: fixed
+      sha256: "a28d9160531bdb7a3326e6351dee05fb54d91110917a5fc4d8eb26c809bc11c4"
+    filelist:
+      # GSM <-> DCC <-> DSP-run mapping without untarring the archive.
+      remote: suppl/filelist.txt
+      dest: GSE200563_filelist.txt
+      stability: fixed
+      sha256: "04c91c7289aa3eed1b293a22b43b047eae89d93b7b61b070ecde2ccb38744018"
+    soft_family:
+      # Sample titles and `cell type`, the inputs to P0-T3. VOLATILE: GEO
+      # regenerates this server-side, so its digest is recorded, not enforced.
+      remote: soft/GSE200563_family.soft.gz
+      dest: GSE200563_family.soft.gz
+      stability: volatile
+      sha256: "1220b6eef191568f20f774c1f06d26e4c70d517440451fad0c8590b6bab1d06f"

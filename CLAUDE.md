@@ -156,8 +156,11 @@ sanity check is evidence rather than ceremony.
 ## Useful commands
 
 ```bash
-snakemake -n                      # dry run (must stay clean)
+snakemake -n --use-conda          # dry run (must stay clean)
 snakemake --lint                  # must stay clean
+# ALWAYS pass --use-conda. Without it the software-env rerun trigger fires,
+# Snakemake tries to re-run P0-T2's downloads, and their protected() outputs
+# raise ProtectedOutputException. A bare `snakemake -n` is not a clean dry run.
 snakemake --report results/reports/workflow-report.html
 uvx marimo check notebooks/**/*.py
 marimo edit --watch notebooks/review/qc_review.py   # live pairing

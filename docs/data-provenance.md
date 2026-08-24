@@ -240,6 +240,37 @@ longer gates it; the remaining risk is n, not availability.
 
 ---
 
+## Acquisition first-look (P0-T2, 2026-08-24)
+
+The four artifacts are acquired, pinned and verified (`resources/provenance.tsv`).
+What follows is **reconnaissance, not a result** — it comes from ad-hoc commands
+over the downloaded files, so per hard constraint 5 nothing here is reportable
+until P0-T3/P0-T4 produce it from a rule. It is recorded because it changes what
+those tasks must handle.
+
+- **Q3 confirmed in hand.** The 120 DCC entries in `GSE200563_filelist.txt` split
+  91 / 29 across `DSP-1012300141221` and `DSP-1012310141221`, as the pre-download
+  survey predicted. The batch variable is real and available.
+- **Q1 consistent with Q3-normalised.** The matrix is 121 columns (`Gene#` + 120
+  AOIs). Of 2,243,400 values, **0 are negative and 99.3% are non-integer** — so
+  not raw counts. Magnitudes are in the tens, not the units, so not log₂. Still
+  **Provisional**: the discriminating test is whether the column-wise third
+  quartile is near-constant across AOIs, and that belongs in P0-T4's rule.
+- **The matrix has 18,695 rows, not 18,694.** The extra row is **`NegProbe-WTX`**.
+  Two consequences:
+  1. **P0-T5 gets its negative-probe control.** §6 lists "negative-probe geomean
+     *if available*" — it is available, in the processed matrix.
+  2. **It must be separated from the gene matrix.** A naive row count will report
+     18,695 genes and every gene-wise operation will carry a non-gene row.
+     P0-T7's `var.tsv` must exclude it or flag it.
+- **Columns are AOI codes, not GSM IDs.** The header reads `L01`, `L02`,
+  `TIME-L12a`, … — i.e. the bracketed portion of the SOFT sample titles
+  (`Patient 12 [TIME-L12a]`). **The join key between the expression matrix and
+  `samples.tsv` is the AOI code**, and GSM ID reaches the matrix only via the
+  SOFT titles. P0-T3 must carry both.
+
+---
+
 ## Discrepancies and reconciliations
 
 Both of these will be rediscovered as apparent bugs at P0-T3 if not recorded.

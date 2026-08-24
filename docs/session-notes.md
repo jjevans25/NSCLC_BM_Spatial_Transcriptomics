@@ -33,6 +33,22 @@ its three action items were done or superseded.
 - **System `python3` has no `pyyaml`.** For quick YAML checks outside a rule,
   `uvx --with pyyaml python -c ...` works without touching the project envs.
 
+## Snakemake
+
+- **Always pass `--use-conda`.** Every rule declares `conda:`, so without the
+  flag the recorded software stack does not match and the `software-env` rerun
+  trigger fires. For P0-T2 that means Snakemake tries to re-download artifacts
+  whose outputs are `protected()`, and the DAG build dies with
+  `ProtectedOutputException`. `snakemake -n` alone is not a clean dry run.
+- **To re-fetch a protected artifact** you must defeat the protection on
+  purpose: `chmod u+w resources/raw/<file> && rm resources/raw/<file>`. Editing
+  `workflow/scripts/acquire_geo.py` also marks those jobs out of date (the
+  `code` trigger) and needs the same recovery.
+- **`--list-params-changes` over-reports.** It will name a file immediately
+  after a clean run with no edits, while `snakemake -n` correctly reports
+  nothing to do. Do not use it to diagnose a rerun; read the `reason:` line in
+  the dry-run output instead.
+
 ## Skills
 
 **15 flagged skills are still uncleared** (ADR 0003). `literature-review` (P4),

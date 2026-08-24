@@ -1,0 +1,5 @@
+artifact	file	url	accessed_utc	last_modified	bytes	sha256	stability	pin_status
+filelist	GSE200563_filelist.txt	https://ftp.ncbi.nlm.nih.gov/geo/series/GSE200nnn/GSE200563/suppl/filelist.txt	2026-08-24T14:46:43+00:00	Tue, 13 Sep 2022 19:05:45 GMT	9332	04c91c7289aa3eed1b293a22b43b047eae89d93b7b61b070ecde2ccb38744018	fixed	verified
+processed_matrix	GSE200563_processed_data.txt.gz	https://ftp.ncbi.nlm.nih.gov/geo/series/GSE200nnn/GSE200563/suppl/GSE200563_processed_data.txt.gz	2026-08-24T14:46:40+00:00	Mon, 12 Sep 2022 14:45:28 GMT	5130014	ee2caf0549cb48049c6937b34fe3f1e3a589c7f7241b769809a80555bad8c29c	fixed	verified
+raw_dcc_archive	GSE200563_RAW.tar	https://ftp.ncbi.nlm.nih.gov/geo/series/GSE200nnn/GSE200563/suppl/GSE200563_RAW.tar	2026-08-24T14:46:44+00:00	Tue, 13 Sep 2022 19:05:45 GMT	8478720	a28d9160531bdb7a3326e6351dee05fb54d91110917a5fc4d8eb26c809bc11c4	fixed	verified
+soft_family	GSE200563_family.soft.gz	https://ftp.ncbi.nlm.nih.gov/geo/series/GSE200nnn/GSE200563/soft/GSE200563_family.soft.gz	2026-08-24T14:46:44+00:00	Sun, 23 Aug 2026 04:30:16 GMT	8662	1220b6eef191568f20f774c1f06d26e4c70d517440451fad0c8590b6bab1d06f	volatile	verified

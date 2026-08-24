@@ -4,7 +4,7 @@ description: >
   snakemake.utils.validate() at Snakefile load time, so a hand-edit that
   breaks the contract fails at parse rather than three rules later.
 type: object
-required: [project, paths, samples, seed, qc, normalisation, phases]
+required: [project, paths, samples, seed, qc, normalisation, phases, acquire]
 additionalProperties: false
 properties:
   project:
@@ -53,3 +53,37 @@ properties:
   phases:
     type: object
     additionalProperties: {type: boolean}
+  acquire:
+    type: object
+    description: >
+      P0-T2 source manifest. Every artifact is fetched from base_url/remote into
+      paths.raw/dest. `stability` is the checksum tier and it is load-bearing:
+      author-uploaded supplementary files are `fixed` and a SHA-256 mismatch is a
+      hard failure, while GEO-generated metadata (SOFT, series matrix) is
+      `volatile` — regenerated server-side, so its digest is recorded as an
+      observation rather than enforced. See ADR 0005.
+    required: [base_url, artifacts]
+    additionalProperties: false
+    properties:
+      base_url: {type: string}
+      artifacts:
+        type: object
+        minProperties: 1
+        additionalProperties:
+          type: object
+          required: [remote, dest, stability, sha256]
+          additionalProperties: false
+          properties:
+            remote: {type: string, description: path below base_url}
+            dest: {type: string, description: filename under paths.raw}
+            stability:
+              type: string
+              enum: [fixed, volatile]
+            sha256:
+              type: [string, "null"]
+              pattern: "^[0-9a-f]{64}$"
+              description: >
+                null until the first run computes it. A `fixed` artifact left
+                null is an unenforced provenance control that looks enforced —
+                pin it before committing. Same reasoning as
+                qc.min_gene_detection_rate.
