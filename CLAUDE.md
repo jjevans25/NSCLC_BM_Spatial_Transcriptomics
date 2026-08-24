@@ -12,14 +12,23 @@ learning and methods project, not a publication. The full plan lives in
 `Markdowns/PROJECT_PLAN.md` — when this file and the plan disagree, the plan
 wins, and the disagreement is a bug in this file.
 
-**Phase 0 is complete (P0-T1 … P0-T8).** All five open questions are answered
+**GATE 0 PASSED (2026-08-24). Phase 0 complete (P0-T1 … P0-T8); current phase
+is Phase 1 (variance landscape).** All five open questions are answered
 (`docs/data-provenance.md`), and `docs/limitations.md` records what the design
 cannot support.
 
-**All three GATE 0 conditions are met:** the marker sanity check passed 4/4
-(`results/tables/marker_sanity_verdict.tsv`), the design table matches §2.1
-exactly (120 AOIs), and Q2 resolved to antibody segmentation — so Aim A4 stands
-as written. The gate itself is a human call; the evidence is in place.
+Gate 0 evidence: marker sanity check 4/4
+(`results/tables/marker_sanity_verdict.tsv`), design table matches §2.1 exactly
+(120 AOIs), Q2 resolved to antibody segmentation.
+
+**Scope change at the gate: Aim A4 is demoted to exploratory (ADR 0008).** Most
+of the checkpoint panel sits at background — CTLA4 is above background in 2 of
+8 `TIME-B` AOIs, TIGIT in 1, IDO1 in 2 — and brain background is *higher*, so a
+near-background gene reads as depleted in brain artefactually. Phase 3 still
+runs; **no A4 result may be a headline claim**, every checkpoint reported states
+its per-site detection count, and a gene detected in fewer than half the
+`TIME-B` AOIs is "not assessable in brain", never "lower in brain".
+**A5 is flagged, not demoted** — re-decide at Gate 2.
 
 Phase 0 output: `results/interim/aoi_normalised.h5ad` — 120 AOIs × 18,694
 genes, `X` = log2(Q3 + 1), `layers['q3']` the untransformed values, 36 `obs`
@@ -29,7 +38,7 @@ columns, git SHA and config hash in `uns`.
 contrast detects roughly **1.1–1.3 SD** at 80% power (P0-T8). A null result in
 Phase 2 is uninformative, not negative.
 
-Next: Gate 0 decision, then Phase 1.
+Next: Phase 1 (A2 — what drives variance: patient vs site vs compartment).
 
 ## The design table — use these numbers, never estimates
 
