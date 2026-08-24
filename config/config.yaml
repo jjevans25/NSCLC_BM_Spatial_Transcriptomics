@@ -53,7 +53,7 @@ phases:
   # Target-rule switches, so `all` can run a slice without editing the Snakefile.
   acquire: true         # P0-T2
   annotate: true        # P0-T3
-  qc: false
+  qc: true              # P0-T6 (P0-T5 still to come)
   landscape: false
   contexture: false
   checkpoints: false

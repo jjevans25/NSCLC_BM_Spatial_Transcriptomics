@@ -117,6 +117,33 @@ label. Two consequences that are not optional:
 Same reasoning as hard constraint 6, which forbids "colocalisation": state the
 claim the assay supports, not the one the label suggests.
 
+### The caveat was tested, and the labels hold (P0-T6)
+
+Because `TIME` and `TBME` rest on human ROI placement rather than a sorting
+mask, the transcriptome is the only independent evidence that the placement
+worked. P0-T6 supplies it — all four gating criteria pass, on all 120 AOIs,
+against a `NegProbe-WTX` background floor of log2 5.23:
+
+| Criterion | median (high) | median (rest) | Δ log2 | 95% CI | n |
+|---|---|---|---|---|---|
+| tumour epithelial-high (EPCAM) | 7.92 | 5.50 | +2.42 | [+1.96, +2.66] | 70 / 50 |
+| tumour epithelial-high (KRT19) | 9.02 | 6.06 | +2.97 | [+2.51, +3.53] | 70 / 50 |
+| `TIME` `PTPRC`-high | 8.19 | 6.05 | +2.14 | [+1.51, +2.38] | 23 / 97 |
+| `TBME` `GFAP`-high | 11.89 | 5.84 | +6.05 | [+1.67, +6.64] | 20 / 100 |
+
+Two details worth carrying forward:
+
+- **Epithelial signal in non-tumour compartments is at background, not merely
+  lower.** `BC` sits on the floor for both EPCAM and KRT19. The PanCK⁻ mask
+  did what it claims.
+- **`TBME` GFAP (11.89) exceeds `BC` GFAP (10.18).** Tumour-adjacent brain is
+  *more* astrocytic than normal brain, consistent with the reactive astrocytes
+  the source paper reports — the label is not merely correct, it is capturing
+  the biology it was drawn for.
+
+Evidence: `results/figures/marker_sanity.png`,
+`results/tables/marker_sanity_verdict.tsv`.
+
 ## Q3 — Is slide / TMA / batch identifiable per AOI?
 
 **Status: Resolved — yes, from the DCC filenames. Extracted by P0-T3 into
@@ -298,6 +325,36 @@ those tasks must handle.
   (`Patient 12 [TIME-L12a]`). **The join key between the expression matrix and
   `samples.tsv` is the AOI code**, and GSM ID reaches the matrix only via the
   SOFT titles. P0-T3 must carry both.
+
+---
+
+## Background is not constant across compartments (P0-T6)
+
+`NegProbe-WTX` — the whole-transcriptome negative probe, present in the
+processed matrix — is **not flat** across the design:
+
+| Code | n | median log2 |
+|---|---|---|
+| L | 30 | 4.96 |
+| LB | 27 | 4.99 |
+| mLN | 13 | 5.03 |
+| TIME-B | 8 | 5.30 |
+| TIME-L | 15 | 5.36 |
+| TBME | 20 | 5.62 |
+| BC | 7 | 5.67 |
+
+A monotone ~0.71 log2 (≈1.6×) rise from lung tumour cores to brain
+parenchyma. Q3 normalisation scales each AOI by its own third quartile, so it
+does not remove a background difference that tracks tissue type.
+
+**Consequence for P0-T5:** a gene expressed near background will look
+differentially expressed between lung and brain compartments on background
+alone. Either subtract or model the negative-probe level, or restrict claims to
+genes comfortably above it. This is a threshold decision, so it needs an ADR
+and is a "stop and ask" — flagged here, not decided.
+
+It does not touch the P0-T6 verdicts: every effect there is 2–6 log2, far above
+a 0.7 log2 background gradient.
 
 ---
 

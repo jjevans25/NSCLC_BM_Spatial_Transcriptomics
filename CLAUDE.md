@@ -12,10 +12,16 @@ learning and methods project, not a publication. The full plan lives in
 `Markdowns/PROJECT_PLAN.md` — when this file and the plan disagree, the plan
 wins, and the disagreement is a bug in this file.
 
-**Current phase: Phase 0 (acquisition, annotation, QC).** P0-T1, P0-T2 and
-P0-T3 are complete. Q2, Q3, Q4 and Q5 are answered (`docs/data-provenance.md`);
-Q1 is provisional pending P0-T4. **Gate 0 now needs only P0-T6 (marker check)**
-— the design table matches §2.1 and Q2 is answered. Next: P0-T4, then P0-T5.
+**Current phase: Phase 0 (acquisition, annotation, QC).** P0-T1, P0-T2, P0-T3
+and P0-T6 are complete. Q2–Q5 are answered (`docs/data-provenance.md`); Q1 is
+provisional pending P0-T4.
+
+**All three GATE 0 conditions are met:** the marker sanity check passed 4/4
+(`results/tables/marker_sanity_verdict.tsv`), the design table matches §2.1
+exactly, and Q2 resolved to antibody segmentation — so Aim A4 stands as
+written. The gate itself is a human call; the evidence is in place.
+
+Remaining in Phase 0: P0-T4, P0-T5, P0-T7, P0-T8.
 
 ## The design table — use these numbers, never estimates
 
