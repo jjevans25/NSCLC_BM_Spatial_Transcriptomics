@@ -12,11 +12,10 @@ learning and methods project, not a publication. The full plan lives in
 `Markdowns/PROJECT_PLAN.md` — when this file and the plan disagree, the plan
 wins, and the disagreement is a bug in this file.
 
-**Current phase: Phase 0 (acquisition, annotation, QC).** P0-T1 is complete.
-Q2, Q4 and Q5 are answered (`docs/data-provenance.md`); Q1 and Q3 have
-provisional answers awaiting the data. Next: P0-T2 (acquire data with
-provenance). **Gate 0 now needs only P0-T3 (design table) and P0-T6 (marker
-check)** — its third condition, Q2, is met.
+**Current phase: Phase 0 (acquisition, annotation, QC).** P0-T1, P0-T2 and
+P0-T3 are complete. Q2, Q3, Q4 and Q5 are answered (`docs/data-provenance.md`);
+Q1 is provisional pending P0-T4. **Gate 0 now needs only P0-T6 (marker check)**
+— the design table matches §2.1 and Q2 is answered. Next: P0-T4, then P0-T5.
 
 ## The design table — use these numbers, never estimates
 
@@ -140,7 +139,7 @@ before anything is hardened against it.
 |---|---|---|
 | Q1 | Is the GEO matrix raw counts, Q3-normalised, or already log-transformed? | **Provisional — Q3-normalised**, not raw, not logged. Confirm at P0-T4 |
 | Q2 | Antibody-segmented compartments or geometric ROIs? | **Resolved — segmented.** PanCK+/PanCK− UV-cleavage within marker-guided ROIs |
-| Q3 | Is slide / TMA / batch identifiable per AOI? | **Provisional — yes, from DCC filenames only.** Two DSP runs (91/29); not the TMA blocks |
+| Q3 | Is slide / TMA / batch identifiable per AOI? | **Resolved — yes, from DCC filenames.** Two DSP runs (91/29), in `samples.tsv`. **`mLN`, `TBME`, `BC` are each wholly within one run** — batch inseparable from biology there |
 | Q4 | Does per-AOI nuclei count / surface area survive into GEO metadata? | **Resolved — no.** `cell type` is GEO's only characteristics field |
 | Q5 | Is patient-level clinical/survival metadata extractable and joinable? | **Resolved — yes.** Two time-to-event columns in Supplementary Data 1; Phase 5 is viable |
 

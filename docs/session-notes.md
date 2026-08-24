@@ -44,6 +44,10 @@ its three action items were done or superseded.
   purpose: `chmod u+w resources/raw/<file> && rm resources/raw/<file>`. Editing
   `workflow/scripts/acquire_geo.py` also marks those jobs out of date (the
   `code` trigger) and needs the same recovery.
+- **`snakemake --lint` scans comments, not just code.** A comment containing
+  the slash-separated form of `"True"` and `"False"` is reported as
+  `Absolute path "/"False"`. Harmless, but the lint must stay clean, so phrase
+  around it rather than chasing a real path bug that isn't there.
 - **`--list-params-changes` over-reports.** It will name a file immediately
   after a clean run with no edits, while `snakemake -n` correctly reports
   nothing to do. Do not use it to diagnose a rerun; read the `reason:` line in

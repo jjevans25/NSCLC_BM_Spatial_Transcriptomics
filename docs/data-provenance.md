@@ -119,7 +119,9 @@ claim the assay supports, not the one the label suggests.
 
 ## Q3 — Is slide / TMA / batch identifiable per AOI?
 
-**Status: Provisional — yes, but only from the DCC filenames. Confirm at P0-T4.**
+**Status: Resolved — yes, from the DCC filenames. Extracted by P0-T3 into
+`samples.tsv` (`dsp_run`, `dsp_well`) and `results/tables/batch_crosstab.tsv`.
+But it is partially confounded with compartment — see below.**
 
 **Not from the GEO sample metadata.** The SOFT family file carries exactly one
 characteristics field per sample:
@@ -152,9 +154,37 @@ term.
 
 Two DSP runs ≠ four TMA blocks, and there is no mapping between them in GEO. So
 the available batch variable is the **sequencing/DSP run**, not the TMA block.
-Confounding between DSP run and compartment is checkable at P0-T4 once the
-filenames are joined to `samples.tsv`; a 91/29 split is unbalanced enough that
-this must be checked before the batch term is trusted.
+
+The plate letter (`A` / `B`) is perfectly collinear with the run id, so this is
+one two-level variable, not two.
+
+### The confounding, which is the part that matters
+
+P0-T3 joined the filenames to the design (`results/tables/batch_crosstab.tsv`):
+
+| Code | `DSP-1012300141221` | `DSP-1012310141221` | Total |
+|---|---|---|---|
+| L | 22 | 8 | 30 |
+| LB | 21 | 6 | 27 |
+| mLN | **13** | **0** | 13 |
+| TBME | **20** | **0** | 20 |
+| TIME-L | 9 | 6 | 15 |
+| TIME-B | 6 | 2 | 8 |
+| BC | **0** | **7** | 7 |
+| **Total** | **91** | **29** | **120** |
+
+**`mLN`, `TBME` and `BC` each sit entirely inside one run.** For those
+compartments batch and biology are inseparable: any `BC`-vs-anything difference
+is also a run-B-vs-run-A difference, and no model can tell them apart. This is a
+limitation to state (P0-T8), not a defect to correct.
+
+**The core comparison survives.** `TIME-L` (9/6) and `TIME-B` (6/2) both span
+both runs, so a batch term is estimable for the primary contrast. Note it rests
+on only **2 `TIME-B` AOIs** in the smaller run, so that estimate is thin — worth
+a sensitivity check at P0-T5 rather than blind inclusion.
+
+Aim A4 and anything else resting on `TBME` inherits the `TBME` confounding in
+full.
 
 ## Q4 — Does per-AOI nuclei count / surface area survive into GEO metadata?
 

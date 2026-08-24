@@ -1,0 +1,121 @@
+gsm_id	sample_title	aoi_label	aoi_code	patient_id	site	compartment	replicate_flag	is_control	dsp_run	dsp_well	cell_type
+GSM6573810	Non-tumor brain #1 [BC03]	BC03	BC	BC1	brain	normal_control	False	True	DSP-1012310141221	C01	cell type: non-tumor brain
+GSM6573811	Non-tumor brain #2 [BC04]	BC04	BC	BC2	brain	normal_control	False	True	DSP-1012310141221	C02	cell type: non-tumor brain
+GSM6573812	Non-tumor brain #3 [BC06]	BC06	BC	BC3	brain	normal_control	False	True	DSP-1012310141221	C04	cell type: non-tumor brain
+GSM6573813	Non-tumor brain #4 [BC07]	BC07	BC	BC4	brain	normal_control	False	True	DSP-1012310141221	C05	cell type: non-tumor brain
+GSM6573814	Non-tumor brain #5 [BC08]	BC08	BC	BC5	brain	normal_control	False	True	DSP-1012310141221	C06	cell type: non-tumor brain
+GSM6573815	Non-tumor brain #6 [BC09]	BC09	BC	BC6	brain	normal_control	False	True	DSP-1012310141221	C07	cell type: non-tumor brain
+GSM6573816	Non-tumor brain #7 [BC10]	BC10	BC	BC7	brain	normal_control	False	True	DSP-1012310141221	C08	cell type: non-tumor brain
+GSM6573699	Patient 1 [L01]	L01	L	P1	lung	tumour	False	False	DSP-1012300141221	A04	cell type: primary lung cancer
+GSM6573732	Patient 11 [L11]	L11	L	P11	lung	tumour	False	False	DSP-1012300141221	D01	cell type: primary lung cancer
+GSM6573735	Patient 12 [L12]	L12	L	P12	lung	tumour	False	False	DSP-1012300141221	D04	cell type: primary lung cancer
+GSM6573738	Patient 13 [L13]	L13	L	P13	lung	tumour	False	False	DSP-1012300141221	D07	cell type: primary lung cancer
+GSM6573743	Patient 14 [L14]	L14	L	P14	lung	tumour	False	False	DSP-1012300141221	D12	cell type: primary lung cancer
+GSM6573745	Patient 15 [L15]	L15	L	P15	lung	tumour	False	False	DSP-1012300141221	E02	cell type: primary lung cancer
+GSM6573750	Patient 16 [L16]	L16	L	P16	lung	tumour	False	False	DSP-1012300141221	E07	cell type: primary lung cancer
+GSM6573753	Patient 17 [L17]	L17	L	P17	lung	tumour	False	False	DSP-1012300141221	E10	cell type: primary lung cancer
+GSM6573776	Patient 18 [L18]	L18	L	P18	lung	tumour	False	False	DSP-1012300141221	G12	cell type: primary lung cancer
+GSM6573756	Patient 19 [L19]	L19	L	P19	lung	tumour	False	False	DSP-1012300141221	F01	cell type: primary lung cancer
+GSM6573702	Patient 2 [L02]	L02	L	P2	lung	tumour	False	False	DSP-1012300141221	A07	cell type: primary lung cancer
+GSM6573760	Patient 20 [L20]	L20	L	P20	lung	tumour	False	False	DSP-1012300141221	F05	cell type: primary lung cancer
+GSM6573773	Patient 21 [L21]	L21	L	P21	lung	tumour	False	False	DSP-1012300141221	G09	cell type: primary lung cancer
+GSM6573771	Patient 22 [L22]	L22	L	P22	lung	tumour	False	False	DSP-1012300141221	G07	cell type: primary lung cancer
+GSM6573780	Patient 24 [L24]	L24	L	P24	lung	tumour	False	False	DSP-1012300141221	H04	cell type: primary lung cancer
+GSM6573784	Patient 26 [L26]	L26	L	P26	lung	tumour	False	False	DSP-1012300141221	H09	cell type: primary lung cancer
+GSM6573788	Patient 29 [L29]	L29	L	P29	lung	tumour	False	False	DSP-1012310141221	A02	cell type: primary lung cancer
+GSM6573767	Patient 3 [L03]	L03	L	P3	lung	tumour	False	False	DSP-1012300141221	F12	cell type: primary lung cancer
+GSM6573798	Patient 30 [L30]	L30	L	P30	lung	tumour	False	False	DSP-1012310141221	A12	cell type: primary lung cancer
+GSM6573793	Patient 32 [L32]	L32	L	P32	lung	tumour	False	False	DSP-1012310141221	A07	cell type: primary lung cancer
+GSM6573790	Patient 34 [L34]	L34	L	P34	lung	tumour	False	False	DSP-1012310141221	A04	cell type: primary lung cancer
+GSM6573802	Patient 35 [L35]	L35	L	P35	lung	tumour	False	False	DSP-1012310141221	B04	cell type: primary lung cancer
+GSM6573805	Patient 37 [L37]	L37	L	P37	lung	tumour	False	False	DSP-1012310141221	B07	cell type: primary lung cancer
+GSM6573708	Patient 4 [L04]	L04	L	P4	lung	tumour	False	False	DSP-1012300141221	B01	cell type: primary lung cancer
+GSM6573787	Patient 40 [L40]	L40	L	P40	lung	tumour	False	False	DSP-1012300141221	H12	cell type: primary lung cancer
+GSM6573796	Patient 43 [L43]	L43	L	P43	lung	tumour	False	False	DSP-1012310141221	A10	cell type: primary lung cancer
+GSM6573808	Patient 44 [L44]	L44	L	P44	lung	tumour	False	False	DSP-1012310141221	B11	cell type: primary lung cancer
+GSM6573714	Patient 5 [L05]	L05	L	P5	lung	tumour	False	False	DSP-1012300141221	B07	cell type: primary lung cancer
+GSM6573722	Patient 7 [L07]	L07	L	P7	lung	tumour	False	False	DSP-1012300141221	C03	cell type: primary lung cancer
+GSM6573727	Patient 9 [L09]	L09	L	P9	lung	tumour	False	False	DSP-1012300141221	C08	cell type: primary lung cancer
+GSM6573697	Patient 1 [LB01]	LB01	LB	P1	brain	tumour	False	False	DSP-1012300141221	A02	cell type: Metastatic lung cancer in the brain
+GSM6573731	Patient 10 [LB10]	LB10	LB	P10	brain	tumour	False	False	DSP-1012300141221	C12	cell type: Metastatic lung cancer in the brain
+GSM6573734	Patient 12 [LB12]	LB12	LB	P12	brain	tumour	False	False	DSP-1012300141221	D03	cell type: Metastatic lung cancer in the brain
+GSM6573740	Patient 13 [LB13]	LB13	LB	P13	brain	tumour	False	False	DSP-1012300141221	D09	cell type: Metastatic lung cancer in the brain
+GSM6573741	Patient 14 [LB14]	LB14	LB	P14	brain	tumour	False	False	DSP-1012300141221	D10	cell type: Metastatic lung cancer in the brain
+GSM6573762	Patient 15 [LB15]	LB15	LB	P15	brain	tumour	False	False	DSP-1012300141221	F07	cell type: Metastatic lung cancer in the brain
+GSM6573748	Patient 16 [LB16]	LB16	LB	P16	brain	tumour	False	False	DSP-1012300141221	E05	cell type: Metastatic lung cancer in the brain
+GSM6573751	Patient 17 [LB17]	LB17	LB	P17	brain	tumour	False	False	DSP-1012300141221	E08	cell type: Metastatic lung cancer in the brain
+GSM6573778	Patient 18 [LB18]	LB18	LB	P18	brain	tumour	False	False	DSP-1012300141221	H02	cell type: Metastatic lung cancer in the brain
+GSM6573755	Patient 19 [LB19]	LB19	LB	P19	brain	tumour	False	False	DSP-1012300141221	E12	cell type: Metastatic lung cancer in the brain
+GSM6573704	Patient 2 [LB02]	LB02	LB	P2	brain	tumour	False	False	DSP-1012300141221	A09	cell type: Metastatic lung cancer in the brain
+GSM6573757	Patient 20 [LB20]	LB20	LB	P20	brain	tumour	False	False	DSP-1012300141221	F02	cell type: Metastatic lung cancer in the brain
+GSM6573774	Patient 21 [LB21]	LB21	LB	P21	brain	tumour	False	False	DSP-1012300141221	G10	cell type: Metastatic lung cancer in the brain
+GSM6573779	Patient 24 [LB24]	LB24	LB	P24	brain	tumour	False	False	DSP-1012300141221	H03	cell type: Metastatic lung cancer in the brain
+GSM6573766	Patient 3 [LB03]	LB03	LB	P3	brain	tumour	False	False	DSP-1012300141221	F11	cell type: Metastatic lung cancer in the brain
+GSM6573794	Patient 31 [LB31]	LB31	LB	P31	brain	tumour	False	False	DSP-1012310141221	A08	cell type: Metastatic lung cancer in the brain
+GSM6573791	Patient 34 [LB34]	LB34	LB	P34	brain	tumour	False	False	DSP-1012310141221	A05	cell type: Metastatic lung cancer in the brain
+GSM6573800	Patient 35 [LB35]	LB35	LB	P35	brain	tumour	False	False	DSP-1012310141221	B02	cell type: Metastatic lung cancer in the brain
+GSM6573804	Patient 37 [LB37]	LB37	LB	P37	brain	tumour	False	False	DSP-1012310141221	B06	cell type: Metastatic lung cancer in the brain
+GSM6573710	Patient 4 [LB04]	LB04	LB	P4	brain	tumour	False	False	DSP-1012300141221	B03	cell type: Metastatic lung cancer in the brain
+GSM6573806	Patient 40 [LB40]	LB40	LB	P40	brain	tumour	False	False	DSP-1012310141221	B08	cell type: Metastatic lung cancer in the brain
+GSM6573809	Patient 44 [LB44]	LB44	LB	P44	brain	tumour	False	False	DSP-1012310141221	B12	cell type: Metastatic lung cancer in the brain
+GSM6573711	Patient 5 [LB05]	LB05	LB	P5	brain	tumour	False	False	DSP-1012300141221	B04	cell type: Metastatic lung cancer in the brain
+GSM6573719	Patient 6 [LB06]	LB06	LB	P6	brain	tumour	False	False	DSP-1012300141221	B12	cell type: Metastatic lung cancer in the brain
+GSM6573720	Patient 7 [LB07]	LB07	LB	P7	brain	tumour	False	False	DSP-1012300141221	C01	cell type: Metastatic lung cancer in the brain
+GSM6573724	Patient 8 [LB08]	LB08	LB	P8	brain	tumour	False	False	DSP-1012300141221	C05	cell type: Metastatic lung cancer in the brain
+GSM6573726	Patient 9 [LB09]	LB09	LB	P9	brain	tumour	False	False	DSP-1012300141221	C07	cell type: Metastatic lung cancer in the brain
+GSM6573698	Patient 1 [TBME01]	TBME01	TBME	P1	brain	glial_stroma	False	False	DSP-1012300141221	A03	cell type: tumor brain microenviroment in metastatic brain
+GSM6573730	Patient 10 [TBME10]	TBME10	TBME	P10	brain	glial_stroma	False	False	DSP-1012300141221	C11	cell type: tumor brain microenviroment in metastatic brain
+GSM6573768	Patient 11 [TBME11]	TBME11	TBME	P11	brain	glial_stroma	False	False	DSP-1012300141221	G01	cell type: tumor brain microenviroment in metastatic brain
+GSM6573739	Patient 13 [TBME13]	TBME13	TBME	P13	brain	glial_stroma	False	False	DSP-1012300141221	D08	cell type: tumor brain microenviroment in metastatic brain
+GSM6573747	Patient 15 [TBME15a]	TBME15a	TBME	P15	brain	glial_stroma	True	False	DSP-1012300141221	E04	cell type: tumor brain microenviroment in metastatic brain
+GSM6573770	Patient 15 [TBME15b]	TBME15b	TBME	P15	brain	glial_stroma	True	False	DSP-1012300141221	G05	cell type: tumor brain microenviroment in metastatic brain
+GSM6573749	Patient 16 [TBME16]	TBME16	TBME	P16	brain	glial_stroma	False	False	DSP-1012300141221	E06	cell type: tumor brain microenviroment in metastatic brain
+GSM6573752	Patient 17 [TBME17]	TBME17	TBME	P17	brain	glial_stroma	False	False	DSP-1012300141221	E09	cell type: tumor brain microenviroment in metastatic brain
+GSM6573754	Patient 18 [TBME18]	TBME18	TBME	P18	brain	glial_stroma	False	False	DSP-1012300141221	E11	cell type: tumor brain microenviroment in metastatic brain
+GSM6573775	Patient 19 [TBME19]	TBME19	TBME	P19	brain	glial_stroma	False	False	DSP-1012300141221	G11	cell type: tumor brain microenviroment in metastatic brain
+GSM6573703	Patient 2 [TBME02]	TBME02	TBME	P2	brain	glial_stroma	False	False	DSP-1012300141221	A08	cell type: tumor brain microenviroment in metastatic brain
+GSM6573759	Patient 20 [TBME20]	TBME20	TBME	P20	brain	glial_stroma	False	False	DSP-1012300141221	F04	cell type: tumor brain microenviroment in metastatic brain
+GSM6573772	Patient 22 [TBME22]	TBME22	TBME	P22	brain	glial_stroma	False	False	DSP-1012300141221	G08	cell type: tumor brain microenviroment in metastatic brain
+GSM6573786	Patient 27 [TBME27]	TBME27	TBME	P27	brain	glial_stroma	False	False	DSP-1012300141221	H11	cell type: tumor brain microenviroment in metastatic brain
+GSM6573705	Patient 3 [TBME03]	TBME03	TBME	P3	brain	glial_stroma	False	False	DSP-1012300141221	A10	cell type: tumor brain microenviroment in metastatic brain
+GSM6573709	Patient 4 [TBME04]	TBME04	TBME	P4	brain	glial_stroma	False	False	DSP-1012300141221	B02	cell type: tumor brain microenviroment in metastatic brain
+GSM6573713	Patient 5 [TBME05]	TBME05	TBME	P5	brain	glial_stroma	False	False	DSP-1012300141221	B06	cell type: tumor brain microenviroment in metastatic brain
+GSM6573718	Patient 6 [TBME06]	TBME06	TBME	P6	brain	glial_stroma	False	False	DSP-1012300141221	B11	cell type: tumor brain microenviroment in metastatic brain
+GSM6573721	Patient 7 [TBME07]	TBME07	TBME	P7	brain	glial_stroma	False	False	DSP-1012300141221	C02	cell type: tumor brain microenviroment in metastatic brain
+GSM6573725	Patient 9 [TBME09]	TBME09	TBME	P9	brain	glial_stroma	False	False	DSP-1012300141221	C06	cell type: tumor brain microenviroment in metastatic brain
+GSM6573782	Patient 12 [TIME-B12]	TIME-B12	TIME-B	P12	brain	immune	False	False	DSP-1012300141221	H07	cell type: tumor immune microenviroment in the metastatic brain
+GSM6573742	Patient 14 [TIME-B14]	TIME-B14	TIME-B	P14	brain	immune	False	False	DSP-1012300141221	D11	cell type: tumor immune microenviroment in the metastatic brain
+GSM6573763	Patient 15 [TIME-B15]	TIME-B15	TIME-B	P15	brain	immune	False	False	DSP-1012300141221	F08	cell type: tumor immune microenviroment in the metastatic brain
+GSM6573764	Patient 19 [TIME-B19]	TIME-B19	TIME-B	P19	brain	immune	False	False	DSP-1012300141221	F09	cell type: tumor immune microenviroment in the metastatic brain
+GSM6573758	Patient 20 [TIME-B20]	TIME-B20	TIME-B	P20	brain	immune	False	False	DSP-1012300141221	F03	cell type: tumor immune microenviroment in the metastatic brain
+GSM6573795	Patient 31 [TIME-B31]	TIME-B31	TIME-B	P31	brain	immune	False	False	DSP-1012310141221	A09	cell type: tumor immune microenviroment in the metastatic brain
+GSM6573801	Patient 35 [TIME-B35]	TIME-B35	TIME-B	P35	brain	immune	False	False	DSP-1012310141221	B03	cell type: tumor immune microenviroment in the metastatic brain
+GSM6573712	Patient 5 [TIME-B05]	TIME-B05	TIME-B	P5	brain	immune	False	False	DSP-1012300141221	B05	cell type: tumor immune microenviroment in the metastatic brain
+GSM6573736	Patient 12 [TIME-L12a]	TIME-L12a	TIME-L	P12	lung	immune	True	False	DSP-1012300141221	D05	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573769	Patient 12 [TIME-L12b]	TIME-L12b	TIME-L	P12	lung	immune	True	False	DSP-1012300141221	G03	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573746	Patient 15 [TIME-L15]	TIME-L15	TIME-L	P15	lung	immune	False	False	DSP-1012300141221	E03	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573777	Patient 18 [TIME-L18]	TIME-L18	TIME-L	P18	lung	immune	False	False	DSP-1012300141221	H01	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573765	Patient 19 [TIME-L19]	TIME-L19	TIME-L	P19	lung	immune	False	False	DSP-1012300141221	F10	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573781	Patient 24 [TIME-L24a]	TIME-L24a	TIME-L	P24	lung	immune	True	False	DSP-1012300141221	H05	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573783	Patient 24 [TIME-L24b]	TIME-L24b	TIME-L	P24	lung	immune	True	False	DSP-1012300141221	H08	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573785	Patient 26 [TIME-L26]	TIME-L26	TIME-L	P26	lung	immune	False	False	DSP-1012300141221	H10	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573789	Patient 29 [TIME-L29]	TIME-L29	TIME-L	P29	lung	immune	False	False	DSP-1012310141221	A03	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573799	Patient 30 [TIME-L30]	TIME-L30	TIME-L	P30	lung	immune	False	False	DSP-1012310141221	B01	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573792	Patient 32 [TIME-L32]	TIME-L32	TIME-L	P32	lung	immune	False	False	DSP-1012310141221	A06	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573803	Patient 35 [TIME-L35]	TIME-L35	TIME-L	P35	lung	immune	False	False	DSP-1012310141221	B05	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573807	Patient 40 [TIME-L40]	TIME-L40	TIME-L	P40	lung	immune	False	False	DSP-1012310141221	B09	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573797	Patient 43 [TIME-L43]	TIME-L43	TIME-L	P43	lung	immune	False	False	DSP-1012310141221	A11	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573715	Patient 5 [TIME-L05]	TIME-L05	TIME-L	P5	lung	immune	False	False	DSP-1012300141221	B08	cell type: tumor immune microenviroment in the primary lung cancer
+GSM6573700	Patient 1 [mLN01]	mLN01	mLN	P1	lymph_node	tumour	False	False	DSP-1012300141221	A05	cell type: Metastatic lung cancer in a lymph node
+GSM6573729	Patient 10 [mLN10]	mLN10	mLN	P10	lymph_node	tumour	False	False	DSP-1012300141221	C10	cell type: Metastatic lung cancer in a lymph node
+GSM6573733	Patient 11 [mLN11]	mLN11	mLN	P11	lymph_node	tumour	False	False	DSP-1012300141221	D02	cell type: Metastatic lung cancer in a lymph node
+GSM6573737	Patient 12 [mLN12]	mLN12	mLN	P12	lymph_node	tumour	False	False	DSP-1012300141221	D06	cell type: Metastatic lung cancer in a lymph node
+GSM6573744	Patient 14 [mLN14]	mLN14	mLN	P14	lymph_node	tumour	False	False	DSP-1012300141221	E01	cell type: Metastatic lung cancer in a lymph node
+GSM6573701	Patient 2 [mLN02]	mLN02	mLN	P2	lymph_node	tumour	False	False	DSP-1012300141221	A06	cell type: Metastatic lung cancer in a lymph node
+GSM6573761	Patient 20 [mLN20]	mLN20	mLN	P20	lymph_node	tumour	False	False	DSP-1012300141221	F06	cell type: Metastatic lung cancer in a lymph node
+GSM6573706	Patient 3 [mLN03]	mLN03	mLN	P3	lymph_node	tumour	False	False	DSP-1012300141221	A11	cell type: Metastatic lung cancer in a lymph node
+GSM6573707	Patient 4 [mLN04]	mLN04	mLN	P4	lymph_node	tumour	False	False	DSP-1012300141221	A12	cell type: Metastatic lung cancer in a lymph node
+GSM6573716	Patient 5 [mLN05]	mLN05	mLN	P5	lymph_node	tumour	False	False	DSP-1012300141221	B09	cell type: Metastatic lung cancer in a lymph node
+GSM6573717	Patient 6 [mLN06]	mLN06	mLN	P6	lymph_node	tumour	False	False	DSP-1012300141221	B10	cell type: Metastatic lung cancer in a lymph node
+GSM6573723	Patient 7 [mLN07]	mLN07	mLN	P7	lymph_node	tumour	False	False	DSP-1012300141221	C04	cell type: Metastatic lung cancer in a lymph node
+GSM6573728	Patient 9 [mLN09]	mLN09	mLN	P9	lymph_node	tumour	False	False	DSP-1012300141221	C09	cell type: Metastatic lung cancer in a lymph node
