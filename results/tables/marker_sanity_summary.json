@@ -1,0 +1,10 @@
+{
+  "seed": 20260823,
+  "n_boot": 2000,
+  "background_floor_log2": 5.2284,
+  "gating_criteria": 4,
+  "gating_passed": 4,
+  "verdict": "PASS",
+  "failed": [],
+  "pre_qc": true
+}

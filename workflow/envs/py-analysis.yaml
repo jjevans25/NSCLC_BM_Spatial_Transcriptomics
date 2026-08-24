@@ -19,6 +19,14 @@ dependencies:
   - seaborn
   - pyyaml
   - jsonschema
+  # anndata >=0.11 does a conditional `import xarray` in compat/. Snakemake
+  # appends its own interpreter's site-packages to sys.path (so the job can
+  # import the snakemake shim), which sits AFTER this env — so anything this
+  # env lacks silently falls through to the user's base install. A base xarray
+  # built against a different numpy then fails with a binary-incompatibility
+  # error that looks nothing like the real cause. The env must be
+  # self-sufficient for every transitive optional import, not just direct ones.
+  - xarray
   # marimo: app-tier notebooks are exported headlessly by a rule (§4.5),
   # so marimo must be inside the analysis env, not just on the dev PATH.
   - marimo

@@ -35,28 +35,71 @@ samples:
 seed: 20260823
 
 qc:
-  # PLACEHOLDER — the real value is chosen at the P0-T5 gate in
-  # notebooks/review/qc_review.py and written back here with an ADR.
-  # Until that ADR exists, treat this number as unset, not as a decision.
-  min_gene_detection_rate: null
-  min_library_size: null
+  # Chosen at the P0-T5 gate in notebooks/review/qc_review.py; ADR 0007.
+  # A gene detection rate below 5% (at 2x background) marks an AOI as
+  # low-signal. Flags 3 TBME AOIs at 2.1-4.0%.
+  min_gene_detection_rate: 0.05
+  # Raw reads from the DCC header, not the normalised matrix sum (which is
+  # post-Q3 and near-constant by construction, so it measures nothing).
+  min_library_size: 1000000
+  min_sequencing_saturation: 0.50
+  # A gene is "detected" in an AOI when it exceeds this multiple of that AOI's
+  # NegProbe-WTX level. The matrix has no zeros at all (Q1), so detection is
+  # necessarily background-relative.
+  detection_background_multiple: 2.0
   flag_only: true          # never silently drop an AOI; log it and carry on
 
 normalisation:
-  # Resolved by Q1 (P0-T4): if the GEO matrix is already Q3-normalised this
-  # becomes "verify" rather than "apply".
-  method: q3
+  # Q1 RESOLVED (P0-T4, 2026-08-24): the GEO matrix arrives already
+  # Q3-normalised — column-wise Q3 is constant to CV 0.059% while library size
+  # varies at CV 13.4%. So this is "verify", not "apply". Raw gene-level counts
+  # are not recoverable (the DCCs are probe-level and GEO carries no PKC), so
+  # re-normalising from raw is not an option even in principle.
+  method: verify
   log_base: 2
   pseudocount: 1
 
 phases:
   # Target-rule switches, so `all` can run a slice without editing the Snakefile.
-  acquire: false        # P0-T2 flips this to true
-  annotate: false
-  qc: false
+  acquire: true         # P0-T2
+  annotate: true        # P0-T3
+  qc: true              # P0-T6 (P0-T5 still to come)
   landscape: false
   contexture: false
   checkpoints: false
   crosstalk: false
   survival: false          # gated on Q5 (P0-T4)
   fair: false
+
+acquire:
+  # P0-T2 source manifest. Fetched into paths.raw; resources/ is read-only
+  # afterwards (outputs are protected(), ADR 0005).
+  base_url: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE200nnn/GSE200563
+  artifacts:
+    processed_matrix:
+      # Q3-normalised expression, 120 AOIs x 18,694 genes (Q1).
+      remote: suppl/GSE200563_processed_data.txt.gz
+      dest: GSE200563_processed_data.txt.gz
+      stability: fixed
+      sha256: "ee2caf0549cb48049c6937b34fe3f1e3a589c7f7241b769809a80555bad8c29c"
+    raw_dcc_archive:
+      # 120 per-AOI .dcc.gz. The only source of raw counts, and the only route
+      # to the DSP-run batch variable (Q3). Needs a PKC for GeomxTools; GEO
+      # does not carry one — see docs/data-provenance.md, raised at P0-T5.
+      remote: suppl/GSE200563_RAW.tar
+      dest: GSE200563_RAW.tar
+      stability: fixed
+      sha256: "a28d9160531bdb7a3326e6351dee05fb54d91110917a5fc4d8eb26c809bc11c4"
+    filelist:
+      # GSM <-> DCC <-> DSP-run mapping without untarring the archive.
+      remote: suppl/filelist.txt
+      dest: GSE200563_filelist.txt
+      stability: fixed
+      sha256: "04c91c7289aa3eed1b293a22b43b047eae89d93b7b61b070ecde2ccb38744018"
+    soft_family:
+      # Sample titles and `cell type`, the inputs to P0-T3. VOLATILE: GEO
+      # regenerates this server-side, so its digest is recorded, not enforced.
+      remote: soft/GSE200563_family.soft.gz
+      dest: GSE200563_family.soft.gz
+      stability: volatile
+      sha256: "1220b6eef191568f20f774c1f06d26e4c70d517440451fad0c8590b6bab1d06f"

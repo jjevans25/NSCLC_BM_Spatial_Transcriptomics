@@ -1,0 +1,6 @@
+criterion	gating	marker	high_in	n_high	n_rest	median_high_log2	median_rest_log2	delta_median_log2	ci95_low	ci95_high	above_background	verdict
+tumour AOIs epithelial-high (EPCAM)	True	EPCAM	L+LB+mLN	70	50	7.9236	5.5037	2.4199	1.964	2.6554	True	PASS
+tumour AOIs epithelial-high (KRT19)	True	KRT19	L+LB+mLN	70	50	9.0246	6.0561	2.9685	2.5144	3.5329	True	PASS
+TIME AOIs PTPRC-high	True	PTPRC	TIME-L+TIME-B	23	97	8.188	6.0512	2.1369	1.5061	2.3771	True	PASS
+TBME AOIs GFAP-high	True	GFAP	TBME	20	100	11.8891	5.8411	6.048	1.6719	6.6359	True	PASS
+brain parenchyma AQP4-high (supporting)	False	AQP4	TBME+BC	27	93	7.8697	5.3516	2.5182	1.227	3.269	True	PASS

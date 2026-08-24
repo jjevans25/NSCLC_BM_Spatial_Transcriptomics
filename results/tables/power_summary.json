@@ -1,0 +1,25 @@
+{
+  "seed": 20260823,
+  "n_sim_per_cell": 1000,
+  "alpha": 0.05,
+  "target_power": 0.8,
+  "n_time_l": 15,
+  "n_time_b": 8,
+  "n_patients": 16,
+  "n_paired_patients": 5,
+  "paired_patients": [
+    "P5",
+    "P12",
+    "P15",
+    "P19",
+    "P35"
+  ],
+  "df_used": 14,
+  "mde_by_icc": {
+    "0.0": 1.303,
+    "0.25": 1.213,
+    "0.5": 1.105,
+    "0.75": 0.846
+  },
+  "min_convergence_rate": 0.973
+}

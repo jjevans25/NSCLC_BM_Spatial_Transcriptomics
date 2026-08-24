@@ -1,0 +1,25 @@
+{
+  "n_aoi": 120,
+  "n_subjects": 42,
+  "n_patients": 35,
+  "n_controls": 7,
+  "counts_by_code": {
+    "L": 30,
+    "LB": 27,
+    "mLN": 13,
+    "TBME": 20,
+    "TIME-L": 15,
+    "TIME-B": 8,
+    "BC": 7
+  },
+  "replicate_aois": 6,
+  "dsp_runs": {
+    "DSP-1012300141221": 91,
+    "DSP-1012310141221": 29
+  },
+  "compartments_confounded_with_dsp_run": [
+    "mLN",
+    "TBME",
+    "BC"
+  ]
+}

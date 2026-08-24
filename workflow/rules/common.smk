@@ -34,6 +34,26 @@ if SAMPLES_TSV.exists():
     import pandas as pd
 
     SAMPLES = pd.read_csv(SAMPLES_TSV, sep="\t", dtype=str)
+
+    # dtype=str keeps patient_id and the AOI codes as written — "P1" must not
+    # become 1, and a code like "03" must not lose its zero. But the schema
+    # declares the flag columns boolean, and dtype=str hands them over as the
+    # strings "True" and "False", which fails validation. Coerce them back
+    # (the slash-separated form of that phrase trips snakemake --lint, which
+    # reads it as an absolute path — hence the wording)
+    # explicitly, and fail on anything that is neither: a silent NaN here would
+    # mean an AOI quietly stopped being marked as a replicate.
+    for _col in ("replicate_flag", "is_control"):
+        if _col not in SAMPLES.columns:
+            continue
+        _mapped = SAMPLES[_col].map({"True": True, "False": False})
+        if _mapped.isna().any():
+            _bad = sorted(set(SAMPLES.loc[_mapped.isna(), _col]))
+            raise WorkflowError(
+                f"{SAMPLES_TSV}: column {_col} must be True or False, got {_bad}."
+            )
+        SAMPLES[_col] = _mapped
+
     validate(SAMPLES, "../schemas/samples.schema.yaml")
     N_EXPECTED = config["samples"]["expected_n_aoi"]
     if len(SAMPLES) != N_EXPECTED:

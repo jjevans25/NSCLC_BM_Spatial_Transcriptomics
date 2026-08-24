@@ -12,8 +12,33 @@ learning and methods project, not a publication. The full plan lives in
 `Markdowns/PROJECT_PLAN.md` — when this file and the plan disagree, the plan
 wins, and the disagreement is a bug in this file.
 
-**Current phase: Phase 0 (acquisition, annotation, QC).** P0-T1 is complete.
-Next: P0-T2 (acquire data with provenance) and the §3 open questions.
+**GATE 0 PASSED (2026-08-24). Phase 0 complete (P0-T1 … P0-T8); current phase
+is Phase 1 (variance landscape).** All five open questions are answered
+(`docs/data-provenance.md`), and `docs/limitations.md` records what the design
+cannot support.
+
+Gate 0 evidence: marker sanity check 4/4
+(`results/tables/marker_sanity_verdict.tsv`), design table matches §2.1 exactly
+(120 AOIs), Q2 resolved to antibody segmentation.
+
+**Scope change at the gate: Aim A4 is demoted to exploratory (ADR 0008).** Most
+of the checkpoint panel sits at background — CTLA4 is above background in 2 of
+8 `TIME-B` AOIs, TIGIT in 1, IDO1 in 2 — and brain background is *higher*, so a
+near-background gene reads as depleted in brain artefactually. Phase 3 still
+runs; **no A4 result may be a headline claim**, every checkpoint reported states
+its per-site detection count, and a gene detected in fewer than half the
+`TIME-B` AOIs is "not assessable in brain", never "lower in brain".
+**A5 is flagged, not demoted** — re-decide at Gate 2.
+
+Phase 0 output: `results/interim/aoi_normalised.h5ad` — 120 AOIs × 18,694
+genes, `X` = log2(Q3 + 1), `layers['q3']` the untransformed values, 36 `obs`
+columns, git SHA and config hash in `uns`.
+
+**The number to keep in view:** with `TIME-B` n = 8, the lung-vs-brain immune
+contrast detects roughly **1.1–1.3 SD** at 80% power (P0-T8). A null result in
+Phase 2 is uninformative, not negative.
+
+Next: Phase 1 (A2 — what drives variance: patient vs site vs compartment).
 
 ## The design table — use these numbers, never estimates
 
@@ -86,7 +111,10 @@ asserted on read.
 - **Config:** validated against `workflow/schemas/config.schema.yaml` at load;
   `samples.tsv` against `workflow/schemas/samples.schema.yaml` when it exists.
 - **Commits:** `P<phase>-T<task>: imperative summary`. One phase per branch,
-  squash-merged with the gate result in the message.
+  squash-merged with the gate result in the message — because gates are
+  phase-level, so a per-task branch would have no gate result to record
+  (ADR 0004). Infrastructure tasks may branch and merge early; nothing that
+  produces a number, table, figure or threshold may.
 - **ADRs:** real decisions go in `docs/decisions/NNNN-slug.md`. A threshold
   without an ADR is a number someone made up.
 
@@ -124,25 +152,37 @@ and `jq` on PATH (all present), and a notebook running under
   multiplicity correction.
 - Anything that would change the answer to an open question in §3 of the plan.
 
-## Open questions (PROJECT_PLAN §3) — unresolved as of 2026-08-23
+## Open questions (PROJECT_PLAN §3) — status as of 2026-08-24
+
+Full answers, with citations, in `docs/data-provenance.md`. **Provisional** means
+the evidence is metadata, not the data — P0-T4 confirms it against the file
+before anything is hardened against it.
 
 | # | Question | Status |
 |---|---|---|
-| Q1 | Is the GEO matrix raw counts, Q3-normalised, or already log-transformed? | Open — needs the data (P0-T2) |
-| Q2 | Antibody-segmented compartments or geometric ROIs? | **Open — highest-impact unknown.** Answerable now from PMID 36216799 methods |
-| Q3 | Is slide / TMA / batch identifiable per AOI? | Open |
-| Q4 | Does per-AOI nuclei count / surface area survive into GEO metadata? | Open |
-| Q5 | Is patient-level clinical/survival metadata extractable and joinable? | Open — gates Phase 5 entirely |
+| Q1 | Is the GEO matrix raw counts, Q3-normalised, or already log-transformed? | **Resolved — Q3-normalised.** Column Q3 CV 0.059% vs library-size CV 13.4%. No zeros (min 2.12), so detection is background-relative |
+| Q2 | Antibody-segmented compartments or geometric ROIs? | **Resolved — segmented.** PanCK+/PanCK− UV-cleavage within marker-guided ROIs |
+| Q3 | Is slide / TMA / batch identifiable per AOI? | **Resolved — yes, from DCC filenames.** Two DSP runs (91/29), in `samples.tsv`. **`mLN`, `TBME`, `BC` are each wholly within one run** — batch inseparable from biology there |
+| Q4 | Does per-AOI nuclei count / surface area survive into GEO metadata? | **Resolved — no.** `cell type` is GEO's only characteristics field |
+| Q5 | Is patient-level clinical/survival metadata extractable and joinable? | **Resolved — yes.** Two time-to-event columns in Supplementary Data 1; Phase 5 is viable |
 
-Until Q2 is answered in `docs/data-provenance.md`, treat the word
-"compartment" as provisional. If Q2 resolves to "geometric ROIs", it becomes
-"region" throughout and Aim A4's framing is rewritten before Phase 2 starts.
+**Q2's caveat is the live constraint, and it outlives the question.** PanCK was
+the *only* collection mask. CD45 and GFAP guided where a pathologist placed the
+ROI; nothing was collected on a CD45 or GFAP mask. A `TIME` AOI is the
+PanCK-negative segment of an ROI sited in a CD45-rich region — **not** a
+CD45-sorted population; same for `TBME` and GFAP. Never write "CD45+ AOI", and
+never treat a compartment label as a cell-type label. This is the same overclaim
+hard constraint 6 forbids for "colocalisation", and it is why P0-T6's marker
+sanity check is evidence rather than ceremony.
 
 ## Useful commands
 
 ```bash
-snakemake -n                      # dry run (must stay clean)
+snakemake -n --use-conda          # dry run (must stay clean)
 snakemake --lint                  # must stay clean
+# ALWAYS pass --use-conda. Without it the software-env rerun trigger fires,
+# Snakemake tries to re-run P0-T2's downloads, and their protected() outputs
+# raise ProtectedOutputException. A bare `snakemake -n` is not a clean dry run.
 snakemake --report results/reports/workflow-report.html
 uvx marimo check notebooks/**/*.py
 marimo edit --watch notebooks/review/qc_review.py   # live pairing
