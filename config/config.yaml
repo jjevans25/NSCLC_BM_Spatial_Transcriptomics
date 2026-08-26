@@ -64,12 +64,48 @@ phases:
   acquire: true         # P0-T2
   annotate: true        # P0-T3
   qc: true              # P0-T6 (P0-T5 still to come)
-  landscape: false
+  landscape: true       # P1-T1/T2
   contexture: false
   checkpoints: false
   crosstalk: false
   survival: false          # gated on Q5 (P0-T4)
   fair: false
+
+landscape:
+  # Phase 1 / A2. PROJECT_PLAN §6 says "top ~2000 variable genes"; the number
+  # lives here rather than in a script so the notebook cannot override it.
+  n_top_genes: 2000
+  # `seurat` expects log-transformed input, which X is (log2(Q3 + 1)).
+  hvg_flavour: seurat
+  n_pcs: 30
+  variance:
+    # P1-T3 / Gate 1. `dsp_run` is in the list deliberately: P1-T2 showed PC1
+    # shifting positive in run B inside every compartment that spans both runs,
+    # so leaving batch out pushes that variance into `compartment` — the very
+    # number the gate turns on. It is only *estimable* in L / LB / TIME-L /
+    # TIME-B; mLN, TBME and BC sit wholly inside one run (Q3).
+    factors: [patient_id, site, compartment, dsp_run]
+    # Cumulative eigenvalue fraction of the sample correlation matrix retained
+    # by PVCA. 0.60 is Bushel's default, kept rather than tuned; ADR 0009.
+    pvca_min_variance: 0.60
+    # Empirical null: each factor's labels shuffled independently, refit on a
+    # seeded gene subsample. Reported beside every share, because with 42
+    # patient levels across 120 AOIs the null is already large.
+    n_permutations: 10
+    n_permutation_genes: 300
+  clustering:
+    # P1-T4. Spearman because the top-variance genes are immunoglobulins, whose
+    # dynamic range would otherwise drive a Pearson correlation. Computed on the
+    # same HVGs as landscape.n_top_genes: over all 18,694 genes every AOI pair
+    # correlates at ~0.99 and the structure is invisible.
+    metric: spearman
+    # UPGMA is the linkage that pairs with a correlation distance; Ward assumes
+    # a Euclidean geometry that 1 - rho does not have.
+    linkage: average
+    # Cluster counts swept when measuring agreement with each factor.
+    k_range: [2, 10]
+    # Label shuffles behind the ARI null band.
+    n_permutations: 200
 
 acquire:
   # P0-T2 source manifest. Fetched into paths.raw; resources/ is read-only

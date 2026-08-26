@@ -1,0 +1,86 @@
+{
+  "verdict": "Compartment structures the dendrogram and patients do not cluster together: at k=7, 34% of the 157 AOI pairs sharing a patient fall in the same cluster, against a 37% baseline over all pairs, and peak patient ARI is 0.003 against compartment's 0.741. PROJECT_PLAN \u00a76 expected the opposite. Patient similarity is nonetheless real and is not compartment in disguise: across 102 same-patient AOI pairs whose compartments differ, mean rho is 0.425 against 0.318 for different-patient pairs (+0.107). That is the non-independence (1|patient) rests on. TIME-B n = 8.",
+  "seed": 20260823,
+  "n_aoi": 120,
+  "n_hvg": 2000,
+  "metric": "spearman",
+  "linkage": "average",
+  "distance": "1 - rho",
+  "k_range": [
+    2,
+    10
+  ],
+  "n_permutations": 200,
+  "correlation_median": 0.40011,
+  "correlation_min": -0.04505,
+  "correlation_max": 0.872076,
+  "peak_ari": {
+    "compartment": {
+      "k": 7,
+      "ari": 0.741415,
+      "ari_null_mean": -0.002789,
+      "ari_null_p95": 0.049134,
+      "same_cluster_rate": 0.807572,
+      "same_cluster_rate_baseline": 0.370868,
+      "n_same_level_pairs": 2879
+    },
+    "site": {
+      "k": 9,
+      "ari": 0.033658,
+      "ari_null_mean": -0.001893,
+      "ari_null_p95": 0.030869,
+      "same_cluster_rate": 0.355863,
+      "same_cluster_rate_baseline": 0.336695,
+      "n_same_level_pairs": 2959
+    },
+    "patient": {
+      "k": 3,
+      "ari": 0.002671,
+      "ari_null_mean": 0.000116,
+      "ari_null_p95": 0.003978,
+      "same_cluster_rate": 0.700637,
+      "same_cluster_rate_baseline": 0.660924,
+      "n_same_level_pairs": 157
+    }
+  },
+  "within_vs_between": {
+    "compartment": {
+      "within": 0.499974,
+      "between": 0.320461,
+      "difference": 0.179513,
+      "n_within_pairs": 2879
+    },
+    "site": {
+      "within": 0.405388,
+      "between": 0.383967,
+      "difference": 0.021421,
+      "n_within_pairs": 2959
+    },
+    "patient": {
+      "within": 0.517304,
+      "between": 0.390046,
+      "difference": 0.127258,
+      "n_within_pairs": 157
+    },
+    "patient\n(cross-compartment)": {
+      "within": 0.425049,
+      "between": 0.317896,
+      "difference": 0.107153,
+      "n_within_pairs": 102
+    }
+  },
+  "cross_compartment_patient": {
+    "within_patient": 0.425049,
+    "between_patient": 0.317896,
+    "difference": 0.107153,
+    "n_pairs": 102,
+    "note": "Restricted to AOI pairs whose compartments differ, so no part of this contrast can be compartment agreement wearing a patient label."
+  },
+  "k_star": 7,
+  "patients_with_multiple_aoi": 33,
+  "caveats": [
+    "Correlation is computed on the 2000 HVGs, not all 18,694 genes: over the full transcriptome every AOI pair correlates at ~0.99 and the structure is not visible.",
+    "site and compartment are structurally confounded (lymph_node is tumour-only, glial_stroma and normal_control are brain-only), so their ARI curves are not independent of each other.",
+    "TIME-B n = 8."
+  ]
+}

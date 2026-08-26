@@ -12,10 +12,18 @@ learning and methods project, not a publication. The full plan lives in
 `Markdowns/PROJECT_PLAN.md` — when this file and the plan disagree, the plan
 wins, and the disagreement is a bug in this file.
 
-**GATE 0 PASSED (2026-08-24). Phase 0 complete (P0-T1 … P0-T8); current phase
-is Phase 1 (variance landscape).** All five open questions are answered
+**GATE 1 PASSED (2026-08-26). Phases 0 and 1 are complete (P0-T1 … P0-T8,
+P1-T1 … P1-T6); current phase is Phase 2 (A1/A3 — the lung-vs-brain immune
+contrast, compartment-resolved).** All five open questions are answered
 (`docs/data-provenance.md`), and `docs/limitations.md` records what the design
 cannot support.
+
+Gate 1 evidence: **41% of variance is compartment-attributable** — PVCA over 14
+PCs spanning 60.4% of variance, per-gene median 21% across the 18,691 of 18,694
+genes that converged, permutation null 0.3%
+(`results/tables/variance_partition_summary.json`, P1-T3). Confirmed
+independently by P1-T4's clustering: compartment ARI **0.741**, patient
+**0.003**. The model specification this licenses is **ADR 0009**.
 
 Gate 0 evidence: marker sanity check 4/4
 (`results/tables/marker_sanity_verdict.tsv`), design table matches §2.1 exactly
@@ -38,7 +46,13 @@ columns, git SHA and config hash in `uns`.
 contrast detects roughly **1.1–1.3 SD** at 80% power (P0-T8). A null result in
 Phase 2 is uninformative, not negative.
 
-Next: Phase 1 (A2 — what drives variance: patient vs site vs compartment).
+**A2 is answered: compartment drives the variance, not patient and not site.**
+Phase 2 therefore estimates the lung-vs-brain contrast **within** compartment,
+never pooled across compartments, and every model carries `(1|patient)` for the
+reason ADR 0009 gives — non-independence, not variance share.
+
+Next: Phase 2 (A1/A3 — is the brain-metastasis immune microenvironment
+different, and in what direction, resolved by compartment).
 
 ## The design table — use these numbers, never estimates
 
@@ -56,8 +70,13 @@ Next: Phase 1 (A2 — what drives variance: patient vs site vs compartment).
 Structural facts with statistical consequences:
 
 - **AOIs within a patient are not independent.** P12 and P24 each have two
-  `TIME-L`; P15 has two `TBME`. A random intercept for patient is **mandatory**,
-  not stylistic.
+  `TIME-L`; P15 has two `TBME`; 33 of 42 subjects contribute more than one AOI.
+  A random intercept for patient is **mandatory**, not stylistic — but justify
+  it on **non-independence, never on variance share** (ADR 0009). Patient is
+  only 12% of variance per-gene and its clustering ARI is 0.003; the evidence
+  that matters is the +0.107 ρ contrast across the 102 same-patient AOI pairs
+  whose *compartments differ*. A reader who sees only the ARI will conclude the
+  random intercept can be dropped. It cannot.
 - **`TIME-B` n = 8** is the binding constraint on the entire project. Design
   every analysis so it degrades gracefully if 1–2 of those AOIs fail QC.
 - Only **5 patients** (5, 12, 15, 19, 35) have paired immune AOIs at both sites.
@@ -178,11 +197,16 @@ sanity check is evidence rather than ceremony.
 ## Useful commands
 
 ```bash
+conda activate nsclc_bm_spatial   # ALWAYS first — see below
 snakemake -n --use-conda          # dry run (must stay clean)
 snakemake --lint                  # must stay clean
 # ALWAYS pass --use-conda. Without it the software-env rerun trigger fires,
 # Snakemake tries to re-run P0-T2's downloads, and their protected() outputs
 # raise ProtectedOutputException. A bare `snakemake -n` is not a clean dry run.
+#
+# ALWAYS run from the nsclc_bm_spatial env (Snakemake 8.30). Base anaconda has
+# 9.20, which writes .snakemake/metadata in a format 8.30 reads as stale — it
+# then provenance-triggers P0-T2 into the same protected-output abort.
 snakemake --report results/reports/workflow-report.html
 uvx marimo check notebooks/**/*.py
 marimo edit --watch notebooks/review/qc_review.py   # live pairing

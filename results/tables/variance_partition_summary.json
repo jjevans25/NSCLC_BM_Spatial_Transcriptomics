@@ -1,0 +1,145 @@
+{
+  "headline": "41% of variance is compartment-attributable (PVCA over 14 PCs spanning 60% of variance; per-gene median 21% over 18691 genes; permutation null 0.3%). TIME-B n = 8.",
+  "dominant_component": "compartment",
+  "seed": 20260823,
+  "n_aoi": 120,
+  "n_genes": 18694,
+  "n_genes_converged": 18691,
+  "n_hvg": 2000,
+  "factors": [
+    "patient_id",
+    "site",
+    "compartment",
+    "dsp_run"
+  ],
+  "model": "MixedLM, REML, crossed random intercepts via VCSpec (single constant group); shares = component / (sum components + residual)",
+  "pvca": {
+    "patient": 0.217603,
+    "site": 0.02284,
+    "compartment": 0.411879,
+    "dsp_run": 0.096129,
+    "residual": 0.251549
+  },
+  "pvca_n_pcs": 14,
+  "pvca_min_variance": 0.6,
+  "pvca_variance_covered": 0.604185,
+  "median_share_all_genes": {
+    "patient": 0.124374,
+    "site": 0.005869,
+    "compartment": 0.210765,
+    "dsp_run": 0.078054,
+    "residual": 0.495278
+  },
+  "median_share_hvg_only": {
+    "patient": 0.1406,
+    "site": 0.0047,
+    "compartment": 0.205222,
+    "dsp_run": 0.033752,
+    "residual": 0.435489
+  },
+  "null_analytic_eta2": {
+    "patient": 0.344538,
+    "site": 0.016807,
+    "compartment": 0.02521,
+    "dsp_run": 0.008403
+  },
+  "null_permutation": {
+    "patient": 0.026177,
+    "site": 0.003385,
+    "compartment": 0.003139,
+    "dsp_run": 0.00174,
+    "residual": 0.888623
+  },
+  "null_permutation_range_across_shuffles": {
+    "patient": [
+      0.005447,
+      0.04779
+    ],
+    "site": [
+      0.0,
+      0.024456
+    ],
+    "compartment": [
+      0.0,
+      0.010359
+    ],
+    "dsp_run": [
+      0.0,
+      0.026727
+    ],
+    "residual": [
+      0.847421,
+      0.921022
+    ]
+  },
+  "optimiser_counts": {
+    "lbfgs": 10471,
+    "powell": 8223
+  },
+  "n_permutations": 10,
+  "n_permutation_genes": 300,
+  "naive_eta2_median_do_not_report": {
+    "patient": 0.446515,
+    "site": 0.047402,
+    "compartment": 0.202616,
+    "dsp_run": 0.031035
+  },
+  "sensitivity_scope": "S1-S3 are fitted on the 2000 HVGs only, so they are comparable to each other and to median_share_hvg_only, not to median_share_all_genes.",
+  "sensitivity": {
+    "S1_aoi_code": {
+      "factors": [
+        "patient_id",
+        "aoi_code",
+        "dsp_run"
+      ],
+      "median_share": {
+        "patient": 0.157715,
+        "aoi_code": 0.190098,
+        "dsp_run": 0.037071,
+        "residual": 0.452436
+      }
+    },
+    "S2_no_dsp_run": {
+      "factors": [
+        "patient_id",
+        "site",
+        "compartment"
+      ],
+      "median_share": {
+        "patient": 0.163502,
+        "site": 0.003542,
+        "compartment": 0.219001,
+        "residual": 0.465701
+      }
+    },
+    "S3_no_bc": {
+      "factors": [
+        "patient_id",
+        "site",
+        "compartment",
+        "dsp_run"
+      ],
+      "n_aoi": 113,
+      "median_share": {
+        "patient": 0.168647,
+        "site": 0.006809,
+        "compartment": 0.184469,
+        "dsp_run": 0.039291,
+        "residual": 0.462946
+      }
+    }
+  },
+  "dsp_run_absorption_hvg": {
+    "patient": 0.022902,
+    "site": -0.001158,
+    "compartment": 0.013779,
+    "residual": 0.030212
+  },
+  "patients_spanning_both_runs": 1,
+  "caveats": [
+    "dsp_run is estimable only in L, LB, TIME-L and TIME-B; mLN, TBME and BC sit wholly within one DSP run (Q3), so the partition is conditional on that.",
+    "dsp_run has 2 levels and is near-nested in patient (1 of 42 patients span both runs), so its component is poorly estimated.",
+    "site and compartment are structurally confounded: lymph_node is tumour-only, glial_stroma and normal_control are brain-only. S1 reports the alternative in which they are one 7-level factor.",
+    "TIME-B n = 8."
+  ]
+}

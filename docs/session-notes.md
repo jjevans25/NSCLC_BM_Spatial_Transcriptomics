@@ -54,6 +54,25 @@ its three action items were done or superseded.
   the slash-separated form of `"True"` and `"False"` is reported as
   `Absolute path "/"False"`. Harmless, but the lint must stay clean, so phrase
   around it rather than chasing a real path bug that isn't there.
+- **Two snakemakes on this machine, and they disagree about provenance.**
+  `base` has **9.20.0** (`/opt/anaconda3/bin/snakemake`); the project env
+  `nsclc_bm_spatial` has **8.30.0**. All Phase 0 and Phase 1 work so far was run
+  under **9.20**, so `.snakemake/metadata` is in its format. Running under 8.30
+  marks `p0t2_fetch_geo` provenance-triggered, which then aborts on the
+  `protected()` downloads. **RESOLVED 2026-08-24: the project standardises on
+  `nsclc_bm_spatial` / 8.30**, matching `CLAUDE.md`'s "Snakemake 8.x" and
+  removing the hidden dependency on base anaconda. The metadata was migrated in
+  place (`chmod u+w` + `--touch` under 8.30, checksums re-verified, protection
+  restored). **Activate the env before every snakemake invocation.** Note
+  `min_version("8.0")` accepts 9.x too, so nothing in the workflow will warn you
+  if you drift back to base.
+- **Recovering a protected file's provenance:** do NOT use
+  `--cleanup-metadata`; removing the record makes Snakemake treat the job as
+  unverifiable and re-run it, which is the opposite of what you want. The
+  working sequence is `chmod u+w resources/raw/*` then
+  `snakemake --touch --use-conda`, which rewrites the metadata without
+  executing and restores the 0444 protection. Verify with
+  `shasum -a 256 -c resources/checksums.sha256` afterwards.
 - **A conda env must be self-sufficient for *transitive optional* imports.**
   Snakemake appends its own interpreter's site-packages to `sys.path` (so the
   job can import the snakemake shim). Measured order inside a `script:` rule:
