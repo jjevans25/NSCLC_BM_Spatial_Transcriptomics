@@ -1,257 +1,261 @@
-# Next steps — Phase 1 (variance landscape)
+# Next steps — Phase 2 (immune contexture, brain vs lung)
 
 **Last session:** 2026-08-26
-**Branch:** `P1`, rebased onto `main` (`46466a0`, PR #2). Not pushed.
-**Gate 0:** **PASSED.** Phase 0 merged. A4 demoted to exploratory (ADR 0008).
-**Phase 1 status:** **COMPLETE.** P1-T1 … P1-T6 all done and committed.
-Gate 1 met; what remains is the squash-merge that records it.
+**Branch:** `main` at `0d3fa9c`, **pushed**. Phase 2 needs a new `P2` branch.
+**Gate 0:** PASSED. **Gate 1:** PASSED — squash-merged with the result in the
+commit message, as ADR 0004 asks.
+**Phase 1:** **COMPLETE** (P1-T1 … P1-T6). Nothing outstanding.
 
-Phase 1's goal (§6): *the figure that justifies every mixed model that follows.*
-Aim **A2** — what actually drives variance: patient, site, or compartment.
-
----
-
-## Gate 1 — the answer
-
-> **41% of variance is compartment-attributable.**
-
-PVCA over the 14 leading PCs (60.4% of variance); per-gene median 21% over the
-18,691 genes that converged of 18,694; permutation null 0.3%. `TIME-B` n = 8.
-Table `results/tables/variance_partition.tsv`, headline and every sensitivity
-fit in `results/tables/variance_partition_summary.json`.
-
-**Compartment dominates. Patient is real but modest.** Full partition:
-
-| Component | Per-gene median (all genes) | HVG-only median | PVCA weighted | Permutation null |
-|---|---|---|---|---|
-| compartment | 0.211 | 0.205 | **0.412** | 0.003 |
-| patient | 0.124 | 0.141 | 0.218 | 0.026 |
-| `dsp_run` | 0.078 | 0.034 | 0.096 | 0.002 |
-| site | 0.006 | 0.005 | 0.023 | 0.003 |
-| residual | 0.495 | 0.436 | 0.252 | 0.889 |
-
-Four things in there matter more than the headline:
-
-**a. The naive η² really was an artefact, and now there is a number for it.**
-Median naive η² for patient is **0.447** against its own analytic floor of
-**0.345** — barely clear of it. The variance-components fit puts patient at
-0.124, against a permutation null of 0.026. So patient is genuinely present
-(~5x its null) but nothing like "half the variance". Reporting the crude number
-would have overstated it by roughly 3.5x.
-
-**b. `dsp_run` absorption is confirmed but small.** Dropping the term (S2) moves
-**+0.014** into compartment and **+0.023** into patient (HVG medians). So the
-worry in the last session's note was directionally right — batch does inflate
-compartment — but it is worth about one and a half percentage points, not the
-distortion the PC1 shifts implied. Note also that most of what `dsp_run` holds
-falls to *patient*, which is what you would expect from a term that is
-near-nested in patient (1 of 42 patients spans both runs).
-
-**c. Site does essentially no work.** 0.006 per-gene, 0.023 in PVCA — at or
-barely above its null everywhere. Collapsing site and compartment into the
-single 7-level `aoi_code` (S1) gives 0.190, against 0.205 for compartment alone.
-Practically all the site signal is inseparable from compartment, which is what
-the structural confounding (lymph_node tumour-only, glial_stroma and
-normal_control brain-only) predicts.
-
-**d. `BC` is not driving it.** Without the 7 controls (S3) compartment falls
-0.205 → 0.184 and the ordering is unchanged.
-
-**Consequence for P1-T6:** the ADR's argument **does** invert, exactly as
-anticipated. `(1|patient)` cannot be justified on variance share — 12% is not a
-dominant component. It is justified on **non-independence**: P12 and P24 each
-have two `TIME-L`, P15 has two `TBME`, and five patients contribute paired
-immune AOIs. Write that argument, not the one the plan expected.
+Phase 2's goal (§6): Aims **A1/A3** — is the brain-metastasis immune
+microenvironment different from the primary lung tumour, and in which
+direction, resolved by compartment.
 
 ---
 
-## P1-T4 — hierarchical clustering: the expectation was inverted
+## Gate 2 — read this before writing any code
 
-Figure `results/figures/sample_correlation_heatmap.png`, k sweep in
-`results/tables/cluster_agreement.tsv`, verdict in
-`results/tables/sample_clustering_summary.json`. Spearman over the same 2000
-HVGs, average linkage on 1 − ρ (median AOI–AOI ρ 0.400, range −0.045–0.872).
+> **Do you recover the published direction (reduced antigen presentation and
+> B/T function in brain)?** If yes: pipeline validated, proceed with confidence.
+> If no: **stop and debug** — an unexpected result at this n is far more likely
+> to be a pipeline bug than new biology. **Resist the opposite instinct.**
 
-§6 said to "note whether patients cluster together across compartments (*they
-usually do*)". **They do not**, and now there is a number rather than an
-impression:
+This is the only gate in the project whose criterion is "reproduce someone
+else's answer". A1–A3 are the **positive control on the pipeline**, not a
+novelty claim (§1.3). Treat a surprising Phase 2 result as a bug report against
+yourself.
 
-| Factor | Peak ARI (k) | Null p95 | Within vs between ρ |
-|---|---|---|---|
-| compartment | **0.741** (k=7) | 0.049 | 0.500 vs 0.320 (**+0.180**) |
-| site | 0.034 (k=9) | 0.031 | 0.405 vs 0.384 (+0.021) |
-| patient | **0.003** (k=3) | 0.004 | 0.517 vs 0.390 (+0.127) |
-
-At k = 7 — where compartment agrees best — only **34%** of the 157 AOI pairs
-sharing a patient land in the same cluster, against a **37%** baseline over all
-pairs. Patient co-membership is at or slightly *below* chance.
-
-**But do not stop at "patient does nothing", because that is the wrong read.**
-Patient ARI is ~0 while within-patient correlation is +0.127, and those are not
-in tension: compartment owns the top-level partition, and patient is a real
-second-order effect that never becomes cluster structure. The controlled
-contrast makes it explicit — restricted to the **102 same-patient AOI pairs
-whose compartments differ** (so no part of it can be compartment agreement
-wearing a patient label), mean ρ is **0.425 vs 0.318** for different-patient
-pairs, **+0.107**.
-
-That number is the one P1-T6 should quote. It is direct pairwise evidence of
-non-independence that owes nothing to variance share, and it is measured across
-compartments — exactly the structure `(1|patient)` exists to absorb.
+**A5 is re-decided at this gate** (ADR 0008). It inherits `TBME`'s batch
+confounding and 21.4% detection. Decide it explicitly and write it down; do not
+let it drift into Phase 4 undecided.
 
 ---
 
-## P1-T5 — landscape explorer: done
+## What Phase 1 decided that binds Phase 2
 
-`notebooks/apps/landscape_explorer.py`, exported to self-contained WASM HTML by
-`p1t5_landscape_explorer` into `results/reports/landscape_explorer/`. Appears in
-the Snakemake report under **Interactive**. Dropdowns for embedding (PCA/UMAP),
-x/y PC, colour-by, a switch that joins each patient's AOIs, and searchable,
-sortable AOI metadata and design tables. **Verified working in a browser.**
+**ADR 0009 is the model contract.** Three things follow, and none is optional:
 
-**How the data reaches the browser, and why it is not cached.** The rule stages
-the notebook into `results/interim/explorer_build/` beside a `public/` folder
-holding the three pipeline outputs. `marimo export html-wasm` copies `public/`
-into the export, and `mo.notebook_location()` resolves to the notebook's
-directory locally and to the **served URL** in the browser, so the app fetches
-its own data over HTTP.
-
-The obvious-looking alternative — `[tool.marimo.runtime] cache_cells = true`
-plus `--execute`, which bundles cell outputs into the export — **was tried and
-does not work here.** Three findings worth keeping, because each cost a rebuild:
-
-- `mo.ui.table` holds a locally defined `PandasTableManager` that **cannot be
-  pickled**. Under `cache_cells` its cell output is stored as an
-  `UnhashableStub`, and per marimo's cached-lifecycle contract an unserializable
-  output forces a **live re-run of that cell's ancestors** — in the browser, a
-  loader with no filesystem. The tables render as stub text. The plot and
-  controls survive because a cell whose *defs* are live UI hits marimo's
-  carve-out; a cell returning UI it does not define does not.
-- `mo.persistent_cache` on just the loader is **not** a targeted substitute:
-  only `cache_cells` writes the export manifest the bundler reads
-  (`dump_cache_manifests` is gated on it in `_runtime/callbacks/cache.py`), so
-  persistent_cache wrote to a local `__marimo__/` the exporter never saw and the
-  export shipped with no data at all.
-- **Pandas cannot read an `http://` URL under Pyodide** — no sockets, so urllib
-  is non-functional. The loader branches on `sys.platform == "emscripten"` and
-  uses `pyodide.http.open_url()`. Without this the page renders its embedded
-  preview, then throws an internal error a few seconds later when Pyodide boots
-  and re-runs the loader. That failure mode looks like a working app.
-
-**The PEP 723 block installs *unpinned* `marimo`,** in the export sandbox and in
-Pyodide alike — not necessarily the 0.24.0 in `py-analysis`. `mo.ui.table` was
-called with `sortable=`/`filterable=` (as the `marimo-notebook` skill's `UI.md`
-documents) and failed at **export runtime**, not at `marimo check`. The real
-options are `show_search`, `show_column_summaries`, `max_height`,
-`hover_template`. Assume any marimo API may skew between check time and run
-time.
-
-**It must be served over HTTP.** `file://` will not run WebAssembly, and the
-data fetch is same-origin:
-`python -m http.server --directory results/reports/landscape_explorer`.
-
-**P1-T1's summary gained a field.** `pca_summary.json` now carries the full
-30-element `variance_ratio`, not just `variance_ratio_pc1_4` — the explorer puts
-any PC on either axis and needs the % for the axis label, and an app-tier
-notebook may only read declared rule outputs.
+1. **Every model carries `(1|patient)`** — justified on non-independence, never
+   on variance share. Patient is only 12% of variance and its clustering ARI is
+   0.003; the load-bearing evidence is the +0.107 ρ contrast across the 102
+   same-patient AOI pairs whose compartments differ. Changing the
+   random-effects structure is a **stop and ask**.
+2. **Estimate within compartment, never pooled across compartments.**
+   Compartment is 41% of variance — pooling `TIME` with `LB`/`L` would swamp the
+   site effect you are trying to measure.
+3. **No variance share or p-value without its null / n / CI / effect size.**
+   Hard constraint 7, and §2 of ADR 0009 for why a naive η² is unusable here.
 
 ---
 
-## P1-T6 — the ADR: done
+## Three things measured this session that change Phase 2's shape
 
-`docs/decisions/0009-mixed-models-and-the-phase-1-variance-landscape.md`. The
-argument inverted exactly as anticipated: `(1|patient)` is mandatory but rests
-on **non-independence**, not variance share — the design facts from P0-T3 plus
-T4's cross-compartment contrast (+0.107 ρ over 102 same-patient pairs whose
-compartments differ). It also records the naive-η² prohibition, `dsp_run`'s
-place and its two permanent caveats, the site/compartment confounding, and the
-method choices behind T3/T4.
+**a. The `TIME` AOIs are QC-clean.** Zero of the 23 `TIME-L` + `TIME-B` AOIs are
+QC-flagged. The flagging in P0-T5 hit 3 `TBME` AOIs, none of them here — so
+`TIME-B` n = 8 is intact and Phase 2 starts at full strength. Design every
+analysis so it still degrades gracefully, but the feared degradation did not
+happen.
 
-`docs/decisions/0010-app-tier-notebooks-ship-data-in-public.md` records the
-P1-T5 export mechanism.
+**b. Batch is estimable in the `TIME` contrast, but barely.**
+
+| | run A | run B |
+|---|---|---|
+| `TIME-L` | 9 | 6 |
+| `TIME-B` | **6** | **2** |
+
+Unlike `mLN`/`TBME`/`BC` — each wholly inside one run — the `TIME` comparison
+does span both. But `TIME-B` has **2 AOIs in run B**, so `score ~ site +
+dsp_run + (1|patient)` is fragile and will likely fit singularly.
+
+**P2-T3 must decide this explicitly, and it is a stop-and-ask.** The plan
+specifies `score ~ site + (1|patient)` with no batch term. P1-T3 found `dsp_run`
+carries ~10% of variance, which argues for adjusting; the 6/2 split argues
+against. Suggested resolution: fit the plan's model as primary, refit with
+`dsp_run` as a **sensitivity**, and report both — the same shape P1-T3's S2 used,
+which is what let it quantify batch absorption at +0.014 rather than assert it.
+Record the choice in an ADR (next free number: **0011**).
+
+**c. Five patients have both `TIME-L` and `TIME-B`** — confirmed against the
+data, matching §2.3. That is P2-T4's paired check, and it is a
+direction-of-effect consistency check only. **No p-values from n = 5.**
 
 ---
 
-## Phase 1 is complete — next is the gate, then Phase 2
+## Start here
 
-**All of P1-T1 … P1-T6 are done and committed.** Nothing in Phase 1 remains.
+### 1. P2-T1 — version the signatures (~2 h)
 
-To close the phase:
+`config/signatures.yaml` is currently `signatures: {}`. Populate: cytotoxicity
+(`GZMB, PRF1, GNLY, NKG7`), exhaustion (`PDCD1, LAG3, HAVCR2, TIGIT, CTLA4,
+TOX`), antigen presentation (HLA-I/II, `B2M, TAP1, TAP2, NLRC5`), M1/M2 myeloid,
+TLS (`CXCL13, CCL19, CCL21, CR2, MS4A1`).
 
-1. **Squash-merge `P1` into `main` with the Gate 1 result in the commit
-   message** (ADR 0004). Gate 0's result went into `4e7a631` and PR #2 merged
-   rather than squashed — do not repeat that. The message should carry:
-   *Gate 1 PASSED — 41% of variance is compartment-attributable (PVCA, 14 PCs;
-   per-gene median 21%; permutation null 0.3%). TIME-B n = 8.*
-2. **Update `CLAUDE.md`** — it still says "current phase is Phase 1" and
-   "Next: Phase 1 (A2 …)". Left untouched deliberately while Phase 1 was open.
-3. **Re-decide A5 at Gate 2**, per ADR 0008. A4 stays exploratory.
+- **Every set carries a `source:`** (MSigDB ID or PMID). Un-sourced gene sets are
+  how reanalyses become unreproducible. **Accept:** YAML validates; every set
+  sourced.
+- **There is no signatures schema yet** — `workflow/schemas/` holds only
+  `config.schema.yaml` and `samples.schema.yaml`. Write
+  `signatures.schema.yaml` and validate at Snakefile load, the way `samples.tsv`
+  is validated in `common.smk`.
+- **Adding or removing a gene from a signature is a stop-and-ask**
+  (`CLAUDE.md`), including while first populating the file.
+- Antigen presentation is the set Gate 2 turns on — the published direction is
+  *reduced* antigen presentation in brain. Get its membership and source right
+  before anything else.
 
-Then Phase 2 (A1/A3 — the lung-vs-brain immune contrast, compartment-resolved).
-Its models carry `(1|patient)` per ADR 0009, estimate the contrast **within**
-compartment rather than pooled, and state `TIME-B` n = 8 inline. Remember the
-power floor: ~1.1–1.3 SD at 80% (P0-T8), so a null there is uninformative, not
-negative.
+### 2. P2-T2 — score signatures (~3 h)
+
+ssGSEA (`gseapy`, already in `py-analysis`) **and** a z-score mean, on the
+`TIME-L` + `TIME-B` AOIs (23 AOIs). Two methods because **agreement between them
+is the robustness evidence at this n**.
+
+**Record per-set detection coverage.** A set with 2 of 6 genes detected is not a
+signature, and P0-T5 established that detection varies systematically by
+compartment — so coverage must be reported per site, not pooled. Reuse the
+`detection_at_2x` columns already in `obs` and `config.qc.detection_background_multiple`
+rather than inventing a second detection rule.
+
+### 3. P2-T3 — mixed models (~3 h)
+
+`score ~ site + (1|patient)` per signature in `lme4`/`lmerTest`, cross-checked on
+one signature in `statsmodels.MixedLM`. Report estimate, 95% CI, df method, raw
+p, BH-FDR across signatures. **Singular fits surfaced, not hidden.**
+
+See §b above — the `dsp_run` decision belongs here, with an ADR.
+
+### 4. P2-T4 — paired sensitivity (~1.5 h)
+
+The 5 patients with both `TIME-L` and `TIME-B`. **Direction of effect only.**
+Per-signature concordance table against the unpaired result.
+
+### 5. P2-T5 — deconvolution (~3 h)
+
+`SpatialDecon`, two-matrix: lung reference for `TIME-L`, brain reference for
+`TIME-B`. Renormalise composition **within** compartment. **Accept:**
+stacked-bar figure **plus a written caveat that cross-site comparison is
+reference-confounded** — that caveat is part of the deliverable, not a footnote.
+
+### 6. P2-T6 — convergence check (~1 h)
+
+Do deconvolution and signatures agree on direction? Where they disagree, write
+which you trust and why (usually signatures — they do not depend on reference
+choice). **Out:** paragraph in `docs/analysis-notes.md`.
+
+### 7. P2-T7 — deliverable figure (~2 h)
+
+Heatmap: signatures × AOIs, columns grouped by site, annotated by patient.
+Publication-grade, colourblind-safe, in the Snakemake report.
 
 ---
 
 ## State you'll have forgotten
 
-- **`conda activate nsclc_bm_spatial` before every snakemake call.** The
-  project standardises on that env's Snakemake **8.30**; base anaconda's 9.20
-  writes incompatible provenance metadata and will provenance-trigger
-  `p0t2_fetch_geo` into its protected outputs. Metadata was migrated to 8.30 on
-  2026-08-24. `min_version("8.0")` will not warn you if you drift back.
+- **Neither R environment has ever been built.** Only two `py-analysis` envs
+  exist under `.snakemake/conda/`. The first Phase 2 rule with
+  `conda: "../envs/r-stats.yaml"` triggers a fresh solve, and `r-geomx.yaml`
+  pulls **five Bioconductor packages** (`GeomxTools`, `standR`, `SpatialDecon`,
+  `limma`, `edgeR`). Budget real time for that solve, and do it *early* rather
+  than discovering it at P2-T5. It is the largest un-derisked step in Phase 2.
+- **`conda activate nsclc_bm_spatial` before every snakemake call.** That env's
+  Snakemake is **8.30**; base anaconda's 9.20 writes provenance metadata 8.30
+  reads as stale and will re-trigger `p0t2_fetch_geo` into its protected
+  outputs. `min_version("8.0")` will not warn you.
 - **`--use-conda` is mandatory, not optional.** Without it the software-env
-  trigger fires, Snakemake tries to re-run P0-T2's downloads, and their
-  `protected()` outputs abort the DAG build. A bare `snakemake -n` is not a
-  clean dry run.
-- **`py-analysis.conda-lock.yml` is stale.** P0-T5 added `xarray` to the env
-  (see `docs/session-notes.md` for the sys.path fall-through that made it
-  necessary) and `conda-lock` is not installed on this machine. A clean-room
-  rebuild from the current lock fails at `p0t7_assemble_h5ad`. **P6-T1 blocker.**
+  trigger fires and P0-T2's `protected()` outputs abort the DAG build. A bare
+  `snakemake -n` is not a clean dry run.
+- **Editing a `script:` rule can leave `snakemake -n` dirty** in a way only a
+  re-run clears. Snakemake 8.30 stores `code: None` for every `script:` rule
+  here, yet after this session's edits three rules reported "code has changed".
+  A full re-run cleared it and reproduced every output byte-identically. Not
+  understood; do not reach for `--cleanup-metadata` (it makes snakemake *forget*
+  provenance, which is wrong for a FAIR target) unless an env genuinely changed.
+- **`py-analysis.conda-lock.yml` is stale** and `conda-lock` is not installed on
+  this machine. P0-T5 added `xarray`; a clean-room rebuild fails at
+  `p0t7_assemble_h5ad`. **Still the P6-T1 blocker.** Nothing this session made it
+  worse — P1-T4 implements ARI in numpy rather than adding scikit-learn, and
+  P1-T5 dropped its pyarrow dependency.
+- **App-tier notebooks: read ADR 0010 before writing P3-T6's
+  `checkpoint_explorer.py`.** It ships data in `public/` and fetches over HTTP;
+  `cache_cells` breaks `mo.ui.table`, `mo.persistent_cache` silently ships an
+  export with no data, and pandas cannot read an `http://` URL under Pyodide.
+  Also: `marimo check` passes while the export is broken, and the PEP 723 block
+  installs *unpinned* marimo, so APIs skew between check time and run time.
+  **Verify app-tier notebooks by exporting and opening them, never by linting.**
 - **`Markdowns/PROJECT_PLAN.md` is gitignored.** Its aims table was updated for
   A4/A5 but that edit is not version-controlled — **ADR 0008 is the record.**
 - **`config/checkpoints.yaml` is still empty**, deliberately. Populating it is a
   Phase 3 stop-and-ask.
-- **A4 is exploratory (ADR 0008); A5 is flagged, re-decide at Gate 2.**
-- **`TIME-B` n = 8** and the power floor is **1.1–1.3 SD** at 80% (P0-T8). A null
-  in Phase 2 is uninformative, not negative.
-- **Gate 0's result lives in commit `4e7a631`**, not in the PR #2 merge commit —
-  PR #2 was a merge rather than the squash ADR 0004 specifies. Harmless, but the
-  gate result is one commit deeper than that ADR implies.
+- **A4 is exploratory (ADR 0008); A5 is re-decided at Gate 2** — i.e. now.
+- **`TIME-B` n = 8** and the power floor is **1.1–1.3 SD** at 80% (P0-T8). **A
+  null in Phase 2 is uninformative, not negative** — and per Gate 2, a
+  *surprising* result is more likely a bug than biology.
 - **`.h5ad` contract:** `X` = log2(Q3+1), `layers['q3']` untransformed, 36 `obs`
   columns, git SHA + config hash in `uns`. 120 × 18,694.
+- **`config/config.yaml` is a declared input of `p0t7_assemble_h5ad`**, so any
+  config edit rebuilds the `.h5ad` and re-runs everything downstream — including
+  P1-T3's ~25-minute fit. Batch config changes rather than making them one at a
+  time.
+
+## Conventions that bite if forgotten
+
+- **Turn `phases.contexture: true` in the same commit that adds the rules**, and
+  populate `TARGETS_CONTEXTURE` in `04_contexture.smk` (currently `[]`) — a
+  phase contributes to `rule all` only when both are true.
+- One `.smk` per phase; every rule declares `log:`, `benchmark:`, `conda:` and
+  `threads:`. No exceptions.
+- **R owns** `lme4`/`lmerTest`/`emmeans` and `SpatialDecon`; **Python owns**
+  AnnData, plotting, enrichment. The handoff is plain TSV with `digits = 17`
+  and an asserted round-trip — **not** `zellkonverter` (ADR 0001).
+- Commits: `P2-T<n>: imperative summary`. One phase per branch, squash-merged
+  with the gate result in the message (ADR 0004).
+- Never write "colocalisation" — **"inferred crosstalk between adjacent
+  compartments"**, no exceptions.
+- Never write "CD45+ AOI". A `TIME` AOI is the PanCK-negative segment of an ROI
+  sited in a CD45-rich region — **not** a CD45-sorted population (Q2's caveat).
 
 ## Useful commands
 
 ```bash
 conda activate nsclc_bm_spatial           # first, always
+git checkout -b P2                        # one branch per phase (ADR 0004)
 snakemake -n --use-conda                  # must stay clean
 snakemake --lint                          # must stay clean
 snakemake --use-conda --cores 4           # build
+snakemake --use-conda --conda-create-envs-only   # build the R envs early
 snakemake --use-conda --report results/reports/workflow-report.html
 uvx marimo check --strict notebooks/**/*.py
-marimo edit notebooks/review/qc_review.py # sliders over the QC thresholds
-/gate 1                                   # what Gate 1 still needs
+/gate 2                                   # what Gate 2 still needs
 ```
 
-If an env ever changes again:
+Serving the Phase 1 explorer (it needs HTTP, not `file://`):
 
 ```bash
-snakemake --cleanup-metadata resources/raw/* results/interim/acquire/*.json
+python -m http.server --directory results/reports/landscape_explorer
 ```
 
-## Gate 1 — **MET** (2026-08-26), recorded in ADR 0009
+---
 
-> You can name the dominant variance component and point to the number.
-> Downstream model specification is now defensible rather than conventional.
+## Phase 1, for reference
 
-**Compartment, 41%** (`results/tables/variance_partition_summary.json`).
-Satisfied by P1-T3, confirmed independently by P1-T4, and the model
-specification it licenses is written down in ADR 0009 — so "defensible rather
-than conventional" holds in the literal sense the criterion asks for.
+Gate 1: **41% of variance is compartment-attributable** (PVCA over 14 PCs
+spanning 60.4%; per-gene median 21% over 18,691 converged genes; permutation
+null 0.3%). `TIME-B` n = 8.
 
-Per ADR 0004 the gate result belongs in the **squash-merge message** for the
-`P1` branch, not in a commit of its own — Gate 0's went into `4e7a631` and PR #2
-merged rather than squashed, so do not repeat that here.
+| Component | Per-gene median | PVCA | Permutation null |
+|---|---|---|---|
+| compartment | 0.211 | **0.412** | 0.003 |
+| patient | 0.124 | 0.218 | 0.026 |
+| `dsp_run` | 0.078 | 0.096 | 0.002 |
+| site | 0.006 | 0.023 | 0.003 |
+| residual | 0.495 | 0.252 | 0.889 |
+
+P1-T4 confirmed it from the clustering side: compartment ARI **0.741**, patient
+**0.003**, same-patient AOIs sharing a cluster at *below* the chance rate —
+inverting PROJECT_PLAN §6's stated expectation, which is recorded as measured
+false in ADR 0009 so it is not reinstated from the plan.
+
+Artefacts: `variance_partition.tsv`, `variance_partition_summary.json`,
+`cluster_agreement.tsv`, `sample_clustering_summary.json`,
+`results/figures/variance_partition.png`,
+`results/figures/sample_correlation_heatmap.png`,
+`results/reports/landscape_explorer/`. ADRs **0009** (models) and **0010**
+(app-tier notebook exports).
