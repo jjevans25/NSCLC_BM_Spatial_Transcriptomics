@@ -1,6 +1,105 @@
 # ---------------------------------------------------------------------------
 # Gene signatures, versioned, with a source per set (PROJECT_PLAN §5.2).
-# Populated in Phase 2. Adding a gene to a signature is a "stop and ask"
-# decision, not an implementation detail.
+#
+# P2-T1. Adding or removing a gene here is a "stop and ask" decision, not an
+# implementation detail (CLAUDE.md). The membership below was approved at the
+# start of Phase 2 and is PROJECT_PLAN §6's, enumerated where the plan
+# abbreviates ("HLA-I/II", "M1/M2 myeloid modules").
+#
+# `source` is the citation for the *concept*, not necessarily for this exact
+# gene list. Where the two differ, `source_note` says so. That distinction is
+# the whole point of the field: an un-sourced gene set is how a reanalysis
+# becomes unreproducible, but a source cited as though it defined a membership
+# it did not define is worse. See ADR 0011.
+#
+# Every symbol below was checked against the 18,694 genes in
+# results/interim/aoi_normalised.h5ad; rule p2t1_resolve_signatures re-checks
+# it on every run and fails if a symbol stops resolving.
+#
+# `decon_cell_types` (optional) names the safeTME cell types P2-T6 compares the
+# signature's direction against. It is present only where an UNAMBIGUOUS lineage
+# counterpart exists. Omitting it is a statement, not an oversight: a signature
+# with no entry has no cell-type analogue and P2-T6 records `no_counterpart`
+# rather than inventing a composite. The mapping is deliberately allowed to be
+# degenerate -- myeloid_m1 and myeloid_m2 both name `macrophages`, because
+# deconvolution resolves lineage and not polarisation state -- and P2-T6 detects
+# that degeneracy and refuses to call such a pair a convergence test.
 # ---------------------------------------------------------------------------
-signatures: {}
+signatures:
+
+  cytotoxicity:
+    genes: [GZMB, PRF1, GNLY, NKG7]
+    decon_cell_types: [CD8.T.cells, NK]
+    source: "PMID:25594174"
+    source_note: >
+      Rooney et al. 2015, Cell — local immune cytolytic activity. Rooney's own
+      CYT metric is the geometric mean of GZMA and PRF1 only; the four genes
+      here are PROJECT_PLAN §6's, and the citation is for the cytolytic-activity
+      construct rather than for this membership.
+
+  exhaustion:
+    genes: [PDCD1, LAG3, HAVCR2, TIGIT, CTLA4, TOX]
+    # Same lineage as cytotoxicity: exhaustion is a T-cell STATE, and safeTME
+    # resolves the cell, not the state.
+    decon_cell_types: [CD8.T.cells]
+    source: "PMID:29634943; PMID:31207603"
+    source_note: >
+      Thommen & Schumacher 2018, Cancer Cell — T cell dysfunction in cancer,
+      covering the five inhibitory receptors. TOX is not an inhibitory receptor
+      and is not from that review: Khan et al. 2019, Nature established it as
+      the transcriptional programmer of CD8 exhaustion, hence the second PMID.
+      No single publication defines this six-gene set; it is the plan's.
+      EXPECT POOR COVERAGE IN BRAIN: ADR 0008 measured CTLA4 above background
+      in 2 of 8 TIME-B AOIs and TIGIT in 1. A low-coverage row for this set is
+      a finding, not an error, and it must be reported as "not assessable in
+      brain", never as "lower in brain".
+
+  antigen_presentation:
+    genes: [HLA-A, HLA-B, HLA-C, B2M, TAP1, TAP2, NLRC5,
+            HLA-DRA, HLA-DRB1, HLA-DPA1, HLA-DPB1, HLA-DMA, CIITA]
+    # decon_cell_types is deliberately ABSENT. Antigen presentation is a
+    # transcriptional program expressed by tumour cells and professional APCs
+    # alike; it is not a lineage safeTME resolves, and mapping it to "B + mDCs +
+    # macrophages" would silently swap a functional program for an abundance.
+    source: "MSigDB:M1062; MSigDB:M705"
+    source_note: >
+      M1062 = REACTOME_ANTIGEN_PRESENTATION_FOLDING_ASSEMBLY_AND_PEPTIDE_LOADING_OF_CLASS_I_MHC
+      (Reactome R-HSA-983170); M705 = REACTOME_MHC_CLASS_II_ANTIGEN_PRESENTATION
+      (Reactome R-HSA-2132295). Both are C2:CP:REACTOME. This set is a curated
+      13-gene core of those two pathways plus their two transactivators, NLRC5
+      (class I) and CIITA (class II), which are regulators rather than pathway
+      members and are therefore not in either Reactome set.
+      THIS IS THE SET GATE 2 TURNS ON — the published direction is *reduced*
+      antigen presentation in brain.
+
+  myeloid_m1:
+    genes: [CD80, CD86, CXCL9, CXCL10, CXCL11, IL1B, TNF, NOS2, IL12B, SOCS3]
+    # Identical to myeloid_m2's mapping, and that is the point: M1 vs M2 is a
+    # polarisation axis within one lineage, so deconvolution cannot separate
+    # them and neither is a valid convergence test.
+    decon_cell_types: [macrophages]
+    source: "PMID:17082649"
+    source_note: >
+      Martinez et al. 2006, J Immunol — transcriptional profiling of human
+      monocyte-to-macrophage differentiation and polarisation. The M1/M2
+      dichotomy is a simplification of macrophage state and is used here as a
+      polarisation axis, not as a claim about discrete populations. NOS2 in
+      particular is a murine M1 marker that is poorly induced in human
+      macrophages; its detection row should be read before its score is.
+
+  myeloid_m2:
+    genes: [MRC1, CD163, MSR1, IL10, TGFB1, CCL18, CCL22, CLEC10A, MAF]
+    decon_cell_types: [macrophages]     # see myeloid_m1
+    source: "PMID:17082649"
+    source_note: >
+      Martinez et al. 2006, J Immunol; see myeloid_m1. Membership is the plan's.
+
+  tls:
+    genes: [CXCL13, CCL19, CCL21, CR2, MS4A1]
+    decon_cell_types: [B, plasma]
+    source: "PMID:31942071"
+    source_note: >
+      Cabrita et al. 2020, Nature — tertiary lymphoid structures in melanoma.
+      Cabrita's own TLS signature is CCL19, CCL21, CXCL13, CCL17, CCR7, CXCR5,
+      SELL and LAMP3; it does not contain CR2 or MS4A1, which the plan adds as
+      follicular-dendritic and B-cell markers. Membership is the plan's.

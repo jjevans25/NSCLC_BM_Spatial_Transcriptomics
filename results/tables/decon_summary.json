@@ -1,0 +1,14 @@
+{
+  "n_aoi": 23,
+  "n_time_b": 8,
+  "renormalised_within": "aoi_then_compared_within_compartment",
+  "error_model_weights_used": false,
+  "error_model_note": "raw gene-level counts do not exist (Q1: probe-level DCCs, no PKC), so spatialdecon was called without `raw` and the fit is unweighted",
+  "cross_site_comparable": {"safetme": true, "tissue": false},
+  "cross_site_note": "the tissue arm uses a different reference per site; Brain_Darmanis resolves no lymphoid type, so a lymphoid difference there would be the reference, not the biology",
+  "references": {
+    "safetme": {"reference": "safeTME", "n_types": 14, "n_lymphoid": 6},
+    "tissue_TIME-L": {"reference": "Lung_HCA", "n_types": 21, "n_lymphoid": 9},
+    "tissue_TIME-B": {"reference": "Brain_Darmanis", "n_types": 12, "n_lymphoid": 0}
+  }
+}

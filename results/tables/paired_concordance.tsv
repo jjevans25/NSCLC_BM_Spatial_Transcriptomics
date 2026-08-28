@@ -1,0 +1,13 @@
+signature	method	n_patients	n_brain_higher	n_lung_higher	mean_delta_brain_minus_lung	median_delta_brain_minus_lung	paired_direction	unpaired_estimate	unpaired_direction	direction_agrees
+antigen_presentation	ssgsea	5	1	4	-0.023558772599086876	-0.039976324705738864	lung_higher	-0.0237690225861798	lung_higher	True
+cytotoxicity	ssgsea	5	0	5	-0.25194851457139367	-0.17114530703461178	lung_higher	-0.28221546627306499	lung_higher	True
+exhaustion	ssgsea	5	1	4	-0.15330599601972467	-0.17366598933046384	lung_higher	-0.179675801862375	lung_higher	True
+myeloid_m1	ssgsea	5	1	4	-0.060991983089973535	-0.0280282863404543	lung_higher	-0.081329841468588196	lung_higher	True
+myeloid_m2	ssgsea	5	3	2	0.07684702766864468	0.11216655704753387	brain_higher	0.010830285271162501	brain_higher	True
+tls	ssgsea	5	0	5	-0.342075825233919	-0.30659568863687742	lung_higher	-0.3718734045341	lung_higher	True
+antigen_presentation	zscore	5	1	4	-0.44977346531311274	-0.35919663225524529	lung_higher	-0.47742264757227199	lung_higher	True
+cytotoxicity	zscore	5	0	5	-1.0070950237564282	-0.51941623992746389	lung_higher	-0.94602569024351302	lung_higher	True
+exhaustion	zscore	5	1	4	-0.610979092401567	-0.52133104933231189	lung_higher	-0.72447471449560297	lung_higher	True
+myeloid_m1	zscore	5	2	3	-0.27676712817844751	-0.16943382237012192	lung_higher	-0.292405100428688	lung_higher	True
+myeloid_m2	zscore	5	3	2	0.26551838193358679	0.51675625899328748	brain_higher	0.090700380632807304	brain_higher	True
+tls	zscore	5	0	5	-0.92511723514129862	-0.80701572546650258	lung_higher	-0.85974080690552102	lung_higher	True

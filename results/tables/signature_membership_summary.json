@@ -1,0 +1,25 @@
+{
+  "all_resolved": true,
+  "h5ad": "results/interim/aoi_normalised.h5ad",
+  "n_gene_slots": 47,
+  "n_genes_measured": 18694,
+  "n_sets": 6,
+  "n_unique_genes": 47,
+  "overlaps": [],
+  "set_sizes": {
+    "antigen_presentation": 13,
+    "cytotoxicity": 4,
+    "exhaustion": 6,
+    "myeloid_m1": 10,
+    "myeloid_m2": 9,
+    "tls": 5
+  },
+  "sources": {
+    "antigen_presentation": "MSigDB:M1062; MSigDB:M705",
+    "cytotoxicity": "PMID:25594174",
+    "exhaustion": "PMID:29634943; PMID:31207603",
+    "myeloid_m1": "PMID:17082649",
+    "myeloid_m2": "PMID:17082649",
+    "tls": "PMID:31942071"
+  }
+}

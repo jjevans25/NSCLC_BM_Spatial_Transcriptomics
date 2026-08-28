@@ -1,0 +1,31 @@
+{
+  "all_agree": true,
+  "comparisons": [
+    {
+      "abs_diff_estimate": 5.301670089052912e-09,
+      "abs_diff_std_error": 1.5408296641856653e-05,
+      "agrees_within_tolerance": true,
+      "converged": true,
+      "lme4_estimate": -0.0237690225861798,
+      "lme4_std_error": 0.0121154219789929,
+      "method": "ssgsea",
+      "statsmodels_estimate": -0.02376902788784989,
+      "statsmodels_std_error": 0.012130830275634757
+    },
+    {
+      "abs_diff_estimate": 2.397239007301266e-08,
+      "abs_diff_std_error": 0.00012223214589429654,
+      "agrees_within_tolerance": true,
+      "converged": true,
+      "lme4_estimate": -0.477422647572272,
+      "lme4_std_error": 0.23887024504546,
+      "method": "zscore",
+      "statsmodels_estimate": -0.47742267154466206,
+      "statsmodels_std_error": 0.2389924771913543
+    }
+  ],
+  "contrast": "brain_minus_lung",
+  "note": "Estimates and SEs are compared; df and p-values are not, because lmerTest uses Satterthwaite and statsmodels a Wald z with no finite-sample correction.",
+  "signature": "antigen_presentation",
+  "tolerance": 0.0001
+}

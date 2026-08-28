@@ -1,0 +1,69 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: >
+  config/signatures.yaml — the versioned gene sets scored in Phase 2 (P2-T1,
+  PROJECT_PLAN §5.2). Validated by snakemake.utils.validate() at Snakefile
+  load, so a hand-edit that drops a source fails at parse rather than three
+  rules later.
+
+  The schema cannot check that a source is the RIGHT source, only that one is
+  present. Two of the four PMIDs proposed for this file at the start of Phase 2
+  turned out to point at unrelated papers and were caught by querying PubMed,
+  not by validation. Verify citations against the record; the schema is a
+  floor, not a check.
+type: object
+required: [signatures]
+additionalProperties: false
+properties:
+  signatures:
+    type: object
+    minProperties: 1
+    description: Set name -> membership and provenance. Set names become column values.
+    propertyNames:
+      pattern: "^[a-z][a-z0-9_]*$"
+    additionalProperties:
+      type: object
+      required: [genes, source]
+      additionalProperties: false
+      properties:
+        genes:
+          type: array
+          minItems: 2
+          uniqueItems: true
+          items:
+            type: string
+            pattern: "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+          description: >
+            HGNC symbols. Every one is resolved against the 18,694 genes in the
+            .h5ad by rule p2t1_resolve_signatures, which fails on a symbol that
+            does not appear — a signature that silently shrank is worse than a
+            workflow that stopped.
+        source:
+          type: string
+          minLength: 1
+          pattern: "^(PMID:[0-9]+|MSigDB:M[0-9]+)(; ?(PMID:[0-9]+|MSigDB:M[0-9]+))*$"
+          description: >
+            One or more `PMID:<digits>` or `MSigDB:<systematic name>`, separated
+            by "; ". A free-text source is rejected on purpose: an un-sourced
+            gene set is how a reanalysis becomes unreproducible (PROJECT_PLAN §6,
+            P2-T1 accept criterion).
+        decon_cell_types:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items: {type: string}
+          description: >
+            OPTIONAL. safeTME cell types P2-T6 compares this signature's
+            direction against. Present only where an unambiguous lineage
+            counterpart exists; absent means "no cell-type analogue", which
+            P2-T6 reports as `no_counterpart` rather than substituting a
+            composite. Two signatures MAY share a mapping (myeloid_m1 and
+            myeloid_m2 both name `macrophages`) — deconvolution resolves
+            lineage, not polarisation state — and P2-T6 detects that and
+            declines to treat such a pair as a convergence test.
+        source_note:
+          type: string
+          minLength: 1
+          description: >
+            Required in practice wherever membership differs from the cited
+            source's own gene list, which is the case for every set here.
+            The schema cannot enforce "explain the difference"; ADR 0011 does.

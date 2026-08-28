@@ -1,0 +1,3 @@
+artifact	file	url	accessed_utc	last_modified	bytes	sha256	stability	pin_status
+brain_darmanis	Brain_Darmanis.RData	https://raw.githubusercontent.com/Nanostring-Biostats/CellProfileLibrary/9698cc40641940581eac92a2bf21cdcbadb49367/Human/Adult/Brain_Darmanis.RData	2026-08-28T19:39:45+00:00		1792675	0f97e62ac2430c39259c3946ec229a3ffe09cdecc70df194fbdbad7bcadd75ed	fixed	verified
+lung_hca	Lung_HCA.RData	https://raw.githubusercontent.com/Nanostring-Biostats/CellProfileLibrary/9698cc40641940581eac92a2bf21cdcbadb49367/Human/Adult/Lung_HCA.RData	2026-08-28T19:39:45+00:00		3031298	55fd325a33217047cfd5a054a56922bd9995e410cc8f42b5dff38f3ab5d1432e	fixed	verified

@@ -1,0 +1,181 @@
+{
+  "aoi_counts": {
+    "TIME-B": 8,
+    "TIME-L": 15
+  },
+  "coverage": [
+    {
+      "aoi_code": "TIME-L",
+      "assessable": true,
+      "coverage": 1.0,
+      "genes_absent": "",
+      "n_aoi": 15,
+      "n_genes": 13,
+      "n_genes_present": 13,
+      "signature": "antigen_presentation",
+      "site": "lung"
+    },
+    {
+      "aoi_code": "TIME-B",
+      "assessable": true,
+      "coverage": 1.0,
+      "genes_absent": "",
+      "n_aoi": 8,
+      "n_genes": 13,
+      "n_genes_present": 13,
+      "signature": "antigen_presentation",
+      "site": "brain"
+    },
+    {
+      "aoi_code": "TIME-L",
+      "assessable": true,
+      "coverage": 0.5,
+      "genes_absent": "GNLY,PRF1",
+      "n_aoi": 15,
+      "n_genes": 4,
+      "n_genes_present": 2,
+      "signature": "cytotoxicity",
+      "site": "lung"
+    },
+    {
+      "aoi_code": "TIME-B",
+      "assessable": true,
+      "coverage": 0.5,
+      "genes_absent": "GNLY,PRF1",
+      "n_aoi": 8,
+      "n_genes": 4,
+      "n_genes_present": 2,
+      "signature": "cytotoxicity",
+      "site": "brain"
+    },
+    {
+      "aoi_code": "TIME-L",
+      "assessable": true,
+      "coverage": 0.6666666666666666,
+      "genes_absent": "LAG3,TOX",
+      "n_aoi": 15,
+      "n_genes": 6,
+      "n_genes_present": 4,
+      "signature": "exhaustion",
+      "site": "lung"
+    },
+    {
+      "aoi_code": "TIME-B",
+      "assessable": false,
+      "coverage": 0.16666666666666666,
+      "genes_absent": "CTLA4,LAG3,PDCD1,TIGIT,TOX",
+      "n_aoi": 8,
+      "n_genes": 6,
+      "n_genes_present": 1,
+      "signature": "exhaustion",
+      "site": "brain"
+    },
+    {
+      "aoi_code": "TIME-L",
+      "assessable": false,
+      "coverage": 0.2,
+      "genes_absent": "CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF",
+      "n_aoi": 15,
+      "n_genes": 10,
+      "n_genes_present": 2,
+      "signature": "myeloid_m1",
+      "site": "lung"
+    },
+    {
+      "aoi_code": "TIME-B",
+      "assessable": false,
+      "coverage": 0.2,
+      "genes_absent": "CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF",
+      "n_aoi": 8,
+      "n_genes": 10,
+      "n_genes_present": 2,
+      "signature": "myeloid_m1",
+      "site": "brain"
+    },
+    {
+      "aoi_code": "TIME-L",
+      "assessable": true,
+      "coverage": 0.6666666666666666,
+      "genes_absent": "CCL22,CLEC10A,IL10",
+      "n_aoi": 15,
+      "n_genes": 9,
+      "n_genes_present": 6,
+      "signature": "myeloid_m2",
+      "site": "lung"
+    },
+    {
+      "aoi_code": "TIME-B",
+      "assessable": true,
+      "coverage": 0.6666666666666666,
+      "genes_absent": "CCL22,CLEC10A,IL10",
+      "n_aoi": 8,
+      "n_genes": 9,
+      "n_genes_present": 6,
+      "signature": "myeloid_m2",
+      "site": "brain"
+    },
+    {
+      "aoi_code": "TIME-L",
+      "assessable": true,
+      "coverage": 0.6,
+      "genes_absent": "CR2,MS4A1",
+      "n_aoi": 15,
+      "n_genes": 5,
+      "n_genes_present": 3,
+      "signature": "tls",
+      "site": "lung"
+    },
+    {
+      "aoi_code": "TIME-B",
+      "assessable": false,
+      "coverage": 0.2,
+      "genes_absent": "CCL19,CCL21,CR2,MS4A1",
+      "n_aoi": 8,
+      "n_genes": 5,
+      "n_genes_present": 1,
+      "signature": "tls",
+      "site": "brain"
+    }
+  ],
+  "detected_in_aoi_fraction": 0.5,
+  "detection_background_multiple": 2.0,
+  "method_agreement_spearman": {
+    "antigen_presentation": 0.8814229249011858,
+    "cytotoxicity": 0.9654150197628459,
+    "exhaustion": 0.9090909090909092,
+    "myeloid_m1": 0.7915019762845852,
+    "myeloid_m2": 0.9654150197628459,
+    "tls": 0.9209486166007905
+  },
+  "methods": [
+    "ssgsea",
+    "zscore"
+  ],
+  "min_detected_fraction": 0.5,
+  "min_set_size": 3,
+  "n_aoi": 23,
+  "n_qc_flagged": 0,
+  "not_assessable": [
+    {
+      "aoi_code": "TIME-B",
+      "coverage": 0.16666666666666666,
+      "signature": "exhaustion"
+    },
+    {
+      "aoi_code": "TIME-L",
+      "coverage": 0.2,
+      "signature": "myeloid_m1"
+    },
+    {
+      "aoi_code": "TIME-B",
+      "coverage": 0.2,
+      "signature": "myeloid_m1"
+    },
+    {
+      "aoi_code": "TIME-B",
+      "coverage": 0.2,
+      "signature": "tls"
+    }
+  ],
+  "seed": 20260823
+}

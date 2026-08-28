@@ -125,6 +125,47 @@ continuous covariate. **Missingness is inconsistently coded** (`N/A`, `NA`,
 `n/a`, `Unspecified`). And the table covers all 44 cohort patients while GEO
 carries **35**, so nine rows have no expression data.
 
+## 10. Detection is the dominant limitation, ahead of power (P2-T2)
+
+Sections 4–6 anticipated this; Phase 2 measured it, and the result is larger in
+scope than "`TBME` detects less than the tumour cores". **Three of six immune
+signatures failed their per-site detection-coverage floor**, scored on the 23
+`TIME` AOIs with a gene counting as detected only above
+`qc.detection_background_multiple` × that AOI's NegProbe-WTX level:
+
+| set | `TIME-L` | `TIME-B` | |
+|---|---|---|---|
+| `antigen_presentation` | 13/13 | 13/13 | the only fully-detected set |
+| `myeloid_m2` | 6/9 | 6/9 | assessable |
+| `cytotoxicity` | 2/4 | 2/4 | assessable, **at the floor** (rests on GZMB, NKG7) |
+| `tls` | 3/5 | **1/5** | not assessable in brain |
+| `exhaustion` | 4/6 | **1/6** | not assessable in brain |
+| `myeloid_m1` | **2/10** | **2/10** | not assessable **at either site** |
+
+Two consequences that outlive Phase 2:
+
+- **`exhaustion` and `tls` returned large, nominally significant "reductions in
+  brain"** (q = 0.005 and 0.018) that **are not reportable**. Brain background is
+  higher (§5), so a near-background gene reads as depleted in brain
+  artefactually — ADR 0008's argument, now observed. Anywhere those sets appear
+  the finding is "not assessable in brain", never "lower in brain", and the
+  P2-T7 heatmap hatches those cells on the figure itself.
+- **Secreted ligands and chemokines are systematically undetected** — CXCL10,
+  CXCL11, IL1B, TNF, IL12B, CD80, CD86, NOS2, IL10, CCL22, CCL19 and CCL21 all
+  sit below background, several at *both* sites. A ligand–receptor analysis
+  needs the ligand side above background, which is why A5 was demoted at Gate 2
+  (ADR 0014).
+
+The detection gate is also load-bearing rather than decorative: it is what
+stopped `myeloid_m1`'s apparent signature-versus-deconvolution contradiction —
+signature down in brain, macrophage abundance up — being written up as a real
+methodological conflict. Eight of its ten genes measure nothing, so the score
+cannot disagree with anything (P2-T6, `docs/analysis-notes.md`).
+
+**Phase 3's checkpoint panel overlaps `exhaustion` almost entirely** (`PDCD1`,
+`CTLA4`, `LAG3`, `HAVCR2`, `TIGIT`), so the same outcome should be expected
+there and designed for, not discovered.
+
 ## 9. Scope
 
 - **`mLN` is out of scope** for the core comparison by design (§A.2), and is

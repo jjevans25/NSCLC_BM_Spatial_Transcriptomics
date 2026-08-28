@@ -1,261 +1,211 @@
-# Next steps — Phase 2 (immune contexture, brain vs lung)
+# Next steps — Phase 3 (checkpoint landscape by compartment)
 
-**Last session:** 2026-08-26
-**Branch:** `main` at `0d3fa9c`, **pushed**. Phase 2 needs a new `P2` branch.
-**Gate 0:** PASSED. **Gate 1:** PASSED — squash-merged with the result in the
-commit message, as ADR 0004 asks.
-**Phase 1:** **COMPLETE** (P1-T1 … P1-T6). Nothing outstanding.
+**Last session:** 2026-08-28
+**Branch:** `main` at the Phase 2 squash-merge. Phase 3 needs a new `P3` branch.
+**Gate 0:** PASSED. **Gate 1:** PASSED. **Gate 2:** PASSED — ADR 0014 is the record.
+**Phase 2:** **COMPLETE** (P2-T1 … P2-T7). Nothing outstanding.
 
-Phase 2's goal (§6): Aims **A1/A3** — is the brain-metastasis immune
-microenvironment different from the primary lung tumour, and in which
-direction, resolved by compartment.
-
----
-
-## Gate 2 — read this before writing any code
-
-> **Do you recover the published direction (reduced antigen presentation and
-> B/T function in brain)?** If yes: pipeline validated, proceed with confidence.
-> If no: **stop and debug** — an unexpected result at this n is far more likely
-> to be a pipeline bug than new biology. **Resist the opposite instinct.**
-
-This is the only gate in the project whose criterion is "reproduce someone
-else's answer". A1–A3 are the **positive control on the pipeline**, not a
-novelty claim (§1.3). Treat a surprising Phase 2 result as a bug report against
-yourself.
-
-**A5 is re-decided at this gate** (ADR 0008). It inherits `TBME`'s batch
-confounding and 21.4% detection. Decide it explicitly and write it down; do not
-let it drift into Phase 4 undecided.
+Phase 3's goal (§6): Aim **A4** — which compartment carries each checkpoint gene,
+and whether that shifts brain vs. lung. §6 calls it "the most differentiable
+analysis in the project"; ADR 0008 demoted it to **exploratory** at Gate 0 and
+nothing since has changed that.
 
 ---
 
-## What Phase 1 decided that binds Phase 2
+## Read this before writing any code
 
-**ADR 0009 is the model contract.** Three things follow, and none is optional:
+**Phase 2 turned the detection ceiling from a checkpoint-panel worry into a
+measured, assay-wide property, and it is now the project's dominant limitation —
+ahead of `TIME-B` n = 8.**
 
-1. **Every model carries `(1|patient)`** — justified on non-independence, never
-   on variance share. Patient is only 12% of variance and its clustering ARI is
-   0.003; the load-bearing evidence is the +0.107 ρ contrast across the 102
-   same-patient AOI pairs whose compartments differ. Changing the
-   random-effects structure is a **stop and ask**.
-2. **Estimate within compartment, never pooled across compartments.**
-   Compartment is 41% of variance — pooling `TIME` with `LB`/`L` would swamp the
-   site effect you are trying to measure.
-3. **No variance share or p-value without its null / n / CI / effect size.**
-   Hard constraint 7, and §2 of ADR 0009 for why a naive η² is unusable here.
+Three of six Phase 2 signatures failed their coverage floor:
+
+| set | `TIME-L` | `TIME-B` | |
+|---|---|---|---|
+| `antigen_presentation` | 13/13 | 13/13 | the only fully-detected set |
+| `myeloid_m2` | 6/9 | 6/9 | assessable |
+| `cytotoxicity` | 2/4 | 2/4 | assessable, **at the floor** |
+| `tls` | 3/5 | **1/5** | not assessable in brain |
+| `exhaustion` | 4/6 | **1/6** | not assessable in brain |
+| `myeloid_m1` | **2/10** | **2/10** | not assessable **at either site** |
+
+`exhaustion` and `tls` returned large, nominally significant "reductions in
+brain" (q = 0.005 and 0.018) that are **not reportable** — they are the ADR 0008
+artefact, exactly as predicted. **P3-T1's panel overlaps `exhaustion` almost
+entirely** (`PDCD1`, `CTLA4`, `LAG3`, `HAVCR2`, `TIGIT`), so expect the same
+outcome and design P3-T2 to produce it cleanly rather than to be surprised by it.
+
+**Secreted ligands and chemokines are systematically undetected** — CXCL10,
+CXCL11, IL1B, TNF, IL12B, IL10, CCL22, CCL19, CCL21 all sit below background.
+That is what demoted A5 (ADR 0014).
+
+**Gate 3 already anticipates the null:** "If everything is not-assessable, that's
+still a legitimate finding." Phase 2 makes that the *likely* outcome. Write
+P3-T2 as the deliverable it is, not as a gate to get past.
 
 ---
 
-## Three things measured this session that change Phase 2's shape
+## What Phase 2 decided that binds Phase 3
 
-**a. The `TIME` AOIs are QC-clean.** Zero of the 23 `TIME-L` + `TIME-B` AOIs are
-QC-flagged. The flagging in P0-T5 hit 3 `TBME` AOIs, none of them here — so
-`TIME-B` n = 8 is intact and Phase 2 starts at full strength. Design every
-analysis so it still degrades gracefully, but the feared degradation did not
-happen.
-
-**b. Batch is estimable in the `TIME` contrast, but barely.**
-
-| | run A | run B |
-|---|---|---|
-| `TIME-L` | 9 | 6 |
-| `TIME-B` | **6** | **2** |
-
-Unlike `mLN`/`TBME`/`BC` — each wholly inside one run — the `TIME` comparison
-does span both. But `TIME-B` has **2 AOIs in run B**, so `score ~ site +
-dsp_run + (1|patient)` is fragile and will likely fit singularly.
-
-**P2-T3 must decide this explicitly, and it is a stop-and-ask.** The plan
-specifies `score ~ site + (1|patient)` with no batch term. P1-T3 found `dsp_run`
-carries ~10% of variance, which argues for adjusting; the 6/2 split argues
-against. Suggested resolution: fit the plan's model as primary, refit with
-`dsp_run` as a **sensitivity**, and report both — the same shape P1-T3's S2 used,
-which is what let it quantify batch absorption at +0.014 rather than assert it.
-Record the choice in an ADR (next free number: **0011**).
-
-**c. Five patients have both `TIME-L` and `TIME-B`** — confirmed against the
-data, matching §2.3. That is P2-T4's paired check, and it is a
-direction-of-effect consistency check only. **No p-values from n = 5.**
+1. **`(1|patient_id)` in every model**, on non-independence grounds (ADR 0009).
+   The config schema now enforces it with a regex on the formula fields — a
+   config edit that drops it fails at Snakefile load. Changing the
+   random-effects structure remains a stop-and-ask.
+2. **Primary + batch sensitivity, both reported** (ADR 0012). `dsp_run` moved
+   estimates by a median of 0.0076 (max 0.0465) and changed no direction or
+   ordering. Half the fits (12/24) were singular and are surfaced, not hidden.
+3. **The coverage gate is not optional.** It is what stopped `myeloid_m1`'s
+   apparent signature/deconvolution contradiction being written up as a real
+   methodological conflict. P3-T2 is the same mechanism; give it the same weight.
+4. **Never "lower in brain" for a set below its floor** — "not assessable in
+   brain" (ADR 0008). The P2-T7 heatmap hatches such cells *on the figure*,
+   because a heatmap is exactly what someone reads "lower" off a colour from.
+   P3-T5 must do the equivalent: §6 says not-assessable genes are "rendered
+   distinctly, not omitted".
 
 ---
 
 ## Start here
 
-### 1. P2-T1 — version the signatures (~2 h)
+### 1. P3-T1 — define the panel (~1.5 h)
 
-`config/signatures.yaml` is currently `signatures: {}`. Populate: cytotoxicity
-(`GZMB, PRF1, GNLY, NKG7`), exhaustion (`PDCD1, LAG3, HAVCR2, TIGIT, CTLA4,
-TOX`), antigen presentation (HLA-I/II, `B2M, TAP1, TAP2, NLRC5`), M1/M2 myeloid,
-TLS (`CXCL13, CCL19, CCL21, CR2, MS4A1`).
+`config/checkpoints.yaml` is still empty, deliberately. Populate it with
+`CD274`, `PDCD1`, `CTLA4`, `LAG3`, `HAVCR2`, `TIGIT`, `IDO1`, `VSIR`, `CD276`,
+one line of sourced clinical rationale each. **Adding or removing a gene is a
+stop-and-ask.**
 
-- **Every set carries a `source:`** (MSigDB ID or PMID). Un-sourced gene sets are
-  how reanalyses become unreproducible. **Accept:** YAML validates; every set
-  sourced.
-- **There is no signatures schema yet** — `workflow/schemas/` holds only
-  `config.schema.yaml` and `samples.schema.yaml`. Write
-  `signatures.schema.yaml` and validate at Snakefile load, the way `samples.tsv`
-  is validated in `common.smk`.
-- **Adding or removing a gene from a signature is a stop-and-ask**
-  (`CLAUDE.md`), including while first populating the file.
-- Antigen presentation is the set Gate 2 turns on — the published direction is
-  *reduced* antigen presentation in brain. Get its membership and source right
-  before anything else.
+**Verify every citation against the record.** Two of the four PMIDs proposed for
+`signatures.yaml` in Phase 2 pointed at unrelated papers — right journal, right
+year, adjacent subject — and were caught only by querying PubMed. A schema can
+enforce that a source is *present*, never that it is *correct* (ADR 0011).
 
-### 2. P2-T2 — score signatures (~3 h)
+Write `workflow/schemas/checkpoints.schema.yaml` and validate it at Snakefile
+load, the way `signatures.yaml` is validated in `common.smk`.
 
-ssGSEA (`gseapy`, already in `py-analysis`) **and** a z-score mean, on the
-`TIME-L` + `TIME-B` AOIs (23 AOIs). Two methods because **agreement between them
-is the robustness evidence at this n**.
+### 2. P3-T2 — detection audit FIRST (~2 h)
 
-**Record per-set detection coverage.** A set with 2 of 6 genes detected is not a
-signature, and P0-T5 established that detection varies systematically by
-compartment — so coverage must be reported per site, not pooled. Reuse the
-`detection_at_2x` columns already in `obs` and `config.qc.detection_background_multiple`
-rather than inventing a second detection rule.
+**Set the detection floor in `config.yaml` before looking at any result.** §6
+says pre-registered; ADR 0008 says the same thing for a different reason.
 
-### 3. P2-T3 — mixed models (~3 h)
+Reuse the existing rule rather than inventing a second one: a gene is detected in
+an AOI when `layers['q3'] > qc.detection_background_multiple × obs['negprobe']`.
+`score_signatures.py` already implements exactly this — lift it rather than
+rewrite it.
 
-`score ~ site + (1|patient)` per signature in `lme4`/`lmerTest`, cross-checked on
-one signature in `statsmodels.MixedLM`. Report estimate, 95% CI, df method, raw
-p, BH-FDR across signatures. **Singular fits surfaced, not hidden.**
+Report per gene × compartment, **never pooled**. Output the panel split into
+assessable / not assessable.
 
-See §b above — the `dsp_run` decision belongs here, with an ADR.
+### 3. P3-T3 — which compartment carries each checkpoint? (~3 h)
 
-### 4. P2-T4 — paired sensitivity (~1.5 h)
+`expression ~ compartment + (1|patient_id)`, **within site**. This is the
+analysis bulk RNA-seq structurally cannot do. `fit_signature_models.R` is the
+template — it already handles the primary/sensitivity pair, Satterthwaite df,
+BH-FDR within family, and singular-fit reporting.
 
-The 5 patients with both `TIME-L` and `TIME-B`. **Direction of effect only.**
-Per-signature concordance table against the unpaired result.
+### 4. P3-T4 — does the profile shift lung → brain? (~3 h)
 
-### 5. P2-T5 — deconvolution (~3 h)
+Within compartment, never pooled. Unpaired primary + the 5-patient paired
+sensitivity (direction only, no p-values — `paired_check.py` asserts none reach
+the table). **Every brain claim states `TIME-B` n = 8 inline.**
 
-`SpatialDecon`, two-matrix: lung reference for `TIME-L`, brain reference for
-`TIME-B`. Renormalise composition **within** compartment. **Accept:**
-stacked-bar figure **plus a written caveat that cross-site comparison is
-reference-confounded** — that caveat is part of the deliverable, not a footnote.
+### 5. P3-T5 — dot plot (~2.5 h), P3-T6 — `checkpoint_explorer.py` (~4 h)
 
-### 6. P2-T6 — convergence check (~1 h)
+**Read ADR 0010 before writing the app-tier notebook.** It ships data in
+`public/` and fetches over HTTP; `cache_cells` breaks `mo.ui.table`,
+`mo.persistent_cache` silently ships an export with no data, and pandas cannot
+read an `http://` URL under Pyodide. `marimo check` passes while the export is
+broken — **verify by exporting and opening, never by linting.**
 
-Do deconvolution and signatures agree on direction? Where they disagree, write
-which you trust and why (usually signatures — they do not depend on reference
-choice). **Out:** paragraph in `docs/analysis-notes.md`.
+Accept criterion worth honouring: the app's defaults must exactly reproduce the
+static P3-T5 figure. If they don't, one of the two is wrong.
 
-### 7. P2-T7 — deliverable figure (~2 h)
+### 6. P3-T7 — clinical interpretation (~2 h)
 
-Heatmap: signatures × AOIs, columns grouped by site, annotated by patient.
-Publication-grade, colourblind-safe, in the Snakemake report.
+~600 words appended to `docs/analysis-notes.md` (the file now exists; P2-T6's
+section is the format). Hedge proportionally to n.
 
 ---
 
 ## State you'll have forgotten
 
-- **Neither R environment has ever been built.** Only two `py-analysis` envs
-  exist under `.snakemake/conda/`. The first Phase 2 rule with
-  `conda: "../envs/r-stats.yaml"` triggers a fresh solve, and `r-geomx.yaml`
-  pulls **five Bioconductor packages** (`GeomxTools`, `standR`, `SpatialDecon`,
-  `limma`, `edgeR`). Budget real time for that solve, and do it *early* rather
-  than discovering it at P2-T5. It is the largest un-derisked step in Phase 2.
-- **`conda activate nsclc_bm_spatial` before every snakemake call.** That env's
-  Snakemake is **8.30**; base anaconda's 9.20 writes provenance metadata 8.30
-  reads as stale and will re-trigger `p0t2_fetch_geo` into its protected
-  outputs. `min_version("8.0")` will not warn you.
-- **`--use-conda` is mandatory, not optional.** Without it the software-env
-  trigger fires and P0-T2's `protected()` outputs abort the DAG build. A bare
-  `snakemake -n` is not a clean dry run.
-- **Editing a `script:` rule can leave `snakemake -n` dirty** in a way only a
-  re-run clears. Snakemake 8.30 stores `code: None` for every `script:` rule
-  here, yet after this session's edits three rules reported "code has changed".
-  A full re-run cleared it and reproduced every output byte-identically. Not
-  understood; do not reach for `--cleanup-metadata` (it makes snakemake *forget*
-  provenance, which is wrong for a FAIR target) unless an env genuinely changed.
-- **`py-analysis.conda-lock.yml` is stale** and `conda-lock` is not installed on
-  this machine. P0-T5 added `xarray`; a clean-room rebuild fails at
-  `p0t7_assemble_h5ad`. **Still the P6-T1 blocker.** Nothing this session made it
-  worse — P1-T4 implements ARI in numpy rather than adding scikit-learn, and
-  P1-T5 dropped its pyarrow dependency.
-- **App-tier notebooks: read ADR 0010 before writing P3-T6's
-  `checkpoint_explorer.py`.** It ships data in `public/` and fetches over HTTP;
-  `cache_cells` breaks `mo.ui.table`, `mo.persistent_cache` silently ships an
-  export with no data, and pandas cannot read an `http://` URL under Pyodide.
-  Also: `marimo check` passes while the export is broken, and the PEP 723 block
-  installs *unpinned* marimo, so APIs skew between check time and run time.
-  **Verify app-tier notebooks by exporting and opening them, never by linting.**
-- **`Markdowns/PROJECT_PLAN.md` is gitignored.** Its aims table was updated for
-  A4/A5 but that edit is not version-controlled — **ADR 0008 is the record.**
-- **`config/checkpoints.yaml` is still empty**, deliberately. Populating it is a
-  Phase 3 stop-and-ask.
-- **A4 is exploratory (ADR 0008); A5 is re-decided at Gate 2** — i.e. now.
-- **`TIME-B` n = 8** and the power floor is **1.1–1.3 SD** at 80% (P0-T8). **A
-  null in Phase 2 is uninformative, not negative** — and per Gate 2, a
-  *surprising* result is more likely a bug than biology.
-- **`.h5ad` contract:** `X` = log2(Q3+1), `layers['q3']` untransformed, 36 `obs`
-  columns, git SHA + config hash in `uns`. 120 × 18,694.
-- **`config/config.yaml` is a declared input of `p0t7_assemble_h5ad`**, so any
-  config edit rebuilds the `.h5ad` and re-runs everything downstream — including
-  P1-T3's ~25-minute fit. Batch config changes rather than making them one at a
-  time.
-
-## Conventions that bite if forgotten
-
-- **Turn `phases.contexture: true` in the same commit that adds the rules**, and
-  populate `TARGETS_CONTEXTURE` in `04_contexture.smk` (currently `[]`) — a
-  phase contributes to `rule all` only when both are true.
-- One `.smk` per phase; every rule declares `log:`, `benchmark:`, `conda:` and
-  `threads:`. No exceptions.
-- **R owns** `lme4`/`lmerTest`/`emmeans` and `SpatialDecon`; **Python owns**
-  AnnData, plotting, enrichment. The handoff is plain TSV with `digits = 17`
-  and an asserted round-trip — **not** `zellkonverter` (ADR 0001).
-- Commits: `P2-T<n>: imperative summary`. One phase per branch, squash-merged
-  with the gate result in the message (ADR 0004).
-- Never write "colocalisation" — **"inferred crosstalk between adjacent
-  compartments"**, no exceptions.
-- Never write "CD45+ AOI". A `TIME` AOI is the PanCK-negative segment of an ROI
-  sited in a CD45-rich region — **not** a CD45-sorted population (Q2's caveat).
+- **`--conda-prefix "$HOME/nsclc-envs"` is MANDATORY on this machine**, alongside
+  `--use-conda`. That symlink points *at* `.snakemake/conda`, so nothing moves —
+  but this working directory contains a space, and **three** separate scripts
+  interpolate the conda prefix unquoted: conda-forge's R wrapper, Snakemake's
+  post-deploy hook, and bioconda's `installBiocDataPackage.sh`. The last makes
+  `r-geomx` impossible to *create*. Recreate the symlink with
+  `ln -sfn "$PWD/.snakemake/conda" "$HOME/nsclc-envs"`. **Do not** relocate the
+  envs to a genuinely different path — that fires the software-env trigger on
+  `p0t2_fetch_geo` and its `protected()` outputs abort the DAG. ADR 0013.
+- **`rule p2t0_repair_r_env` must run before any R rule.** It quotes conda-R's
+  relocated path assignments; declare `results/interim/env_repair/<env>.ok` as an
+  input of every R rule. The wildcard already accepts `r-stats|r-geomx`.
+- **Both R envs are now built and verified.** `r-stats` (lme4 2.0.6 / Matrix
+  1.7.5) and `r-geomx` (SpatialDecon 1.16.0, GeomxTools, standR). `r-geomx.yaml`
+  carries `r-lme4>=2.0` + `r-reformulas` pins without which SpatialDecon solves
+  green and then fails to load.
+- **A green `--conda-create-envs-only` is not evidence an env works.** It
+  happened twice in one session. Load the libraries.
+- **ADR 0001's exact float round-trip does not hold Python → R.** R's parser is
+  not correctly rounded (`R_strtod` reads Python's `0.44525532065683371` one ULP
+  low, on 34 of 276 values). Exactness is kept R → Python, where it does hold;
+  Python → R asserts structure, and numeric agreement is checked end-to-end by
+  `p2t3_model_crosscheck` instead. ADR 0013.
+- **`config/config.yaml` is a declared input of `p0t7_assemble_h5ad`** — its
+  SHA-256 goes into `uns`, so *any* edit, comment included, correctly rebuilds
+  the `.h5ad` and re-runs Phase 1 (~16 min). Batch config changes. Signature-like
+  content belongs in its own file for this reason; `config/signatures.yaml` and
+  `config/checkpoints.yaml` are not inputs of that rule.
+- **`py-analysis.conda-lock.yml` is stale** and `conda-lock` is not installed.
+  Still the P6-T1 blocker. Phase 2 added no new Python dependency.
+- **P6-T1 must be run on a path containing a space**, or it will not exercise
+  `p2t0_repair_r_env` or the symlink and will report a false pass.
+- **`Markdowns/PROJECT_PLAN.md` is gitignored** — ADRs are the durable record.
+  ADR 0014 §4 lists two defects found in §6 at the Gate 2 audit: P2-T7's
+  "publication-grade" criterion is unfalsifiable, and the A5 re-decision was
+  owned by no task row.
 
 ## Useful commands
 
 ```bash
-conda activate nsclc_bm_spatial           # first, always
-git checkout -b P2                        # one branch per phase (ADR 0004)
-snakemake -n --use-conda                  # must stay clean
-snakemake --lint                          # must stay clean
-snakemake --use-conda --cores 4           # build
-snakemake --use-conda --conda-create-envs-only   # build the R envs early
-snakemake --use-conda --report results/reports/workflow-report.html
-uvx marimo check --strict notebooks/**/*.py
-/gate 2                                   # what Gate 2 still needs
-```
-
-Serving the Phase 1 explorer (it needs HTTP, not `file://`):
-
-```bash
-python -m http.server --directory results/reports/landscape_explorer
+conda activate nsclc_bm_spatial
+ln -sfn "$PWD/.snakemake/conda" "$HOME/nsclc-envs"   # once per machine
+git checkout -b P3
+snakemake -n --use-conda --conda-prefix "$HOME/nsclc-envs"   # must stay clean
+snakemake --lint                                             # must stay clean
+snakemake --use-conda --conda-prefix "$HOME/nsclc-envs" --cores 4
+snakemake --use-conda --conda-prefix "$HOME/nsclc-envs" \
+  --report results/reports/workflow-report.html
+/gate 3
 ```
 
 ---
 
-## Phase 1, for reference
+## Phase 2, for reference
 
-Gate 1: **41% of variance is compartment-attributable** (PVCA over 14 PCs
-spanning 60.4%; per-gene median 21% over 18,691 converged genes; permutation
-null 0.3%). `TIME-B` n = 8.
+Gate 2 (ADR 0014): the published direction is reproduced. Brain minus lung,
+within `TIME`, `TIME-B` n = 8:
 
-| Component | Per-gene median | PVCA | Permutation null |
-|---|---|---|---|
-| compartment | 0.211 | **0.412** | 0.003 |
-| patient | 0.124 | 0.218 | 0.026 |
-| `dsp_run` | 0.078 | 0.096 | 0.002 |
-| site | 0.006 | 0.023 | 0.003 |
-| residual | 0.495 | 0.252 | 0.889 |
+| signature | coverage | estimate (z-score) | q | |
+|---|---|---|---|---|
+| antigen presentation | 13/13 both | −0.477 SD [−1.030, +0.075] | 0.098 | direction recovered, underpowered |
+| cytotoxicity | 2/4 both | −0.946 SD [−1.590, −0.302] | **0.018** | recovered, significant |
+| myeloid M2 | 6/9 both | +0.091 SD [−0.333, +0.514] | 0.660 | null |
 
-P1-T4 confirmed it from the clustering side: compartment ARI **0.741**, patient
-**0.003**, same-patient AOIs sharing a cluster at *below* the chance rate —
-inverting PROJECT_PLAN §6's stated expectation, which is recorded as measured
-false in ADR 0009 so it is not reinstated from the plan.
+−0.48 SD sits below the 1.1–1.3 SD power floor, so antigen presentation's
+non-significance is uninformative, not negative. Paired direction agreed 12/12;
+lme4 vs statsmodels 5e-9; the two scoring methods correlate at ρ 0.79–0.97.
 
-Artefacts: `variance_partition.tsv`, `variance_partition_summary.json`,
-`cluster_agreement.tsv`, `sample_clustering_summary.json`,
-`results/figures/variance_partition.png`,
-`results/figures/sample_correlation_heatmap.png`,
-`results/reports/landscape_explorer/`. ADRs **0009** (models) and **0010**
-(app-tier notebook exports).
+P2-T5 deconvolution ran two arms — `safeTME` on both sites (comparable) and
+§6's two-matrix approach (**not** comparable: `Lung_HCA` resolves 9 lymphoid
+types, `Brain_Darmanis` resolves **0**). P2-T6 found exactly **one** signature
+genuinely testable for convergence — cytotoxicity — and it agrees: −0.946 SD
+against CD8+NK proportion 0.139 → 0.081.
+
+Artefacts: `signature_membership.tsv`, `signature_scores.tsv`,
+`signature_coverage.tsv`, `signature_models.tsv`, `model_crosscheck.json`,
+`paired_concordance.tsv`, `decon_composition.tsv`, `convergence_check.tsv`,
+`results/figures/contexture_heatmap.png`, `results/figures/decon_composition.png`,
+`docs/analysis-notes.md`. ADRs **0011** (signature membership and sourcing),
+**0012** (batch term), **0013** (conda R on a path with spaces; the float
+boundary), **0014** (Gate 2 record; A5 demotion).

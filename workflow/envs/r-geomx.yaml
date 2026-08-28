@@ -18,3 +18,12 @@ dependencies:
   - bioconductor-summarizedexperiment
   - bioconductor-limma
   - bioconductor-edger
+  # Both pins exist because the unconstrained solve SUCCEEDS AND THEN DOES NOT
+  # RUN. conda resolved r-lme4 1.1_35.5 (built against Matrix ABI 1) alongside
+  # r-matrix 1.7_6 (ABI 2); `library(SpatialDecon)` then died on an ABI-mismatch
+  # warning plus "there is no package called 'reformulas'" -- lme4 >= 1.1_36
+  # split its formula handling into that package, and the old build neither
+  # provides nor requires it. A green `--conda-create-envs-only` is therefore
+  # not evidence the env works; this one was caught by loading the library.
+  - r-lme4>=2.0
+  - r-reformulas

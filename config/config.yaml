@@ -65,7 +65,7 @@ phases:
   annotate: true        # P0-T3
   qc: true              # P0-T6 (P0-T5 still to come)
   landscape: true       # P1-T1/T2
-  contexture: false
+  contexture: true         # P2-T1..T7
   checkpoints: false
   crosstalk: false
   survival: false          # gated on Q5 (P0-T4)
@@ -107,6 +107,66 @@ landscape:
     # Label shuffles behind the ARI null band.
     n_permutations: 200
 
+contexture:
+  # Phase 2 / A1 + A3 — the lung-vs-brain immune contrast, compartment-resolved.
+  #
+  # Estimated WITHIN the TIME compartment and never pooled with L/LB: compartment
+  # is 41% of variance (Gate 1) and pooling would swamp the site effect this
+  # phase exists to measure. ADR 0009 §Consequences.
+  signatures_yaml: config/signatures.yaml
+  # The 23 AOIs Phase 2 scores. TIME-L 15 + TIME-B 8, and P1 confirmed zero of
+  # them are QC-flagged, so TIME-B n = 8 is intact.
+  aoi_codes: ["TIME-L", "TIME-B"]
+  scoring:
+    # Two methods because AGREEMENT BETWEEN THEM is the robustness evidence at
+    # this n (PROJECT_PLAN §6, P2-T2). Neither is the tiebreaker for the other.
+    methods: [ssgsea, zscore]
+    # gseapy.ssgsea defaults min_size to 15. Every set here is 4-13 genes, so
+    # the default drops all six. Verified against gseapy 1.3.1: it raises
+    # LookupError("No gene sets passed through filtering condition") rather
+    # than returning an empty frame, so the failure is loud -- but it is a
+    # failure, and the value has to be set for the rule to run at all.
+    min_set_size: 3
+    # A gene counts as present at a site if it is detected in at least this
+    # fraction of that site's AOIs...
+    detected_in_aoi_fraction: 0.5
+    # ...and a set is "assessable" at a site only if at least this fraction of
+    # its genes clear that bar. Below it the set is reported as "not assessable
+    # in <site>", never as "lower in <site>" — ADR 0008's rule, which exists
+    # because brain background is HIGHER, so a near-background gene reads as
+    # depleted in brain artefactually.
+    min_detected_fraction: 0.5
+  model:
+    # P2-T3. The random intercept is mandatory and is justified on
+    # NON-INDEPENDENCE, not variance share (ADR 0009 §1). Changing this
+    # random-effects structure is a "stop and ask".
+    primary: "score ~ site + (1|patient_id)"
+    # dsp_run is a SENSITIVITY, not the primary, and ADR 0012 records why: it
+    # carries ~10% of variance (P1-T3), which argues for adjusting, but TIME-B
+    # splits 6/2 across the two runs, so the adjusted fit is barely identified
+    # and is expected to go singular. Reporting both quantifies the absorption
+    # instead of asserting it — the shape P1-T3's S2 used.
+    sensitivity: "score ~ site + dsp_run + (1|patient_id)"
+    df_method: satterthwaite
+    fdr_method: fdr_bh
+    fdr_alpha: 0.05
+    # Cross-checked in statsmodels.MixedLM. This is the set Gate 2 turns on.
+    crosscheck_signature: antigen_presentation
+  deconvolution:
+    # P2-T5. safeTME ships inside SpatialDecon (906 genes x 18 immune/stromal
+    # types) and is applied to BOTH sites, so its composition is the one arm
+    # whose cross-site comparison is not reference-confounded.
+    primary_reference: safeTME
+    # PROJECT_PLAN §6's two-matrix approach, kept as the sensitivity. It cannot
+    # support cross-site comparison and the caveat is part of the deliverable:
+    # Lung_HCA resolves CD8/CD4/Treg/NK/B/plasma, while Brain_Darmanis carries
+    # only Myeloid.Type.1/2 and NO T or B cell types at all. A lymphoid
+    # difference between the two arms would be the reference, not the biology.
+    sensitivity_references:
+      TIME-L: Lung_HCA
+      TIME-B: Brain_Darmanis
+    renormalise_within: compartment
+
 acquire:
   # P0-T2 source manifest. Fetched into paths.raw; resources/ is read-only
   # afterwards (outputs are protected(), ADR 0005).
@@ -139,3 +199,29 @@ acquire:
       dest: GSE200563_family.soft.gz
       stability: volatile
       sha256: "1220b6eef191568f20f774c1f06d26e4c70d517440451fad0c8590b6bab1d06f"
+
+reference:
+  # P2-T5 deconvolution references, fetched into paths.reference. Separate from
+  # `acquire` because that block is GEO-only and its outputs are protected() at
+  # a different base_url; same ADR 0005 rules apply here.
+  #
+  # base_url pins a COMMIT, not `master`. The library is a live GitHub repo, so
+  # a branch ref would silently change the reference matrix under a rerun and
+  # the sha256 below would then be a failure rather than a control.
+  base_url: https://raw.githubusercontent.com/Nanostring-Biostats/CellProfileLibrary/9698cc40641940581eac92a2bf21cdcbadb49367
+  artifacts:
+    lung_hca:
+      # 16,700 genes x 21 cell types. Madissoon et al., Human Cell Atlas lung.
+      remote: Human/Adult/Lung_HCA.RData
+      dest: Lung_HCA.RData
+      stability: fixed
+      sha256: "55fd325a33217047cfd5a054a56922bd9995e410cc8f42b5dff38f3ab5d1432e"
+    brain_darmanis:
+      # 16,378 genes x 12 cell types. Darmanis et al. 2017, infiltrating
+      # neoplastic cells at the migrating front of human glioblastoma — a brain
+      # TUMOUR reference, not normal brain, which is the right choice for
+      # TIME-B but is also why it has no lymphoid types.
+      remote: Human/Adult/Brain_Darmanis.RData
+      dest: Brain_Darmanis.RData
+      stability: fixed
+      sha256: "0f97e62ac2430c39259c3946ec229a3ffe09cdecc70df194fbdbad7bcadd75ed"

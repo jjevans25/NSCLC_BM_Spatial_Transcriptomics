@@ -12,11 +12,27 @@ learning and methods project, not a publication. The full plan lives in
 `Markdowns/PROJECT_PLAN.md` — when this file and the plan disagree, the plan
 wins, and the disagreement is a bug in this file.
 
-**GATE 1 PASSED (2026-08-26). Phases 0 and 1 are complete (P0-T1 … P0-T8,
-P1-T1 … P1-T6); current phase is Phase 2 (A1/A3 — the lung-vs-brain immune
-contrast, compartment-resolved).** All five open questions are answered
-(`docs/data-provenance.md`), and `docs/limitations.md` records what the design
-cannot support.
+**GATE 2 PASSED (2026-08-28). Phases 0, 1 and 2 are complete (P0-T1 … P0-T8,
+P1-T1 … P1-T6, P2-T1 … P2-T7); current phase is Phase 3 (A4 — the checkpoint
+landscape by compartment, exploratory per ADR 0008).** All five open questions
+are answered (`docs/data-provenance.md`), and `docs/limitations.md` records what
+the design cannot support.
+
+Gate 2 evidence (ADR 0014): the published direction is reproduced. Brain minus
+lung, within `TIME`, `TIME-B` n = 8 — antigen presentation **−0.477 SD
+[−1.030, +0.075]** (q = 0.098, and the only set detected 13/13 at *both* sites),
+cytotoxicity **−0.946 SD [−1.590, −0.302]** (q = 0.018). Antigen presentation
+does not clear FDR 0.05 and is not expected to: −0.48 SD sits below the
+1.1–1.3 SD power floor, so that is uninformative, not negative. Direction agrees
+with the paired check in 12 of 12 cells; lme4 and statsmodels agree to 5e-9.
+
+**The dominant limitation is now detection, ahead of `TIME-B` n = 8.** Three of
+six Phase 2 signatures failed their coverage floor — `exhaustion` 1/6 and `tls`
+1/5 in brain, `myeloid_m1` 2/10 at *both* sites — and two of those show large,
+nominally significant "reductions in brain" that are the ADR 0008 artefact and
+**are not reportable**. Only antigen presentation, cytotoxicity and myeloid M2
+are interpretable. Secreted ligands and chemokines are systematically
+undetected.
 
 Gate 1 evidence: **41% of variance is compartment-attributable** — PVCA over 14
 PCs spanning 60.4% of variance, per-gene median 21% across the 18,691 of 18,694
@@ -29,14 +45,20 @@ Gate 0 evidence: marker sanity check 4/4
 (`results/tables/marker_sanity_verdict.tsv`), design table matches §2.1 exactly
 (120 AOIs), Q2 resolved to antibody segmentation.
 
-**Scope change at the gate: Aim A4 is demoted to exploratory (ADR 0008).** Most
+**Scope change at Gate 2: Aim A5 is demoted to exploratory (ADR 0014)** — a
+ligand–receptor analysis needs the ligand above background, and Phase 2 measured
+the ligand side directly at both sites and found it largely absent. Phase 4 runs;
+no A5 result may be a headline claim, and the anticipated null is an
+assay-sensitivity limit, never evidence that the crosstalk is absent.
+
+**Scope change at Gate 0: Aim A4 is demoted to exploratory (ADR 0008).** Most
 of the checkpoint panel sits at background — CTLA4 is above background in 2 of
 8 `TIME-B` AOIs, TIGIT in 1, IDO1 in 2 — and brain background is *higher*, so a
 near-background gene reads as depleted in brain artefactually. Phase 3 still
 runs; **no A4 result may be a headline claim**, every checkpoint reported states
 its per-site detection count, and a gene detected in fewer than half the
 `TIME-B` AOIs is "not assessable in brain", never "lower in brain".
-**A5 is flagged, not demoted** — re-decide at Gate 2.
+A5 was flagged here and **re-decided at Gate 2 — demoted (ADR 0014)**.
 
 Phase 0 output: `results/interim/aoi_normalised.h5ad` — 120 AOIs × 18,694
 genes, `X` = log2(Q3 + 1), `layers['q3']` the untransformed values, 36 `obs`
@@ -51,8 +73,13 @@ Phase 2 therefore estimates the lung-vs-brain contrast **within** compartment,
 never pooled across compartments, and every model carries `(1|patient)` for the
 reason ADR 0009 gives — non-independence, not variance share.
 
-Next: Phase 2 (A1/A3 — is the brain-metastasis immune microenvironment
-different, and in what direction, resolved by compartment).
+Phase 2 output: `signature_scores.tsv`, `signature_coverage.tsv`,
+`signature_models.tsv`, `paired_concordance.tsv`, `decon_composition.tsv`,
+`convergence_check.tsv`; figures `contexture_heatmap.png`,
+`decon_composition.png`; prose in `docs/analysis-notes.md`.
+
+Next: Phase 3 (A4 — which checkpoints are measurable at all, by compartment).
+Its honest output is reconnaissance, not a claim (ADR 0008).
 
 ## The design table — use these numbers, never estimates
 
@@ -198,7 +225,18 @@ sanity check is evidence rather than ceremony.
 
 ```bash
 conda activate nsclc_bm_spatial   # ALWAYS first — see below
-snakemake -n --use-conda          # dry run (must stay clean)
+# ALWAYS pass --conda-prefix "$HOME/nsclc-envs" too. That symlink points AT
+# .snakemake/conda, so the envs do not move — but conda embeds the path string
+# it is given, and this working directory contains a space ("Biomedical Data
+# Science"). Three separate conda/bioconda scripts interpolate that prefix
+# unquoted: conda-forge's R wrapper, Snakemake's post-deploy hook, and
+# bioconda's installBiocDataPackage.sh. The last one makes r-geomx impossible
+# to CREATE. Recreate the symlink with:
+#     ln -sfn "$PWD/.snakemake/conda" "$HOME/nsclc-envs"
+# Do NOT relocate the envs to a genuinely different directory: that fires the
+# software-env rerun trigger on p0t2_fetch_geo and its protected() outputs
+# abort the DAG. See ADR 0013.
+snakemake -n --use-conda --conda-prefix "$HOME/nsclc-envs"   # must stay clean
 snakemake --lint                  # must stay clean
 # ALWAYS pass --use-conda. Without it the software-env rerun trigger fires,
 # Snakemake tries to re-run P0-T2's downloads, and their protected() outputs

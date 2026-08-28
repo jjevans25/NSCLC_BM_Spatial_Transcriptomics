@@ -64,6 +64,40 @@ if SAMPLES_TSV.exists():
         )
 
 
+# --- signatures.yaml -------------------------------------------------------
+# P2-T1. Loaded and validated here rather than inside the scoring script, for
+# the same reason samples.tsv is: a malformed gene set should fail at parse,
+# not three rules later.
+#
+# It is a separate file from config.yaml deliberately. config.yaml is a
+# declared input of p0t7_assemble_h5ad, so editing it rebuilds the .h5ad and
+# re-runs everything downstream including P1-T3's ~25-minute fit. Editing a
+# gene set must not cost that.
+SIGNATURES = None
+SIGNATURES_YAML = Path(config["contexture"]["signatures_yaml"])
+
+if SIGNATURES_YAML.exists():
+    import yaml
+
+    with open(SIGNATURES_YAML, encoding="utf-8") as _handle:
+        _signature_doc = yaml.safe_load(_handle)
+
+    validate(_signature_doc, "../schemas/signatures.schema.yaml")
+    SIGNATURES = _signature_doc["signatures"]
+
+    # The schema enforces uniqueItems within a set but says nothing across
+    # sets, and overlap is legitimate here — TIGIT and CTLA4 are in both
+    # `exhaustion` and the Phase 3 checkpoint panel. Recorded, not rejected, so
+    # a reader of the scores knows two sets are not independent draws.
+    SIGNATURE_OVERLAP = {}
+    _names = sorted(SIGNATURES)
+    for _i, _a in enumerate(_names):
+        for _b in _names[_i + 1 :]:
+            _shared = set(SIGNATURES[_a]["genes"]) & set(SIGNATURES[_b]["genes"])
+            if _shared:
+                SIGNATURE_OVERLAP[(_a, _b)] = sorted(_shared)
+
+
 def targets(*phase_names):
     """Union of the target lists of the named phases, honouring config switches.
 

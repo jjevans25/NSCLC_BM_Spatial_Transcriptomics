@@ -1,0 +1,48 @@
+signature	gene	in_matrix	n_genes_in_set	source
+antigen_presentation	HLA-A	True	13	MSigDB:M1062; MSigDB:M705
+antigen_presentation	HLA-B	True	13	MSigDB:M1062; MSigDB:M705
+antigen_presentation	HLA-C	True	13	MSigDB:M1062; MSigDB:M705
+antigen_presentation	B2M	True	13	MSigDB:M1062; MSigDB:M705
+antigen_presentation	TAP1	True	13	MSigDB:M1062; MSigDB:M705
+antigen_presentation	TAP2	True	13	MSigDB:M1062; MSigDB:M705
+antigen_presentation	NLRC5	True	13	MSigDB:M1062; MSigDB:M705
+antigen_presentation	HLA-DRA	True	13	MSigDB:M1062; MSigDB:M705
+antigen_presentation	HLA-DRB1	True	13	MSigDB:M1062; MSigDB:M705
+antigen_presentation	HLA-DPA1	True	13	MSigDB:M1062; MSigDB:M705
+antigen_presentation	HLA-DPB1	True	13	MSigDB:M1062; MSigDB:M705
+antigen_presentation	HLA-DMA	True	13	MSigDB:M1062; MSigDB:M705
+antigen_presentation	CIITA	True	13	MSigDB:M1062; MSigDB:M705
+cytotoxicity	GZMB	True	4	PMID:25594174
+cytotoxicity	PRF1	True	4	PMID:25594174
+cytotoxicity	GNLY	True	4	PMID:25594174
+cytotoxicity	NKG7	True	4	PMID:25594174
+exhaustion	PDCD1	True	6	PMID:29634943; PMID:31207603
+exhaustion	LAG3	True	6	PMID:29634943; PMID:31207603
+exhaustion	HAVCR2	True	6	PMID:29634943; PMID:31207603
+exhaustion	TIGIT	True	6	PMID:29634943; PMID:31207603
+exhaustion	CTLA4	True	6	PMID:29634943; PMID:31207603
+exhaustion	TOX	True	6	PMID:29634943; PMID:31207603
+myeloid_m1	CD80	True	10	PMID:17082649
+myeloid_m1	CD86	True	10	PMID:17082649
+myeloid_m1	CXCL9	True	10	PMID:17082649
+myeloid_m1	CXCL10	True	10	PMID:17082649
+myeloid_m1	CXCL11	True	10	PMID:17082649
+myeloid_m1	IL1B	True	10	PMID:17082649
+myeloid_m1	TNF	True	10	PMID:17082649
+myeloid_m1	NOS2	True	10	PMID:17082649
+myeloid_m1	IL12B	True	10	PMID:17082649
+myeloid_m1	SOCS3	True	10	PMID:17082649
+myeloid_m2	MRC1	True	9	PMID:17082649
+myeloid_m2	CD163	True	9	PMID:17082649
+myeloid_m2	MSR1	True	9	PMID:17082649
+myeloid_m2	IL10	True	9	PMID:17082649
+myeloid_m2	TGFB1	True	9	PMID:17082649
+myeloid_m2	CCL18	True	9	PMID:17082649
+myeloid_m2	CCL22	True	9	PMID:17082649
+myeloid_m2	CLEC10A	True	9	PMID:17082649
+myeloid_m2	MAF	True	9	PMID:17082649
+tls	CXCL13	True	5	PMID:31942071
+tls	CCL19	True	5	PMID:31942071
+tls	CCL21	True	5	PMID:31942071
+tls	CR2	True	5	PMID:31942071
+tls	MS4A1	True	5	PMID:31942071

@@ -1,0 +1,13 @@
+signature	aoi_code	site	n_aoi	n_genes	n_genes_present	coverage	assessable	genes_absent
+antigen_presentation	TIME-L	lung	15	13	13	1	True	
+antigen_presentation	TIME-B	brain	8	13	13	1	True	
+cytotoxicity	TIME-L	lung	15	4	2	0.5	True	GNLY,PRF1
+cytotoxicity	TIME-B	brain	8	4	2	0.5	True	GNLY,PRF1
+exhaustion	TIME-L	lung	15	6	4	0.66666666666666663	True	LAG3,TOX
+exhaustion	TIME-B	brain	8	6	1	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX
+myeloid_m1	TIME-L	lung	15	10	2	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF
+myeloid_m1	TIME-B	brain	8	10	2	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF
+myeloid_m2	TIME-L	lung	15	9	6	0.66666666666666663	True	CCL22,CLEC10A,IL10
+myeloid_m2	TIME-B	brain	8	9	6	0.66666666666666663	True	CCL22,CLEC10A,IL10
+tls	TIME-L	lung	15	5	3	0.59999999999999998	True	CR2,MS4A1
+tls	TIME-B	brain	8	5	1	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1

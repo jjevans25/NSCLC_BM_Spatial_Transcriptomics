@@ -1,0 +1,7 @@
+signature	decon_cell_types	has_counterpart	assessable_both_sites	unique_mapping	checkable	verdict	signature_estimate_zscore	signature_direction	methods_agree_on_sign	decon_prop_lung	decon_prop_brain	decon_delta_brain_minus_lung	decon_direction	direction_agrees
+antigen_presentation		False	True	False	False	no_counterpart	-0.47742264757227199	lung_higher	True					
+cytotoxicity	CD8.T.cells,NK	True	True	True	True	checkable	-0.94602569024351302	lung_higher	True	0.13874013189426293	0.081049652483274004	-0.057690479410988926	lung_higher	True
+exhaustion	CD8.T.cells	True	False	True	False	not_assessable_in_TIME-B	-0.72447471449560297	lung_higher	True	0.11105435338423818	0.062165842110905464	-0.048888511273332713	lung_higher	
+myeloid_m1	macrophages	True	False	False	False	not_assessable_in_TIME-B,TIME-L	-0.292405100428688	lung_higher	True	0.20019078931220349	0.31182981880586258	0.11163902949365909	brain_higher	
+myeloid_m2	macrophages	True	True	False	False	degenerate_mapping_with_myeloid_m1	0.090700380632807304	brain_higher	True	0.20019078931220349	0.31182981880586258	0.11163902949365909	brain_higher	
+tls	B,plasma	True	False	True	False	not_assessable_in_TIME-B	-0.85974080690552102	lung_higher	True	0.16560947811598167	0.072675914992174545	-0.092933563123807128	lung_higher	
