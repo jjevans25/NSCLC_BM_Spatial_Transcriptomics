@@ -1,0 +1,160 @@
+# ---------------------------------------------------------------------------
+# P3-T2b — the source publication's own supplementary files, as an EXTERNAL
+# check on this project's numbers.
+#
+# Everything Phase 3 has asserted so far is INTERNAL. P3-T2's 25 cross-checks
+# run three implementations of ADR 0007's detection rule against one input
+# column (obs['negprobe']) and one hypothesis; they catch indexing and
+# transcription errors and cannot, by construction, catch the rule being wrong.
+# The project's only genuinely external check was ADR 0007's reproduction of the
+# paper's sequencing-saturation claim, which validates DCC parsing, not values.
+#
+# PMID 36216799 deposits its Source Data. That makes the whole processed matrix
+# checkable against the authors' own file rather than against ourselves.
+#
+# THIS FILE IS NOT config/config.yaml, deliberately. config.yaml's SHA-256 goes
+# into the .h5ad `uns`, so an edit there rebuilds Phases 1 and 2; Phase 3 paid
+# that once at f1f55b8 and must not pay it again. Its path is hardcoded in
+# workflow/rules/05_checkpoints.smk for the same reason — pointing at it from
+# config.yaml would be the edit this file exists to avoid.
+#
+# Fetched into resources/supplementary/ under ADR 0005's rules: protected()
+# outputs, a pinned digest per artifact, `fixed` because these are
+# author-uploaded static-content files that have not moved since 2022.
+# ---------------------------------------------------------------------------
+external_validation:
+
+  # Springer static-content, NOT the nature.com article URL — the latter 303s to
+  # an IdP authorize endpoint and returns no file. The percent-encoding of the
+  # DOI in the path is required and must not be normalised away.
+  base_url: https://static-content.springer.com/esm/art%3A10.1038%2Fs41467-022-33365-y/MediaObjects
+
+  artifacts:
+
+    supplementary_data_2:
+      # Masson-trichrome fibrosis scores, 19 TBME cases. The group assignment
+      # behind the paper's F(h) vs F(-) contrast — parsed, never hardcoded, so
+      # the groups this project tests are the authors' own.
+      remote: 41467_2022_33365_MOESM5_ESM.xlsx
+      dest: 41467_2022_33365_MOESM5_ESM.xlsx
+      stability: fixed
+      sha256: "3ebc0bc71b3a8267d2db36f323b8cfe1aa78654046cca95dc9649d59ddbaa37c"
+
+    supplementary_data_3:
+      # The published DEG lists, all four at |log2FC| > 1.5. Used two ways: to
+      # verify that this project reproduces the authors' pipeline exactly, and
+      # to establish which genes are ABSENT from it.
+      remote: 41467_2022_33365_MOESM6_ESM.xlsx
+      dest: 41467_2022_33365_MOESM6_ESM.xlsx
+      stability: fixed
+      sha256: "01d3fb39a86225872473998434f5782c02e223173b1aae155d1ffe80dae0f73d"
+
+    source_data:
+      # 45 MB. The per-AOI values behind the figures, including the complete
+      # 120-AOI matrix. This is the external comparator for layers['q3'].
+      remote: 41467_2022_33365_MOESM9_ESM.xlsx
+      dest: 41467_2022_33365_MOESM9_ESM.xlsx
+      stability: fixed
+      sha256: "084e249253c6c2d05598f7ebc6a6afa53e1d622039d5a1609263292a6a159d95"
+
+  # Worksheet names are transcribed EXACTLY, including the trailing space in
+  # "Fig.4-6 & S4,5 ", which is in the deposited file and is why these are
+  # quoted. header_row is 0-based; every sheet carries one or two title rows
+  # above its header.
+  sheets:
+
+    full_matrix:
+      artifact: source_data
+      name: "Figure 1b-e"
+      header_row: 2
+
+    fibrosis_matrix:
+      artifact: source_data
+      name: "Fig.4-6 & S4,5 "
+      header_row: 2
+
+    fibrosis_scores:
+      artifact: supplementary_data_2
+      name: "Fibrosis scores in TBME"
+      # 2, not 1: this sheet has a blank row between title and header, which
+      # Excel omits from the XML entirely. The reader places rows by their
+      # declared index precisely so these numbers stay countable by eye.
+      header_row: 2
+
+    published_deg:
+      artifact: supplementary_data_3
+      name: "F(h) vs. F(-)"
+      header_row: 1
+
+  expect:
+    # Declared before the comparison runs. A mismatch is a hard failure: the
+    # point of an external check is that it can fail.
+    n_aoi: 120
+    n_genes: 18694
+
+    # The paper's matrix carries one row this project holds in obs instead.
+    # It is compared against obs['negprobe'], not dropped.
+    control_rows: ["NegProbe-WTX"]
+
+    # The fibrosis sheet labels patient 15's AOI "TBME15" where the full matrix
+    # and this project both carry TBME15a and TBME15b. Asserted, not assumed:
+    # the rule checks that the column equals TBME15a across every gene and
+    # differs from TBME15b. This is the whole of the paper's 119-vs-120 gap.
+    aoi_alias:
+      TBME15: TBME15a
+
+    # The alias check DISCRIMINATES between candidates; it does not certify
+    # bit-identity, and it must not, because the two deposited sheets round
+    # differently. "Figure 1b-e" is byte-for-byte the GEO matrix (all 2,243,280
+    # values exact). "Fig.4-6 & S4,5 " carries an extra significant figure for
+    # large values -- 20375.33 where GEO has 20375.0 -- so 64 of 18,694 values
+    # differ there by up to 0.49, none of them anywhere near background.
+    # Requiring exactness would fail on the publisher's rounding rather than on
+    # anything about the data.
+    #
+    # The test is still sharp: the correct candidate agrees on >= 99% of genes
+    # within alias_rtol, the wrong one on <= 50%. Observed here, 0.997 against
+    # TBME15a and 0.000 against TBME15b -- three orders of margin.
+    alias_rtol: 0.0001
+    alias_min_agreement: 0.99
+    alias_max_other_agreement: 0.5
+
+    # Paper's sign convention, recovered from the deposited DEG list: positive
+    # log2FC is UP in F(h), the fibrotic group. F(l) is not in this contrast.
+    fibrosis_reference_group: "F(-)"
+    fibrosis_test_group: "F(h)"
+    fibrosis_n_cases: 19
+    fibrosis_group_sizes:
+      "F(-)": 8
+      "F(h)": 6
+      "F(I)": 5
+
+    # --- count quantisation --------------------------------------------------
+    # The matrix is Q3-scaled counts with no zeros (Q1), so gene values in an
+    # AOI sit on a lattice whose spacing is one raw count times that AOI's Q3
+    # factor. Recovering the spacing recovers the counts.
+    #
+    # The spacing is the DIFFERENCE between adjacent distinct values, NOT the
+    # smallest value: the smallest value is 1 count only in the shallowest AOIs
+    # and is 5-13 counts in the median one. Estimating the quantum as the
+    # minimum overstates every count by that factor, and it fails visibly —
+    # the lattice check drops to 0.15.
+    #
+    # This is not left as an inference. resources/raw/GSE200563_RAW.tar carries
+    # the per-probe raw counts, and the recovered quantum is checked against
+    # them per AOI: median(value / quantum) must equal the DCC's own median
+    # count within dcc_ratio_tol. That makes the count scale measured rather
+    # than assumed, without needing the PKC this project does not have (ADR
+    # 0006) — the comparison is distribution-to-distribution, so no probe-to-
+    # gene mapping is required.
+    quantum_probe: 200
+    lattice_probe: 20
+    lattice_min_fraction: 0.9
+    dcc_ratio_tol: 0.05
+
+    # The estimator is mean-of-log2, NOT log2-of-mean. Established by
+    # reproducing all 99 published values; log2-of-mean matches only 4 of 99.
+    published_deg_n: 99
+    published_log2fc_threshold: 1.5
+    log2fc_tolerance: 0.001
+    pvalue_rtol: 0.001

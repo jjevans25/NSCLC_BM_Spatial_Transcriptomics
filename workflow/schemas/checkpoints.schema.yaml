@@ -1,0 +1,85 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: >
+  config/checkpoints.yaml — the pre-registered immune-checkpoint panel scored in
+  Phase 3 (P3-T1, PROJECT_PLAN §5.2 and §6). Validated by
+  snakemake.utils.validate() at Snakefile load, so a hand-edit that drops a
+  rationale or a source fails at parse rather than three rules later.
+
+  Shaped after signatures.schema.yaml, with one structural difference: a
+  signature maps a NAME to a list of genes, whereas this file maps a GENE
+  SYMBOL to its clinical annotation. There is no `genes` array — the keys are
+  the panel.
+
+  The schema cannot check that a source is the RIGHT source, only that one is
+  present. At P3-T1, three of the nine PMIDs first proposed for this file
+  pointed at entirely unrelated papers (a digital-health guide, an autoimmune
+  encephalitis review, an organic-chemistry paper) and were caught by querying
+  eutils, not by validation — the same failure ADR 0011 recorded for Phase 2,
+  reproduced exactly. Verify citations against the record; the schema is a
+  floor, not a check.
+type: object
+required: [checkpoints]
+additionalProperties: false
+properties:
+  checkpoints:
+    type: object
+    minProperties: 1
+    description: >
+      HGNC symbol -> clinical annotation. The keys become the `gene` column in
+      every Phase 3 table, so they must be the symbols as they appear in the
+      matrix, not aliases.
+    propertyNames:
+      pattern: "^[A-Z0-9][A-Z0-9._-]*$"
+    additionalProperties:
+      type: object
+      required: [alias, trial_stage, rationale, source]
+      additionalProperties: false
+      properties:
+        alias:
+          type: string
+          minLength: 1
+          description: >
+            The name the gene is known by clinically (PD-L1, TIM-3, VISTA).
+            Figures and prose use it alongside the symbol, because a reader of
+            the checkpoint literature does not recognise VSIR or HAVCR2 on
+            sight. It is a label only — never a second key, and never used to
+            resolve against the matrix.
+        trial_stage:
+          type: string
+          enum: [approved, phase_3, phase_2, investigational]
+          description: >
+            PROJECT_PLAN §6 P3-T1 asks for "approved agent / trial stage". This
+            is the controlled form of that, so the "every gene annotated"
+            acceptance criterion is checkable rather than prose. The value is
+            the most advanced stage THE CITED SOURCE ESTABLISHES, not the most
+            advanced trial in existence — where those differ, source_note says
+            so. `investigational` covers everything earlier than phase 2.
+        rationale:
+          type: string
+          minLength: 1
+          description: >
+            One line: why this gene is on the panel. Names the approved agent or
+            the clinical programme. An un-annotated checkpoint gene is how a
+            panel becomes a list someone assembled from memory.
+        source:
+          type: string
+          minLength: 1
+          pattern: "^(PMID:[0-9]+|NCT[0-9]{8})(; ?(PMID:[0-9]+|NCT[0-9]{8}))*$"
+          description: >
+            One or more `PMID:<digits>` or `NCT<8 digits>`, separated by "; ".
+            Free text is rejected on purpose.
+
+            This pattern DELIBERATELY DIFFERS from signatures.schema.yaml's,
+            which admits `PMID:` and `MSigDB:`. A checkpoint's warrant is
+            clinical rather than a gene-set database, and §6 P3-T1 names
+            ClinicalTrials.gov as a source, so `NCT` is admitted and `MSigDB`
+            is not. ADR 0015 records the divergence.
+        source_note:
+          type: string
+          minLength: 1
+          description: >
+            OPTIONAL, and required in practice wherever the citation does not
+            establish exactly what the other fields claim — a trial in a
+            different tumour type, an agent targeting the partner rather than
+            this gene, or a stage the source predates. The schema cannot
+            enforce "explain the gap"; ADR 0015 does.

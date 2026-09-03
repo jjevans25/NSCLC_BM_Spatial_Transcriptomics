@@ -66,7 +66,7 @@ phases:
   qc: true              # P0-T6 (P0-T5 still to come)
   landscape: true       # P1-T1/T2
   contexture: true         # P2-T1..T7
-  checkpoints: false
+  checkpoints: true       # P3-T1..T7 (ADR 0015, ADR 0016)
   crosstalk: false
   survival: false          # gated on Q5 (P0-T4)
   fair: false
@@ -166,6 +166,92 @@ contexture:
       TIME-L: Lung_HCA
       TIME-B: Brain_Darmanis
     renormalise_within: compartment
+
+checkpoints:
+  # Phase 3 / A4 — the checkpoint landscape by compartment, EXPLORATORY per
+  # ADR 0008. Phase 3 computes everything; no A4 result may be a headline
+  # claim, every gene reported states its per-compartment detection, and a gene
+  # below the floor is "not assessable in <compartment>", never "lower" there.
+  #
+  # Every threshold in this block was PRE-REGISTERED in ADR 0016 and committed
+  # before any Phase 3 result was computed. Setting a detection floor after
+  # seeing which genes clear it is the specific failure P3-T2 exists to prevent.
+  panel_yaml: config/checkpoints.yaml
+
+  # P3-T2 audits detection across ALL SEVEN compartments — the audit is the
+  # phase's deliverable (Gate 3: "if everything is not-assessable, that's still
+  # a legitimate finding"), so it must cover the compartments the models cannot
+  # touch as well as the ones they can.
+  audit_aoi_codes: ["L", "LB", "mLN", "TBME", "TIME-L", "TIME-B", "BC"]
+
+  # P3-T3/T4 model only the four compartments that SPAN BOTH DSP RUNS, so no
+  # contrast confounds batch with biology. TBME (20/0), mLN (13/0) and BC (0/7)
+  # each sit wholly inside one run (Q3), and ADR 0009 §3 is explicit that no
+  # covariate recovers that. TBME is therefore audited and plotted but never
+  # modelled: §6's "tumour vs. immune vs. glial" becomes tumour vs. immune, and
+  # ADR 0016 records the narrowing so a reader does not assume glial was
+  # overlooked.
+  model_aoi_codes: ["L", "TIME-L", "LB", "TIME-B"]
+
+  detection:
+    # Identical to contexture.scoring's values, and deliberately so: this is
+    # ADR 0008 point 4 verbatim ("a gene detected in fewer than half the TIME-B
+    # AOIs is not assessable in brain"), and reusing Phase 2's number means
+    # Phase 3 invents no new threshold. The per-value rule is unchanged too --
+    # qc.detection_background_multiple x that AOI's NegProbe-WTX.
+    #
+    # A gene counts as present in a compartment if it is detected in at least
+    # this fraction of that compartment's AOIs...
+    detected_in_aoi_fraction: 0.5
+    # ...and the panel is "assessable" in a compartment only if at least this
+    # fraction of its nine genes clear that bar. The panel-level number drives
+    # the one-sentence summary in P3-T7; the gene-level one drives every model
+    # and every dot on the P3-T5 figure.
+    min_assessable_fraction: 0.5
+
+  model:
+    # P3-T3 — which compartment CARRIES each checkpoint, within site. The
+    # analysis bulk RNA-seq structurally cannot do. Reference level is the
+    # TUMOUR compartment (L within lung, LB within brain), asserted in the
+    # script, so the coefficient is immune minus tumour.
+    carrier: "expression ~ compartment + (1|patient_id)"
+    carrier_batch_sensitivity: "expression ~ compartment + dsp_run + (1|patient_id)"
+    # ADR 0008 point 5 requires any checkpoint comparison to address the
+    # background gradient explicitly -- brain background is HIGHER, so a
+    # near-background gene reads as depleted in brain artefactually. This
+    # project does BOTH routes it offers: the primary is RESTRICTED to genes
+    # above the floor in both groups compared, and this sensitivity MODELS the
+    # negative-probe level. Reporting both quantifies the gradient instead of
+    # asserting it away -- ADR 0012's shape, applied to a second confound.
+    #
+    # It is applied to the carrier model as well as the shift model even though
+    # ADR 0008 only mandates it for brain-vs-lung: the gradient between L (log2
+    # 4.96) and TIME-L (5.36) is LARGER than the one between TIME-L and TIME-B
+    # (5.30), so the compartment contrast is at least as exposed as the site
+    # contrast. ADR 0016 records that extension.
+    carrier_background_sensitivity: "expression ~ compartment + negprobe_log2 + (1|patient_id)"
+
+    # P3-T4 — does the profile SHIFT lung -> brain, within compartment. Never
+    # pooled across compartments: a tumour-compartment CD274 shift and an
+    # immune-compartment CD274 shift mean different things therapeutically.
+    # site is releveled to lung, asserted, so estimates are brain minus lung.
+    shift: "expression ~ site + (1|patient_id)"
+    shift_batch_sensitivity: "expression ~ site + dsp_run + (1|patient_id)"
+    shift_background_sensitivity: "expression ~ site + negprobe_log2 + (1|patient_id)"
+
+    df_method: satterthwaite
+    fdr_method: fdr_bh
+    fdr_alpha: 0.05
+    # T3 and T4 answer different questions from the same AOIs, so they are
+    # different families: T3 corrects across genes WITHIN A SITE, T4 across
+    # genes WITHIN A COMPARTMENT, each within a model. Correcting across both
+    # at once would be a third family nobody asked for.
+    #
+    # The gene refit in statsmodels.MixedLM as an implementation cross-check.
+    # CD276 because it is the best-detected gene on the panel (105 of 120
+    # AOIs), so it is the best-conditioned fit -- a cross-check should test the
+    # implementation, not the optimiser's behaviour at the detection floor.
+    crosscheck_gene: CD276
 
 acquire:
   # P0-T2 source manifest. Fetched into paths.raw; resources/ is read-only

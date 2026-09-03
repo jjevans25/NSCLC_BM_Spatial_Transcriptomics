@@ -1,0 +1,81 @@
+{
+  "aoi_alias_resolution": {
+    "TBME15": {
+      "agreement_by_candidate": {
+        "TBME15a": 1.0,
+        "TBME15b": 0.000320958596341072
+      },
+      "n_exact": 18630,
+      "n_genes_compared": 18694,
+      "note": "agreement is within alias_rtol, not exact: this sheet carries an extra significant figure for large values where 'Figure 1b-e' matches GEO exactly",
+      "resolves_to": "TBME15a"
+    }
+  },
+  "matrix_agreement": {
+    "aoi_labels_identical": true,
+    "control_rows_compared": [
+      "NegProbe-WTX"
+    ],
+    "max_abs_diff": 0.0,
+    "n_aoi": 120,
+    "n_exact": 2243280,
+    "n_genes": 18694,
+    "n_values": 2243280,
+    "status": "exact agreement"
+  },
+  "panel_unchanged": "config/checkpoints.yaml is untouched by this rule. The genes the paper names are reported, never adopted \u2014 panel membership is pre-registered (ADR 0015) and a stop-and-ask decision.",
+  "published_contrast": {
+    "estimator": "mean-of-log2, Student's t, positive = up in F(h)",
+    "excluded_class_sizes": {
+      "F(I)": 5
+    },
+    "largest_checkpoint_abs_log2fc": 0.8880873954399009,
+    "max_abs_diff_log2fc": 1.5517798836128804e-05,
+    "max_rel_diff_p": 0.0002016245326668109,
+    "n_checkpoint_genes_examined": 15,
+    "n_in_published_deg_list": 0,
+    "n_published_deg_reproduced": 99,
+    "n_reaching_published_threshold": 0,
+    "n_reference": 8,
+    "n_test": 6,
+    "paper_named_checkpoints": [
+      "PDCD1LG2",
+      "BTLA",
+      "VTCN1",
+      "IDO1",
+      "IDO2",
+      "TDO2",
+      "CD160"
+    ],
+    "published_log2fc_threshold": 1.5,
+    "reference_group": "F(-)",
+    "smallest_published_abs_log2fc": 1.51918530464172,
+    "test_group": "F(h)"
+  },
+  "quantisation": {
+    "lattice_min_fraction": 0.9,
+    "lattice_probe": 20,
+    "median_distinct_values_per_aoi": 645.0,
+    "min_distinct_values_per_aoi": 123,
+    "n_aoi_counts_reliable": 118
+  },
+  "reporting_rule": "The published-contrast table describes the published analysis, not this project's compartments. ADR 0008 point 4 is unchanged.",
+  "source_publication": {
+    "doi": "10.1038/s41467-022-33365-y",
+    "files": {
+      "source_data": {
+        "dest": "41467_2022_33365_MOESM9_ESM.xlsx",
+        "sha256": "084e249253c6c2d05598f7ebc6a6afa53e1d622039d5a1609263292a6a159d95"
+      },
+      "supplementary_data_2": {
+        "dest": "41467_2022_33365_MOESM5_ESM.xlsx",
+        "sha256": "3ebc0bc71b3a8267d2db36f323b8cfe1aa78654046cca95dc9649d59ddbaa37c"
+      },
+      "supplementary_data_3": {
+        "dest": "41467_2022_33365_MOESM6_ESM.xlsx",
+        "sha256": "01d3fb39a86225872473998434f5782c02e223173b1aae155d1ffe80dae0f73d"
+      }
+    },
+    "pmid": "36216799"
+  }
+}

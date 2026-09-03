@@ -1,0 +1,10 @@
+gene	alias	trial_stage	in_matrix	source	rationale
+CD274	PD-L1	approved	True	PMID:27718847	Ligand for PD-1 and the target of the approved anti-PD-L1 antibodies atezolizumab and durvalumab; tumour PD-L1 protein is the only routinely used predictive biomarker for checkpoint blockade in NSCLC.
+CD276	B7-H3	investigational	True	PMID:36555714	Broadly expressed B7-family ligand under active development in NSCLC as an antibody, ADC and CAR-T target; the best-detected gene on this panel (105 of 120 AOIs), so it is the one most likely to be assessable everywhere.
+CTLA4	CTLA-4	approved	True	PMID:31562796	Target of ipilimumab, approved in NSCLC in combination with nivolumab; acts earlier in T-cell priming than the PD-1 axis.
+HAVCR2	TIM-3	phase_2	True	PMID:31676858	Inhibitory receptor co-expressed with PD-1 on exhausted T cells and a proposed mechanism of acquired resistance to PD-1 blockade; anti-TIM-3 antibodies are in clinical trials.
+IDO1	IDO1	phase_3	True	PMID:31221619	Tryptophan-catabolising enzyme mediating myeloid immunosuppression; epacadostat added to pembrolizumab failed its phase 3 endpoint, which is itself the reason to measure where IDO1 sits by compartment.
+LAG3	LAG-3	approved	True	PMID:34986285	Target of relatlimab, the third checkpoint class to reach approval; approved with nivolumab in melanoma and in trials in NSCLC.
+PDCD1	PD-1	approved	True	PMID:26028407	The receptor targeted by pembrolizumab and nivolumab, both approved in NSCLC; the single most consequential checkpoint in this disease.
+TIGIT	TIGIT	phase_2	True	PMID:35576957	Co-inhibitory receptor on T and NK cells; tiragolumab plus atezolizumab was tested in PD-L1-selected NSCLC, making TIGIT the checkpoint with the most NSCLC-specific late-phase evidence after the PD-1 axis.
+VSIR	VISTA	investigational	True	PMID:31949051	Myeloid-predominant checkpoint enforcing naive T-cell quiescence; of particular interest here because the brain metastasis microenvironment is myeloid-dominated, and because VSIR is one of the few panel members detected well above background at both sites.

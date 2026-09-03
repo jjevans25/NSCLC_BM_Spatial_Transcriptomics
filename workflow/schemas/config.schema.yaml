@@ -4,7 +4,7 @@ description: >
   snakemake.utils.validate() at Snakefile load time, so a hand-edit that
   breaks the contract fails at parse rather than three rules later.
 type: object
-required: [project, paths, samples, seed, qc, normalisation, phases, acquire, landscape, contexture, reference]
+required: [project, paths, samples, seed, qc, normalisation, phases, acquire, landscape, contexture, checkpoints, reference]
 additionalProperties: false
 properties:
   project:
@@ -252,6 +252,123 @@ properties:
           renormalise_within:
             type: string
             enum: [compartment]
+  checkpoints:
+    type: object
+    description: >
+      Phase 3 (A4) — the checkpoint landscape by compartment, EXPLORATORY per
+      ADR 0008. Every threshold here was pre-registered in ADR 0016 and
+      committed before any Phase 3 result was computed; a floor chosen after
+      seeing which genes clear it is the failure P3-T2 exists to prevent.
+    required: [panel_yaml, audit_aoi_codes, model_aoi_codes, detection, model]
+    additionalProperties: false
+    properties:
+      panel_yaml:
+        type: string
+        description: >
+          Path to the pre-registered checkpoint panel, validated against
+          checkpoints.schema.yaml at Snakefile load. A separate file from this
+          one for the same reason signatures.yaml is: config.yaml is a declared
+          input of p0t7_assemble_h5ad, so editing it rebuilds the .h5ad and
+          re-runs Phase 1 and Phase 2. A panel edit has no business costing
+          that.
+      audit_aoi_codes:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items: {type: string}
+        description: >
+          Compartments entering the P3-T2 detection audit. Broader than
+          model_aoi_codes on purpose — the audit IS the phase's deliverable
+          (Gate 3), so it covers compartments no model can touch.
+      model_aoi_codes:
+        type: array
+        minItems: 2
+        uniqueItems: true
+        items: {type: string}
+        description: >
+          Compartments entering the P3-T3/T4 models. Restricted to those
+          spanning both DSP runs, so no contrast confounds batch with biology;
+          TBME, mLN and BC sit wholly inside one run (Q3) and ADR 0009 §3 says
+          no covariate recovers that. This list is the mechanism that keeps
+          them out — and, like contexture.aoi_codes, what stops estimation
+          drifting across compartments rather than within.
+      detection:
+        type: object
+        required: [detected_in_aoi_fraction, min_assessable_fraction]
+        additionalProperties: false
+        properties:
+          detected_in_aoi_fraction:
+            type: number
+            exclusiveMinimum: 0
+            maximum: 1
+            description: >
+              Fraction of a compartment's AOIs in which a gene must clear
+              qc.detection_background_multiple x that AOI's NegProbe-WTX level
+              to count as present there. ADR 0008 point 4 in numeric form.
+          min_assessable_fraction:
+            type: number
+            exclusiveMinimum: 0
+            maximum: 1
+            description: >
+              Fraction of the panel that must be present for the panel to be
+              "assessable" in a compartment. Below it the statement is "not
+              assessable in <compartment>", never "lower in <compartment>".
+      model:
+        type: object
+        required: [carrier, carrier_batch_sensitivity, carrier_background_sensitivity,
+                   shift, shift_batch_sensitivity, shift_background_sensitivity,
+                   df_method, fdr_method, fdr_alpha, crosscheck_gene]
+        additionalProperties: false
+        properties:
+          carrier:
+            type: string
+            pattern: "\\(1\\|patient_id\\)"
+            description: >
+              P3-T3, within site: which compartment carries each checkpoint.
+              The pattern is load-bearing, not decoration — ADR 0009 makes
+              (1|patient_id) mandatory on non-independence grounds and changing
+              the random-effects structure is a "stop and ask". A config edit
+              that drops it fails at parse. Singular fits are NOT grounds to
+              drop it; half of Phase 2's fits were singular and it stayed.
+          carrier_batch_sensitivity:
+            type: string
+            pattern: "\\(1\\|patient_id\\)"
+            description: The dsp_run-adjusted carrier refit. ADR 0012's shape.
+          carrier_background_sensitivity:
+            type: string
+            pattern: "\\(1\\|patient_id\\)"
+            description: >
+              The negprobe-adjusted carrier refit. ADR 0008 point 5 mandates
+              this only for brain-vs-lung, but the L-to-TIME-L background gap
+              (log2 4.96 -> 5.36) is larger than the TIME-L-to-TIME-B gap
+              (5.36 -> 5.30), so the compartment contrast is at least as
+              exposed. ADR 0016 records the extension.
+          shift:
+            type: string
+            pattern: "\\(1\\|patient_id\\)"
+            description: >
+              P3-T4, within compartment: does the profile shift lung -> brain.
+              Never pooled across compartments (ADR 0009 §Consequences).
+          shift_batch_sensitivity:
+            type: string
+            pattern: "\\(1\\|patient_id\\)"
+            description: The dsp_run-adjusted shift refit. ADR 0012.
+          shift_background_sensitivity:
+            type: string
+            pattern: "\\(1\\|patient_id\\)"
+            description: >
+              The negprobe-adjusted shift refit — the second of the two routes
+              ADR 0008 point 5 offers, run alongside the restriction rather
+              than instead of it.
+          df_method: {type: string, enum: [satterthwaite, kenward-roger]}
+          fdr_method: {type: string, enum: [fdr_bh]}
+          fdr_alpha: {type: number, exclusiveMinimum: 0, maximum: 1}
+          crosscheck_gene:
+            type: string
+            description: >
+              Gene refit in statsmodels.MixedLM as an implementation
+              cross-check. Estimates and SEs are compared; df and p are not,
+              because lmerTest uses Satterthwaite and statsmodels a Wald z.
   reference:
     type: object
     description: >

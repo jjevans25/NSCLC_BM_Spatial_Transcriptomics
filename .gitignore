@@ -26,6 +26,12 @@ resources/raw/*
 !resources/raw/.gitkeep
 resources/reference/*
 !resources/reference/.gitkeep
+# P3-T2b's supplementary files from the source publication (ADR 0017). Same
+# rule, and the 45 MB Source Data workbook is the reason it is not negotiable:
+# resources/supplementary_checksums.sha256 is the provenance record and the
+# rule re-fetches and re-verifies from the pinned digests.
+resources/supplementary/*
+!resources/supplementary/.gitkeep
 
 # Derived and re-creatable. Deleting results/ and re-running must reproduce
 # everything (§4.2) — so nothing in here is a source of truth.

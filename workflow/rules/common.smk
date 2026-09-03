@@ -98,6 +98,92 @@ if SIGNATURES_YAML.exists():
                 SIGNATURE_OVERLAP[(_a, _b)] = sorted(_shared)
 
 
+# --- checkpoints.yaml ------------------------------------------------------
+# P3-T1. Same contract as SIGNATURES above: loaded and validated here so a
+# malformed panel fails at parse rather than three rules later, and kept in its
+# own file because config.yaml is a declared input of p0t7_assemble_h5ad and a
+# panel edit must not cost a Phase 1 + Phase 2 rebuild.
+#
+# The panel is PRE-REGISTERED (ADR 0015). Nothing downstream may filter it by
+# detection: which genes turn out to be measurable is the Phase 3 result, not a
+# Phase 3 input.
+CHECKPOINTS = None
+CHECKPOINTS_YAML = Path(config["checkpoints"]["panel_yaml"])
+
+if CHECKPOINTS_YAML.exists():
+    import yaml
+
+    with open(CHECKPOINTS_YAML, encoding="utf-8") as _handle:
+        _checkpoint_doc = yaml.safe_load(_handle)
+
+    validate(_checkpoint_doc, "../schemas/checkpoints.schema.yaml")
+    CHECKPOINTS = _checkpoint_doc["checkpoints"]
+
+    # Five panel genes (PDCD1, CTLA4, LAG3, HAVCR2, TIGIT) are also members of
+    # the `exhaustion` signature. Recorded, never rejected — the same rule
+    # SIGNATURE_OVERLAP applies within signatures.yaml. A reader comparing the
+    # Phase 2 and Phase 3 tables needs to know they are not independent draws,
+    # and Phase 2 measured `exhaustion` at 1 of 6 genes in brain, so the overlap
+    # is also the best available prior on what Phase 3 will find.
+    CHECKPOINT_SIGNATURE_OVERLAP = {}
+    if SIGNATURES is not None:
+        for _name in sorted(SIGNATURES):
+            _shared = set(SIGNATURES[_name]["genes"]) & set(CHECKPOINTS)
+            if _shared:
+                CHECKPOINT_SIGNATURE_OVERLAP[_name] = sorted(_shared)
+
+
+# --- external_validation.yaml ----------------------------------------------
+# P3-T2b. The source publication's supplementary files, used as an EXTERNAL
+# comparator for layers['q3'].
+#
+# The path is a LITERAL here, not config["..."], and that is the point: pointing
+# at this file from config/config.yaml would change config.yaml's SHA-256, which
+# is recorded in the .h5ad `uns` and would rebuild Phases 1 and 2 (ADR 0013).
+# Phase 3 paid that once at f1f55b8. Same reasoning that keeps checkpoints.yaml
+# out of config.yaml, applied one step further.
+#
+# Guarded by exists() like SAMPLES and CHECKPOINTS above, so the workflow parses
+# cleanly on a checkout that has not fetched the supplementary files.
+EXTERNAL_VALIDATION = None
+EXTERNAL_VALIDATION_YAML = Path("config/external_validation.yaml")
+
+if EXTERNAL_VALIDATION_YAML.exists():
+    import yaml
+
+    with open(EXTERNAL_VALIDATION_YAML, encoding="utf-8") as _handle:
+        _external_doc = yaml.safe_load(_handle)
+
+    validate(_external_doc, "../schemas/external_validation.schema.yaml")
+    EXTERNAL_VALIDATION = _external_doc["external_validation"]
+
+    # Cross-reference sheets against artifacts at LOAD time. The schema can
+    # enforce that `artifact` is a string; only this can enforce that it names
+    # something. Failing here costs a parse; failing at read time costs a 45 MB
+    # download first.
+    for _sheet, _spec in sorted(EXTERNAL_VALIDATION["sheets"].items()):
+        if _spec["artifact"] not in EXTERNAL_VALIDATION["artifacts"]:
+            raise ValueError(
+                f"external_validation.sheets.{_sheet}.artifact = "
+                f"'{_spec['artifact']}' does not name an entry in "
+                f"external_validation.artifacts "
+                f"({sorted(EXTERNAL_VALIDATION['artifacts'])})."
+            )
+
+    # Two artifacts sharing a `dest` would collide in resources/supplementary/
+    # and the wildcard rule would offer to produce the same path twice. Same
+    # check REF_KEY_BY_DEST makes for the Phase 2 reference matrices.
+    EXTERNAL_KEY_BY_DEST = {
+        _spec["dest"]: _key
+        for _key, _spec in EXTERNAL_VALIDATION["artifacts"].items()
+    }
+    if len(EXTERNAL_KEY_BY_DEST) != len(EXTERNAL_VALIDATION["artifacts"]):
+        raise ValueError(
+            "config external_validation.artifacts: two artifacts share a "
+            "`dest` filename."
+        )
+
+
 def targets(*phase_names):
     """Union of the target lists of the named phases, honouring config switches.
 

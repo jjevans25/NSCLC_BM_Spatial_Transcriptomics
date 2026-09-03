@@ -1,0 +1,60 @@
+{
+  "aliases": {
+    "CD274": "PD-L1",
+    "CD276": "B7-H3",
+    "CTLA4": "CTLA-4",
+    "HAVCR2": "TIM-3",
+    "IDO1": "IDO1",
+    "LAG3": "LAG-3",
+    "PDCD1": "PD-1",
+    "TIGIT": "TIGIT",
+    "VSIR": "VISTA"
+  },
+  "all_resolved": true,
+  "genes": [
+    "CD274",
+    "CD276",
+    "CTLA4",
+    "HAVCR2",
+    "IDO1",
+    "LAG3",
+    "PDCD1",
+    "TIGIT",
+    "VSIR"
+  ],
+  "h5ad": "results/interim/aoi_normalised.h5ad",
+  "n_genes": 9,
+  "n_genes_measured": 18694,
+  "pre_registered": "ADR 0015",
+  "signature_overlap": {
+    "exhaustion": [
+      "CTLA4",
+      "HAVCR2",
+      "LAG3",
+      "PDCD1",
+      "TIGIT"
+    ]
+  },
+  "sources": {
+    "CD274": "PMID:27718847",
+    "CD276": "PMID:36555714",
+    "CTLA4": "PMID:31562796",
+    "HAVCR2": "PMID:31676858",
+    "IDO1": "PMID:31221619",
+    "LAG3": "PMID:34986285",
+    "PDCD1": "PMID:26028407",
+    "TIGIT": "PMID:35576957",
+    "VSIR": "PMID:31949051"
+  },
+  "trial_stages": {
+    "CD274": "approved",
+    "CD276": "investigational",
+    "CTLA4": "approved",
+    "HAVCR2": "phase_2",
+    "IDO1": "phase_3",
+    "LAG3": "approved",
+    "PDCD1": "approved",
+    "TIGIT": "phase_2",
+    "VSIR": "investigational"
+  }
+}

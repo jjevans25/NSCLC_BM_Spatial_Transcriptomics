@@ -1,0 +1,19 @@
+compartment	gene	n_patients	n_brain_higher	n_lung_higher	mean_delta_brain_minus_lung	median_delta_brain_minus_lung	paired_direction	n_patients_detected_lung	n_patients_detected_brain	unpaired_estimate	unpaired_direction	compared_against	direction_agrees
+immune	CD274	5	2	3	-0.11923461866070824	-0.17246523571892691	lung_higher	4	4	-0.26046935687460698	lung_higher	primary	True
+immune	CD276	5	1	4	-0.16081983373886963	-0.23633501281980784	lung_higher	5	5	0.072486367456723697	brain_higher	primary	False
+immune	CTLA4	5	0	5	-0.39510044754755747	-0.34066792270694801	lung_higher	3	2	-0.55160474922023495	lung_higher	exploratory	True
+immune	HAVCR2	5	2	3	0.13292371985100715	-0.047648961714047644	brain_higher	3	5	0.180027701084301	brain_higher	primary	True
+immune	IDO1	5	0	5	-0.97958316888280828	-1.1195396599836904	lung_higher	4	1	-0.62709035237362698	lung_higher	exploratory	True
+immune	LAG3	5	1	4	-0.39597315465339111	-0.54295980936547394	lung_higher	2	2			none	
+immune	PDCD1	5	3	2	0.032197101312207897	0.027080277206149361	brain_higher	3	3	-0.055296254899538599	lung_higher	exploratory	False
+immune	TIGIT	5	0	5	-0.45645056156456293	-0.53196212476254612	lung_higher	3	1	-0.51495039261243403	lung_higher	exploratory	True
+immune	VSIR	5	4	1	0.29343168673640552	0.33671831163762445	brain_higher	4	5	0.14953772464009499	brain_higher	primary	True
+tumour	CD274	23	11	12	0.0891601127924814	-0.062133295637111452	brain_higher	15	14	0.023458435967444201	brain_higher	primary	True
+tumour	CD276	23	9	14	-0.074262252620778721	-0.15313381043869079	lung_higher	23	22	-0.043102081770187498	lung_higher	primary	True
+tumour	CTLA4	23	11	12	0.07546656964816649	-0.0090577593434808534	brain_higher	2	2			none	
+tumour	HAVCR2	23	10	13	0.065839873377656691	-0.057662720513964594	brain_higher	2	2			none	
+tumour	IDO1	23	13	10	-0.019710518645355002	0.035120341482361539	lung_higher	6	4			none	
+tumour	LAG3	23	14	9	0.11398962164453801	0.094252279993473742	brain_higher	0	2			none	
+tumour	PDCD1	23	14	9	0.20312703317027961	0.085826358156346316	brain_higher	8	11	0.13847963944554501	brain_higher	exploratory	True
+tumour	TIGIT	23	14	9	0.12359592274713124	0.17734792504763064	brain_higher	0	2			none	
+tumour	VSIR	23	18	5	0.3488047672505673	0.22226089058548926	brain_higher	6	9			none	

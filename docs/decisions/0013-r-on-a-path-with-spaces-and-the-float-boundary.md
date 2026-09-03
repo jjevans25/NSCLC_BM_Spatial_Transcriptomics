@@ -161,3 +161,43 @@ of ~1e-8.
   ("Biomedical", "Data") or an "ambiguous redirect", never the real cause.
 - P6-T1's clean-room reproduction must run on a path with a space, or it will
   not exercise the repair rule and will report a false pass.
+
+---
+
+## Postscript, added at P3-T2 (2026-09-02): pandas' default reader has the same property
+
+§3 recorded that **R's** parser is not correctly rounded — `R_strtod` reads
+Python's `%.17g` output one ULP low on 34 of 276 values. At P3-T2 the same
+property turned up on the **Python** side, and it is worth recording because it
+initially read as a defect in a new output file rather than in the reader.
+
+`workflow/scripts/checkpoint_detection.py` writes
+`results/tables/checkpoint_expression.tsv` with `float_format="%.17g"`. Reading
+it back with a plain `pd.read_csv(..., sep="\t")` and comparing to the `.h5ad`
+reported **32 of 720 values unequal**. The file was correct: for `LB01`/`CD274`
+it holds `7.2514350695632297`, which is exactly `'%.17g' % x` of the stored
+double, and which re-parses exactly. What differed was the *reader*.
+
+`pandas.read_csv`'s default C engine uses a fast float conversion that is not
+correctly rounded. `float_precision="round_trip"` recovers exactness:
+
+```
+read_csv float_precision=None          -> 32 of 720 mismatched
+read_csv float_precision='round_trip'  ->  0 of 720 mismatched
+```
+
+**Consequences:**
+
+- **Any Python rule that needs exact values back from a project TSV must pass
+  `float_precision="round_trip"`.** Phase 3's scripts do.
+- **No existing result is affected.** The Phase 2 scripts that read these files
+  (`crosscheck_mixedlm.py`, `paired_check.py`, `convergence_check.py`,
+  `contexture_heatmap.py`) use the default reader, but a 1-ULP difference is
+  ~1e-16 relative against a cross-check tolerance of 1e-4 and a paired check
+  that reports direction only. They are deliberately left unmodified: editing
+  them would fire the code rerun-trigger on their rules for no numerical gain.
+- **§3's conclusion is unchanged and now has a second leg.** Exactness across a
+  text boundary is a property of the *reader*, not only of the writer, and
+  neither R's default nor pandas' default provides it. The project's position
+  stands: assert structure across the boundary, and check numeric agreement
+  end-to-end instead.

@@ -1,0 +1,197 @@
+{
+  "aoi_counts": {
+    "BC": 7,
+    "L": 30,
+    "LB": 27,
+    "TBME": 20,
+    "TIME-B": 8,
+    "TIME-L": 15,
+    "mLN": 13
+  },
+  "audit_aoi_codes": [
+    "L",
+    "LB",
+    "mLN",
+    "TBME",
+    "TIME-L",
+    "TIME-B",
+    "BC"
+  ],
+  "crosscheck_adr0008_recon": {
+    "n_comparisons": 16,
+    "ratio_drift_beyond_2dp": [],
+    "status": "exact agreement"
+  },
+  "crosscheck_var_detected_in_n_aoi": {
+    "n_genes_compared": 9,
+    "source": "workflow/scripts/export_tsv.py (P0-T7), independent implementation",
+    "status": "exact agreement"
+  },
+  "detected_in_aoi_fraction": 0.5,
+  "detection_background_multiple": 2.0,
+  "figure_colour_basis": "median_negprobe_ratio \u2014 background-normalised, so it is immune to the compartment background gradient by construction (ADR 0016 \u00a75)",
+  "genes": [
+    "CD274",
+    "CD276",
+    "CTLA4",
+    "HAVCR2",
+    "IDO1",
+    "LAG3",
+    "PDCD1",
+    "TIGIT",
+    "VSIR"
+  ],
+  "min_assessable_fraction": 0.5,
+  "model_aoi_codes": [
+    "L",
+    "TIME-L",
+    "LB",
+    "TIME-B"
+  ],
+  "n_genes": 9,
+  "n_qc_flagged_retained": 5,
+  "panel_assessability": {
+    "BC": {
+      "assessable_genes": [
+        "VSIR"
+      ],
+      "fraction": 0.1111111111111111,
+      "modelled": false,
+      "n_assessable": 1,
+      "n_genes": 9,
+      "not_assessable_genes": [
+        "CD274",
+        "CD276",
+        "CTLA4",
+        "HAVCR2",
+        "IDO1",
+        "LAG3",
+        "PDCD1",
+        "TIGIT"
+      ],
+      "panel_assessable": false
+    },
+    "L": {
+      "assessable_genes": [
+        "CD274",
+        "CD276"
+      ],
+      "fraction": 0.2222222222222222,
+      "modelled": true,
+      "n_assessable": 2,
+      "n_genes": 9,
+      "not_assessable_genes": [
+        "CTLA4",
+        "HAVCR2",
+        "IDO1",
+        "LAG3",
+        "PDCD1",
+        "TIGIT",
+        "VSIR"
+      ],
+      "panel_assessable": false
+    },
+    "LB": {
+      "assessable_genes": [
+        "CD274",
+        "CD276",
+        "PDCD1"
+      ],
+      "fraction": 0.3333333333333333,
+      "modelled": true,
+      "n_assessable": 3,
+      "n_genes": 9,
+      "not_assessable_genes": [
+        "CTLA4",
+        "HAVCR2",
+        "IDO1",
+        "LAG3",
+        "TIGIT",
+        "VSIR"
+      ],
+      "panel_assessable": false
+    },
+    "TBME": {
+      "assessable_genes": [
+        "CD276",
+        "VSIR"
+      ],
+      "fraction": 0.2222222222222222,
+      "modelled": false,
+      "n_assessable": 2,
+      "n_genes": 9,
+      "not_assessable_genes": [
+        "CD274",
+        "CTLA4",
+        "HAVCR2",
+        "IDO1",
+        "LAG3",
+        "PDCD1",
+        "TIGIT"
+      ],
+      "panel_assessable": false
+    },
+    "TIME-B": {
+      "assessable_genes": [
+        "CD274",
+        "CD276",
+        "HAVCR2",
+        "VSIR"
+      ],
+      "fraction": 0.4444444444444444,
+      "modelled": true,
+      "n_assessable": 4,
+      "n_genes": 9,
+      "not_assessable_genes": [
+        "CTLA4",
+        "IDO1",
+        "LAG3",
+        "PDCD1",
+        "TIGIT"
+      ],
+      "panel_assessable": false
+    },
+    "TIME-L": {
+      "assessable_genes": [
+        "CD274",
+        "CD276",
+        "CTLA4",
+        "HAVCR2",
+        "IDO1",
+        "PDCD1",
+        "TIGIT",
+        "VSIR"
+      ],
+      "fraction": 0.8888888888888888,
+      "modelled": true,
+      "n_assessable": 8,
+      "n_genes": 9,
+      "not_assessable_genes": [
+        "LAG3"
+      ],
+      "panel_assessable": true
+    },
+    "mLN": {
+      "assessable_genes": [
+        "CD274",
+        "CD276",
+        "PDCD1"
+      ],
+      "fraction": 0.3333333333333333,
+      "modelled": false,
+      "n_assessable": 3,
+      "n_genes": 9,
+      "not_assessable_genes": [
+        "CTLA4",
+        "HAVCR2",
+        "IDO1",
+        "LAG3",
+        "TIGIT",
+        "VSIR"
+      ],
+      "panel_assessable": false
+    }
+  },
+  "pre_registered": "ADR 0016",
+  "reporting_rule": "A gene below the floor in a compartment is 'not assessable in <compartment>', never 'lower in <compartment>' (ADR 0008 point 4)."
+}

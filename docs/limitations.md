@@ -166,12 +166,52 @@ cannot disagree with anything (P2-T6, `docs/analysis-notes.md`).
 `CTLA4`, `LAG3`, `HAVCR2`, `TIGIT`), so the same outcome should be expected
 there and designed for, not discovered.
 
+### Phase 3 confirmed it gene by gene, and it is worse at gene level (P3-T2)
+
+Signature scoring averages over a set, which hides how few genes carry it. The
+checkpoint audit does not average: **40 of 63 gene × compartment cells are below
+the pre-registered 0.5 floor, and the panel clears it in `TIME-L` alone** —
+1 of 7 compartments. Per compartment: `TIME-L` 8/9 genes, `TIME-B` 4/9
+(**n = 8**), `LB` 3/9, `mLN` 3/9, `L` 2/9, `TBME` 2/9, `BC` 1/9. `TIGIT` is
+detected in 0 of 30 `L` AOIs and `IDO1` in 0 of 20 `TBME` AOIs.
+
+Three consequences:
+
+- **Only two genes per site could be modelled at all.** The pre-registered
+  restriction admits a gene only where it clears the floor in *both* groups
+  (ADR 0016 §3, ADR 0018), so `CD274` and `CD276` carry the entire primary
+  carrier analysis and the other seven sit in an unadjusted exploratory table
+  that licenses no claim. **The restriction is not a loss of power that better
+  statistics could recover; it is the measurement not existing.**
+- **P3-T2b restated the same fact as resolution rather than as background**, and
+  that version survives an argument about where the threshold belongs. In
+  `TIME-B`, background is ~30 raw counts while `CTLA4`, `TIGIT` and `IDO1` carry
+  37–44; an AOI holds a median of **645 distinct values across 18,694 genes**,
+  and a panel gene's exact value is shared with a median of 100–360 other genes.
+  Those genes are not lowly expressed so much as unresolved.
+- **Detection and expression move OPPOSITE ways under the same background
+  gradient** (ADR 0018), so the two must never be read off one another. Higher
+  background raises the detection bar and a gene looks depleted; the same
+  background adds to `log2(q3 + 1)` and it looks enriched. P3-T5 keeps them on
+  separate figures and P3-T6 on separate panels for this reason.
+
+The one place the gradient was *measured* rather than feared, it was small where
+it mattered: every P3-T4 site contrast has a `negligible` gradient (background
+deltas +0.03 tumour, −0.06 immune, against 0.31–0.40 for the compartment
+contrasts). **The background artefact is a compartment-contrast problem, not a
+site-contrast one** — which is the opposite of what ADR 0008 anticipated, and is
+now a number rather than an assumption.
+
 ## 9. Scope
 
 - **`mLN` is out of scope** for the core comparison by design (§A.2), and is
   carried only so the design table is complete.
 - **One AOI more than the source paper.** GEO deposits 120; the paper analyses
-  119, with `TBME` = 19 rather than 20. Which `TBME` AOI the authors excluded,
-  and why, is not recoverable from GEO — so a figure-for-figure replication of
-  their `TBME` results is not possible.
+  119, with `TBME` = 19 rather than 20. **The excluded AOI is `TBME15b`**,
+  established at P3-T2b from the paper's Source Data, which GEO does not carry
+  (ADR 0017, `docs/data-provenance.md`). P15 contributes two `TBME` AOIs and the
+  paper used only the first; its fibrosis scores are per case, not per AOI. No
+  reason is stated and nothing failed QC, so this project analyses all 20 under
+  flag-don't-drop. A figure-for-figure replication of their `TBME` results is
+  therefore possible by dropping `TBME15b`, and is deliberately not attempted.
 - **This is a learning and methods project, not a publication** (CLAUDE.md).

@@ -1,0 +1,49 @@
+{
+  "all_agree": true,
+  "compared": [
+    "estimate"
+  ],
+  "comparisons": [
+    {
+      "abs_diff_estimate": 7.259489648303585e-09,
+      "abs_diff_std_error": 0.004724834147272011,
+      "agrees": true,
+      "gene": "CD276",
+      "lme4_estimate": 0.158841495981032,
+      "lme4_std_error": 0.151459629921865,
+      "n_obs": 35,
+      "n_patient": 27,
+      "rel_diff_std_error": 0.03119533666964232,
+      "statsmodels_estimate": 0.15884148872154236,
+      "statsmodels_std_error": 0.15618446406913702,
+      "stratum": "brain"
+    },
+    {
+      "abs_diff_estimate": 1.115295283848905e-06,
+      "abs_diff_std_error": 0.026178217794195713,
+      "agrees": true,
+      "gene": "CD276",
+      "lme4_estimate": 0.146779175437991,
+      "lme4_std_error": 0.133568885719136,
+      "n_obs": 45,
+      "n_patient": 30,
+      "rel_diff_std_error": 0.19599038842955055,
+      "statsmodels_estimate": 0.14678029073327484,
+      "statsmodels_std_error": 0.1597471035133317,
+      "stratum": "lung"
+    }
+  ],
+  "contrast": "immune_minus_tumour",
+  "contrast_var": "compartment",
+  "gene": "CD276",
+  "not_compared": [
+    "std_error",
+    "df",
+    "p_value"
+  ],
+  "not_compared_reason": "Different estimators, not the same number computed twice. statsmodels' MixedLM fixed-effect SEs and lmerTest's agree only when the variance components are sharply determined, which they are not here (17/30 lung and 19/27 brain patients contribute one AOI); statsmodels reaches the same variance components under lbfgs, powell and bfgs, so this is not an optimiser artefact. lmerTest reports Satterthwaite df, statsmodels a Wald z with no finite-sample correction. The SE, CI and p-value of record are lmerTest's; recomputing the CI in statsmodels gives a wider one.",
+  "task": "P3-T3",
+  "tolerance": 0.0001,
+  "worst_abs_diff_estimate": 1.115295283848905e-06,
+  "worst_rel_diff_std_error": 0.19599038842955055
+}

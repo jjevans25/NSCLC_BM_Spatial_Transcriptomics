@@ -1,0 +1,253 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: >
+  config/external_validation.yaml — the source publication's supplementary files
+  and the expectations P3-T2b checks this project's numbers against.
+
+  Shaped after the `acquire` and `reference` blocks of config.schema.yaml, with
+  one addition: an `expect` block. Those two manifests describe where bytes come
+  from; this one also declares, BEFORE the comparison runs, what agreement is
+  supposed to look like. An external check whose expectations are written after
+  seeing the answer is not an external check, and the schema is where that
+  intent is made structural rather than left to a comment.
+
+  As with checkpoints.schema.yaml, the schema is a floor: it can enforce that a
+  digest is present and well-formed, never that it is the right digest. The
+  digests here were computed from files fetched by hand at P3-T2b and are
+  re-verified from disk on every run by p3t2b_record_supplementary_provenance.
+type: object
+required: [external_validation]
+additionalProperties: false
+properties:
+  external_validation:
+    type: object
+    required: [base_url, artifacts, sheets, expect]
+    additionalProperties: false
+    properties:
+
+      base_url:
+        type: string
+        pattern: "^https://"
+        description: >
+          Springer static-content prefix. HTTPS is required by pattern: these
+          bytes are a provenance claim, and an http:// fetch cannot support one.
+
+      artifacts:
+        type: object
+        minProperties: 1
+        description: >
+          Manifest key -> one supplementary file. Same shape as
+          config.yaml's acquire.artifacts, so workflow/scripts/acquire_geo.py
+          and record_provenance.py drive it unmodified — editing either would
+          fire the code rerun-trigger on p0t2_fetch_geo and abort the DAG on its
+          protected() outputs (ADR 0005, ADR 0013).
+        additionalProperties:
+          type: object
+          required: [remote, dest, stability, sha256]
+          additionalProperties: false
+          properties:
+            remote:
+              type: string
+              minLength: 1
+              description: Path under base_url.
+            dest:
+              type: string
+              pattern: "^[A-Za-z0-9._-]+$"
+              description: >
+                Filename under resources/supplementary/. Constrained to a bare
+                filename: a `dest` containing a separator would let the manifest
+                write outside the directory the rule declares.
+            stability:
+              type: string
+              enum: [fixed, volatile]
+              description: >
+                ADR 0005's two tiers. Every artifact here is `fixed` — these are
+                author-uploaded files, static since 2022, and unlike GEO's SOFT
+                file nothing regenerates them server-side. A `volatile`
+                supplementary file would be a contradiction, but the enum is
+                kept whole so this manifest stays the same shape as the others.
+            sha256:
+              type: string
+              pattern: "^[0-9a-f]{64}$"
+              description: >
+                Pinned and enforced. Unlike the acquire manifest there is no
+                `null` case: an unpinned external comparator would let the
+                thing being compared against drift silently, which defeats the
+                purpose of the task.
+
+      sheets:
+        type: object
+        minProperties: 1
+        description: >
+          Logical name -> one worksheet inside one artifact. Named so the script
+          refers to `full_matrix` rather than to a string with a trailing space
+          in it.
+        additionalProperties:
+          type: object
+          required: [artifact, name, header_row]
+          additionalProperties: false
+          properties:
+            artifact:
+              type: string
+              minLength: 1
+              description: >
+                Key into `artifacts` above. Checked at load, not at read time,
+                so a typo fails at parse rather than after a 45 MB download.
+            name:
+              type: string
+              minLength: 1
+              description: >
+                The worksheet name EXACTLY as deposited, trailing whitespace
+                included. Do not tidy these.
+            header_row:
+              type: integer
+              minimum: 0
+              description: >
+                0-based index of the header row; data begins at header_row + 1.
+                Every sheet in this file carries one or two title rows above it.
+
+      expect:
+        type: object
+        required:
+          [
+            n_aoi,
+            n_genes,
+            control_rows,
+            aoi_alias,
+            alias_rtol,
+            alias_min_agreement,
+            alias_max_other_agreement,
+            fibrosis_reference_group,
+            fibrosis_test_group,
+            fibrosis_n_cases,
+            fibrosis_group_sizes,
+            quantum_probe,
+            lattice_probe,
+            lattice_min_fraction,
+            dcc_ratio_tol,
+            published_deg_n,
+            published_log2fc_threshold,
+            log2fc_tolerance,
+            pvalue_rtol,
+          ]
+        additionalProperties: false
+        properties:
+          n_aoi:
+            type: integer
+            const: 120
+            description: >
+              PROJECT_PLAN §2.1's design table. `const` rather than a bound:
+              this number is not a parameter, and a run that finds a different
+              one has found something that must stop the phase.
+          n_genes:
+            type: integer
+            const: 18694
+          control_rows:
+            type: array
+            minItems: 1
+            items: {type: string, minLength: 1}
+            description: >
+              Rows present in the published matrix that this project holds in
+              `obs` rather than `var`. Compared, never silently dropped.
+          aoi_alias:
+            type: object
+            description: >
+              Published AOI label -> this project's label, for the sheets that
+              disagree. Every entry is ASSERTED equal across all genes and
+              unequal against the alternative, so an alias cannot quietly
+              paper over a real difference.
+            additionalProperties: {type: string, minLength: 1}
+          alias_rtol:
+            type: number
+            exclusiveMinimum: 0
+            description: >
+              Relative tolerance when matching an aliased column to a candidate
+              AOI. Non-zero on purpose: the two deposited sheets round
+              differently — "Figure 1b-e" reproduces the GEO matrix exactly,
+              while "Fig.4-6 & S4,5 " carries an extra significant figure for
+              large values. Exactness there would fail on the publisher's
+              rounding, not on the data. The full-matrix comparison is a
+              separate check and remains exact.
+          alias_min_agreement:
+            type: number
+            exclusiveMinimum: 0
+            maximum: 1
+            description: >
+              Fraction of genes that must agree within alias_rtol for the
+              declared candidate.
+          alias_max_other_agreement:
+            type: number
+            minimum: 0
+            maximum: 1
+            description: >
+              Ceiling on every OTHER candidate's agreement. Both bounds are
+              needed: the first says the alias is right, the second says it is
+              unambiguous, and an alias that satisfied only the first would be
+              a coin-flip dressed as a measurement.
+          fibrosis_reference_group: {type: string, minLength: 1}
+          fibrosis_test_group: {type: string, minLength: 1}
+          fibrosis_n_cases:
+            type: integer
+            minimum: 1
+          fibrosis_group_sizes:
+            type: object
+            minProperties: 1
+            additionalProperties: {type: integer, minimum: 1}
+            description: >
+              Expected size of every fibrosis class, including the F(I) class
+              that the published contrast excludes — recorded so the exclusion
+              is visible rather than inferred from a smaller total.
+          quantum_probe:
+            type: integer
+            minimum: 2
+            description: >
+              How many of an AOI's smallest distinct values the count quantum is
+              estimated from, as the median of their consecutive differences.
+              The lattice is densest at the low end, which is also the only
+              region where quantisation affects an interpretation.
+          lattice_probe:
+            type: integer
+            minimum: 2
+            description: >
+              How many of the smallest distinct values are then checked against
+              the recovered quantum. Separate from quantum_probe so the check is
+              not scored on exactly the values that produced the estimate.
+          lattice_min_fraction:
+            type: number
+            exclusiveMinimum: 0
+            maximum: 1
+            description: >
+              Fraction of those that must be integer multiples before an AOI's
+              counts are reported as reliable. Reported per AOI either way — an
+              AOI that fails is a fact about that AOI, not an error.
+          dcc_ratio_tol:
+            type: number
+            exclusiveMinimum: 0
+            description: >
+              Tolerance on median(value / quantum) against the AOI's own median
+              raw count from its .dcc file. This is what makes the count scale
+              measured rather than inferred, and a failure means the recovered
+              quantum is wrong however clean its lattice looks.
+          published_deg_n:
+            type: integer
+            minimum: 1
+          published_log2fc_threshold:
+            type: number
+            exclusiveMinimum: 0
+            description: >
+              The threshold the paper states for this DEG list. P3-T2b checks
+              that the published list respects it and reports which genes fall
+              below it — it never applies it to anything of this project's own.
+          log2fc_tolerance:
+            type: number
+            exclusiveMinimum: 0
+            description: >
+              Agreement required when reproducing the published log2FC values.
+              Reproduction is what licenses every other statement about the
+              published contrast, so this is a hard failure, not a warning.
+          pvalue_rtol:
+            type: number
+            exclusiveMinimum: 0
+            description: >
+              Relative tolerance on the reproduced p-values. Looser than
+              log2fc_tolerance on purpose: the published values are rounded in
+              the deposited file, and the estimator is what is being checked.

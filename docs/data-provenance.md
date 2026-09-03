@@ -411,9 +411,39 @@ excluded from the paper's analysis, with no stated reason. So:
 - `PROJECT_PLAN` §2.1 stays authoritative and `expected_n_aoi: 120` is correct.
 - `common.smk`'s hard failure on a row-count mismatch stays as written — it is
   right to fail if P0-T3 produces 119.
-- Which TBME AOI the authors dropped is not recoverable from GEO. If it matters
-  later (it would only matter to a direct replication of their TBME figures),
-  it is a limitation, not a bug. Note it at P0-T8.
+
+**RESOLVED at P3-T2b (2026-09-02, ADR 0017) — the dropped AOI is `TBME15b`.**
+
+This was recorded above as "not recoverable from GEO", and that was correct: it
+is not recoverable from GEO. It is recoverable from the paper's own **Source
+Data**, which GEO does not carry. Supplementary Data 5's `Fig.4-6 & S4,5` sheet
+labels a single `TBME15` column where the full-matrix sheet carries both
+`TBME15a` and `TBME15b`. `p3t2b_external_validation` tests that column against
+every candidate:
+
+| candidate | agreement |
+|---|---|
+| `TBME15a` | **1.0000** |
+| `TBME15b` | 0.0003 |
+
+So the paper's 19 TBME "cases" are this project's 20 AOIs with patient 15's
+second AOI omitted — consistent with Supplementary Data 2, which scores fibrosis
+for 19 TBME **cases**, not 20 AOIs. Nothing failed QC upstream and no AOI is
+anomalous; P15 simply contributes two AOIs and the paper used one.
+
+A figure-for-figure replication of the paper's TBME results is therefore
+possible after all, by dropping `TBME15b`. This project does **not** do that —
+`PROJECT_PLAN` §2.1 remains authoritative and all 20 AOIs are analysed, because
+the paper's exclusion has no stated basis and flag-don't-drop is the policy
+(CLAUDE.md). The fact is recorded so a reader comparing the two AOI counts is
+not left with a mystery.
+
+One further finding from the same comparison, worth knowing before anyone
+compares numbers across the paper's sheets: **the deposited sheets round
+differently.** `Figure 1b-e` reproduces the GEO matrix bit-for-bit — all
+2,243,280 values — while `Fig.4-6 & S4,5` carries an extra significant figure
+for large values (20375.33 where GEO has 20375.0). 64 of 18,694 values differ
+between them, none anywhere near background.
 
 ### 44 patients (paper) vs 35 (GEO)
 

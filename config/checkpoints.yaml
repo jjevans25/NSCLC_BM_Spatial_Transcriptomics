@@ -1,5 +1,158 @@
 # ---------------------------------------------------------------------------
 # Immune-checkpoint gene panel, one rationale per gene (PROJECT_PLAN §5.2).
-# Populated in Phase 3.
+#
+# P3-T1. Adding or removing a gene here is a "stop and ask" decision, not an
+# implementation detail (CLAUDE.md). The membership below is PROJECT_PLAN §6's
+# P3-T1 list exactly, approved before any Phase 3 result was computed, and
+# recorded in ADR 0015. It is PRE-REGISTERED: choosing a panel after seeing
+# which genes happen to be detected is the failure this task exists to prevent,
+# and ADR 0008's reconnaissance table explicitly confers no licence to do it.
+#
+# `rationale` is the clinical reason the gene is on the panel — the approved
+# agent or the trial stage, per §6. `trial_stage` is the controlled form of the
+# same fact, so the "every gene annotated" acceptance criterion is checkable
+# rather than prose. Every stage below is the most advanced one the cited
+# source actually establishes; where a gene has agents further along than its
+# citation shows, `source_note` says so rather than the field overstating it.
+#
+# EVERY PMID BELOW WAS VERIFIED AGAINST PUBMED before being written here.
+# That is not ceremony: at P3-T1 three of the nine PMIDs first proposed pointed
+# at entirely unrelated papers — a digital-health guide, an autoimmune
+# encephalitis review and an organic-chemistry paper — and were caught only by
+# querying eutils. A schema can enforce that a source is PRESENT, never that it
+# is CORRECT (ADR 0011). Verify any addition the same way.
+#
+# Every symbol below was checked against the 18,694 genes in
+# results/interim/aoi_normalised.h5ad; rule p3t1_resolve_checkpoints re-checks
+# it on every run and fails if a symbol stops resolving.
+#
+# EXPECT POOR COVERAGE IN BRAIN. ADR 0008 measured CTLA4 above background in 2
+# of 8 TIME-B AOIs, TIGIT in 1 and IDO1 in 2, and Phase 2 found the overlapping
+# `exhaustion` signature clearing 1 of 6 genes in brain. A low-coverage row for
+# any gene here is a finding, not an error, and it must be reported as "not
+# assessable in <compartment>", never as "lower in <compartment>".
+#
+# Five of these genes (PDCD1, CTLA4, LAG3, HAVCR2, TIGIT) are also members of
+# the `exhaustion` set in config/signatures.yaml. The overlap is recorded by
+# common.smk, not rejected: a reader of both tables needs to know the two sets
+# are not independent draws.
 # ---------------------------------------------------------------------------
-checkpoints: {}
+checkpoints:
+
+  CD274:
+    alias: PD-L1
+    trial_stage: approved
+    rationale: >
+      Ligand for PD-1 and the target of the approved anti-PD-L1 antibodies
+      atezolizumab and durvalumab; tumour PD-L1 protein is the only routinely
+      used predictive biomarker for checkpoint blockade in NSCLC.
+    source: "PMID:27718847"
+    source_note: >
+      Reck et al. 2016, NEJM — KEYNOTE-024, which selected patients on PD-L1
+      tumour proportion score >= 50%. The trial's agent is anti-PD-1, so the
+      citation establishes CD274 as the predictive biomarker rather than as
+      that trial's drug target; atezolizumab and durvalumab target the ligand
+      directly.
+
+  PDCD1:
+    alias: PD-1
+    trial_stage: approved
+    rationale: >
+      The receptor targeted by pembrolizumab and nivolumab, both approved in
+      NSCLC; the single most consequential checkpoint in this disease.
+    source: "PMID:26028407"
+    source_note: >
+      Brahmer et al. 2015, NEJM — CheckMate 017, nivolumab versus docetaxel in
+      advanced squamous NSCLC.
+
+  CTLA4:
+    alias: CTLA-4
+    trial_stage: approved
+    rationale: >
+      Target of ipilimumab, approved in NSCLC in combination with nivolumab;
+      acts earlier in T-cell priming than the PD-1 axis.
+    source: "PMID:31562796"
+    source_note: >
+      Hellmann et al. 2019, NEJM — CheckMate 227, nivolumab plus ipilimumab in
+      advanced NSCLC.
+
+  LAG3:
+    alias: LAG-3
+    trial_stage: approved
+    rationale: >
+      Target of relatlimab, the third checkpoint class to reach approval;
+      approved with nivolumab in melanoma and in trials in NSCLC.
+    source: "PMID:34986285"
+    source_note: >
+      Tawbi et al. 2022, NEJM — RELATIVITY-047. The approval this cites is in
+      MELANOMA, not NSCLC; LAG3 is on this panel as a mechanistically
+      established, clinically validated checkpoint, not as an approved NSCLC
+      target.
+
+  HAVCR2:
+    alias: TIM-3
+    trial_stage: phase_2
+    rationale: >
+      Inhibitory receptor co-expressed with PD-1 on exhausted T cells and a
+      proposed mechanism of acquired resistance to PD-1 blockade; anti-TIM-3
+      antibodies are in clinical trials.
+    source: "PMID:31676858"
+    source_note: >
+      Wolf, Anderson & Kuchroo 2020, Nature Reviews Immunology — a review of
+      TIM-3 biology covering the early-phase clinical programme. The stage
+      field reflects what the review establishes, not the most advanced trial
+      running now.
+
+  TIGIT:
+    alias: TIGIT
+    trial_stage: phase_2
+    rationale: >
+      Co-inhibitory receptor on T and NK cells; tiragolumab plus atezolizumab
+      was tested in PD-L1-selected NSCLC, making TIGIT the checkpoint with the
+      most NSCLC-specific late-phase evidence after the PD-1 axis.
+    source: "PMID:35576957"
+    source_note: >
+      Cho et al. 2022, Lancet Oncology — CITYSCAPE, a randomised double-blind
+      PHASE 2 study in PD-L1-selected NSCLC. Later phase 3 work exists; this
+      citation supports phase 2 and the field says phase 2.
+
+  IDO1:
+    alias: IDO1
+    trial_stage: phase_3
+    rationale: >
+      Tryptophan-catabolising enzyme mediating myeloid immunosuppression;
+      epacadostat added to pembrolizumab failed its phase 3 endpoint, which is
+      itself the reason to measure where IDO1 sits by compartment.
+    source: "PMID:31221619"
+    source_note: >
+      Long et al. 2019, Lancet Oncology — ECHO-301/KEYNOTE-252, a phase 3 study
+      in MELANOMA, not NSCLC. It is cited as the trial that defines IDO1's
+      clinical status; the negative result is the point, not a caveat.
+
+  VSIR:
+    alias: VISTA
+    trial_stage: investigational
+    rationale: >
+      Myeloid-predominant checkpoint enforcing naive T-cell quiescence; of
+      particular interest here because the brain metastasis microenvironment is
+      myeloid-dominated, and because VSIR is one of the few panel members
+      detected well above background at both sites.
+    source: "PMID:31949051"
+    source_note: >
+      ElTanbouly et al. 2020, Science — establishes VISTA as a checkpoint
+      regulator of naive T-cell quiescence and peripheral tolerance. It is a
+      mechanistic paper; first-in-human VISTA-directed agents exist but are not
+      what this citation supports, hence `investigational`.
+
+  CD276:
+    alias: B7-H3
+    trial_stage: investigational
+    rationale: >
+      Broadly expressed B7-family ligand under active development in NSCLC as
+      an antibody, ADC and CAR-T target; the best-detected gene on this panel
+      (105 of 120 AOIs), so it is the one most likely to be assessable
+      everywhere.
+    source: "PMID:36555714"
+    source_note: >
+      Malapelle et al. 2022, International Journal of Molecular Sciences —
+      a review of B7-H3/CD276 inhibitors specifically in metastatic NSCLC.

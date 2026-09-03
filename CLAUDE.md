@@ -78,8 +78,68 @@ Phase 2 output: `signature_scores.tsv`, `signature_coverage.tsv`,
 `convergence_check.tsv`; figures `contexture_heatmap.png`,
 `decon_composition.png`; prose in `docs/analysis-notes.md`.
 
-Next: Phase 3 (A4 — which checkpoints are measurable at all, by compartment).
-Its honest output is reconnaissance, not a claim (ADR 0008).
+**P3-T2b added an external check (ADR 0017), and it is the only one the project
+has.** Everything else is internal: P3-T2's three "independent implementations"
+all read the same `obs['negprobe']` and test the same hypothesis. Against the
+source paper's own deposited Source Data, **all 2,243,280 values of
+`layers['q3']` are identical** and the published `NegProbe-WTX` row equals
+`obs['negprobe']` exactly — so this project's inputs are demonstrably the
+published inputs. Two consequences worth carrying:
+
+- **The 119-vs-120 gap is closed: the paper dropped `TBME15b`** (agreement
+  1.0000 vs `TBME15a`, 0.0003 vs `TBME15b`). No AOI failed QC; P15 contributes
+  two `TBME` AOIs and the paper used one. All 20 are analysed here.
+- **The count scale is measured**, validated against the `.dcc` raw counts for
+  120/120 AOIs. In `TIME-B`, background is ~30 counts and CTLA4/TIGIT/IDO1 carry
+  37–44 — the same fact as the detection floor, stated as resolution. An AOI
+  holds a median of 645 distinct values across 18,694 genes.
+
+**P3-T3 (ADR 0018): the primary restriction stands, a declared exploratory
+secondary carries the rest.** A gene enters a primary fit only if it clears the
+detection floor in *both* groups — 2 of 9 genes per site. `CD274` (PD-L1) is
+enriched in the lung immune compartment, **+0.612 SD [+0.361, +0.863], q =
+0.0001**, surviving both sensitivities. Everything else is a separate,
+unadjusted, exploratory-within-exploratory table on which no claim may rest.
+
+**Detection and expression move OPPOSITE ways under the same background
+gradient, and conflating them inverts the argument.** Detection is
+`q3 > 2 × negprobe`, so higher background → detected less → looks *depleted*.
+Expression is `log2(q3 + 1)`, where background adds to signal, so higher
+background → looks *enriched*. The models are on expression, background is
+higher in the immune compartments, so the gradient is **permissive** there —
+adjusting for `negprobe_log2` shifts the excluded genes by a mean of −0.155 and
+the admitted ones by +0.010. The genes the restriction excludes are the genes
+the adjustment moves.
+
+**P3-T4: the lung-vs-brain checkpoint shift is null in every assessable gene,
+and uninformative rather than negative.** Primary is 4 genes in the immune
+compartment and 2 in tumour; largest is CD274 at −0.260 SD [−0.595, +0.075],
+q = 0.462, brain minus lung, `TIME-B` n = 8. All far below the 1.1–1.3 SD power
+floor. Every P3-T4 gradient is `negligible` (site background deltas +0.03 and
+−0.06) — **the background artefact is a P3-T3 problem, not a P3-T4 problem**,
+now measured rather than assumed. The paired check is direction only in BOTH
+compartments and agrees 9 of 11; the 23-patient tumour set deliberately gets no
+p-value either.
+
+**P3-T5 is the deliverable figure** (`checkpoint_dotplot.png`): genes ×
+compartment × site, all 7 compartments, all 120 AOIs. Dot area = detection rate,
+colour = `median_negprobe_ratio` with its midpoint read from
+`qc.detection_background_multiple` so it cannot drift from ADR 0007's rule,
+hatch = below the pre-registered floor. **40 of 63 cells are hatched and that is
+the finding** — the panel clears the floor in `TIME-L` alone.
+
+**P3-T6 is the same audit made interactive** (`checkpoint_explorer.py`, exported
+to WASM at `results/reports/checkpoint_explorer`). **Its detection-floor slider
+is a sensitivity display, not a threshold control** (ADR 0019): the floor of
+record stays 0.5, the app defaults there and reproduces P3-T5's figure there,
+it labels itself the moment it leaves, and nothing it reaches is a result. The
+2× background multiple is deliberately not exposed — `detection_rate` is already
+computed at it. Model estimates sit in their own section **below** the plot and
+never on it: the plot is detection, they are expression, and the two move
+opposite ways under the same gradient (ADR 0018).
+
+Next: Phase 3 P3-T7. A4's honest output is reconnaissance, not a claim
+(ADR 0008).
 
 ## The design table — use these numbers, never estimates
 

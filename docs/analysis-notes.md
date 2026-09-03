@@ -87,3 +87,79 @@ A `TIME` AOI is the PanCK-negative segment of an ROI sited in a CD45-rich
 region — **not** a CD45-sorted population (Q2's caveat). A deconvolved
 proportion is an inference from bulk expression within that segment, never a
 cell count.
+
+---
+
+## P3-T7 — which compartment carries PD-L1, and what would that mean? (2026-09-03)
+
+**Source tables:** `results/tables/checkpoint_carrier_models.tsv`,
+`checkpoint_shift_models.tsv`, `checkpoint_detection.tsv`,
+`checkpoint_paired_concordance.tsv`, `decon_composition.tsv`.
+
+**In the lung primary, PD-L1 transcript sits in the PanCK-negative compartment
+rather than the tumour compartment — and that is the only checkpoint claim
+Phase 3 supports.**
+
+`CD274` is enriched in the lung immune compartment relative to the paired
+tumour compartment by **+0.612 SD [+0.361, +0.863], q = 0.0001** (45 AOIs, 30
+patients, `expression ~ compartment + (1|patient_id)`; detected 19/30 in `L`,
+13/15 in `TIME-L`). It survives both pre-registered sensitivities — batch
++0.599, background +0.635 — and the background adjustment *raises* it, which
+matters here: the immune compartments carry higher background, so that gradient
+is permissive and could have manufactured an immune-side enrichment (ADR 0018).
+It did not manufacture this one. `CD276` (B7-H3), the only other gene clearing
+the primary restriction, shows no compartment preference at either site (+0.147
+lung, +0.159 brain, both null), so this is not the panel-wide immune-side drift
+an artefact would produce.
+
+### What it would mean, and how far it goes
+
+The routine NSCLC biomarker is PD-L1 protein on tumour cells, the basis of
+KEYNOTE-024's TPS ≥ 50% selection (PMID:27718847). But tumour-cell and
+immune-cell PD-L1 are separately scored and separately actionable: IMpower110
+enrolled on PD-L1 expression in ≥ 1% of tumour cells **or** ≥ 1% of
+tumour-infiltrating immune cells by the SP142 assay (Herbst et al. 2020,
+*N Engl J Med* 383:1328–1339, PMID:32997907). A tumour whose PD-L1 is
+predominantly stromal is one a tumour-cell-only assay can score as negative.
+
+This dataset points at the second source in the lung primary. It does **not**
+identify the cell type, and three limits say how far it goes, in order of what
+they cost:
+
+- **The compartment label is not a cell-type label.** A `TIME` AOI is the
+  PanCK-negative segment of an ROI a pathologist sited in a CD45-rich region —
+  **not** a CD45-sorted population (Q2). safeTME deconvolution puts `TIME-L` at
+  a mean 0.200 macrophages, but also 0.198 fibroblasts and 0.060 endothelium:
+  roughly a quarter of that compartment is not immune at all. **"Myeloid-derived"
+  is a hypothesis this design cannot separate from stromal; what the contrast
+  shows is "not tumour-cell-derived".**
+- **Transcript is not protein, and neither is a TPS.** Nothing here is an IHC
+  measurement, and the clinical biomarker is.
+- **A4 is exploratory** (ADR 0008). This is reconnaissance that would justify a
+  targeted study, not a claim that stands on its own.
+
+### What Phase 3 cannot say, and why that silence is not evidence
+
+**Brain is uninformative, not negative.** The same carrier contrast in brain is
++0.222 [−0.384, +0.829] with **`TIME-B` n = 8**, and the lung-vs-brain shift is
+null in every assessable gene — largest `CD274` at −0.260 [−0.595, +0.075],
+q = 0.462, again **`TIME-B` n = 8**. The design detects roughly **1.1–1.3 SD at
+80% power** (P0-T8), so every one of these sits far below the floor. Writing them
+up as "no difference between sites" would be a worse error than having no result.
+The 5-patient paired check agrees with the unpaired direction for `CD274` (3 of 5
+patients lung-higher) and deliberately carries no test statistic.
+
+**Seven of nine genes never entered a primary fit.** A gene enters only if it
+clears the detection floor in *both* groups compared (ADR 0016 §3, upheld as
+Option C in ADR 0018); `CTLA4`, `PDCD1`, `LAG3`, `TIGIT`, `IDO1`, `HAVCR2` and
+`VSIR` sit in a separate, unadjusted, exploratory table on which **no claim
+rests**. Several show large apparent immune enrichments there, and every one is a
+gene detected in 0–9 of 30 tumour AOIs. **The exclusion is itself the finding:**
+40 of 63 gene × compartment cells are not assessable, and the panel clears the
+floor in `TIME-L` alone.
+
+**The glial compartment was not overlooked.** `TBME` — with `mLN` and `BC` —
+sits wholly within one DSP run, so batch is inseparable from biology there
+(ADR 0009 §3). Those three are audited and plotted but never modelled
+(ADR 0016 §2), which is why §6's "tumour vs. immune vs. glial" is answered here
+as tumour vs. immune only.
