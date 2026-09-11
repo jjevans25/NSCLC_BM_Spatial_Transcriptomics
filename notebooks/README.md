@@ -67,15 +67,29 @@ App-tier notebooks are exported to self-contained interactive HTML by a rule, so
 they land in `snakemake --report` alongside the static figures:
 
 ```bash
-marimo export html-wasm notebooks/apps/<nb>.py -o results/reports/notebooks/<nb>.html --mode run
+# What the rules run -- `p1t5_landscape_explorer` (03_landscape.smk) and
+# `p3t6_checkpoint_explorer` (05_checkpoints.smk). The output is a DIRECTORY
+# containing index.html, not a single file, and the notebook's declared inputs
+# are staged into a sibling `public/` so the export can fetch them over HTTP.
+# That data path is ADR 0010 -- read it before adding a third app.
+marimo export html-wasm --execute --mode run -f <staged>/<nb>.py -o results/reports/<nb>
+```
+
+The export **must be served over HTTP**, never opened as a `file://` URL:
+
+```bash
+python -m http.server --directory results/reports/<nb>
 ```
 
 ## Current inventory
 
 | Notebook | Tier | Phase | Status |
 |---|---|---|---|
-| `explore/00_first_look.py` | Explore | P0 | Stub — answers Q1 once P0-T2 lands the matrix |
-| `review/design_review.py` | Review | P0 | Not yet written (P0-T3) |
-| `review/qc_review.py` | Review | P0 | Not yet written (P0-T5) |
-| `apps/landscape_explorer.py` | App | P1 | Not yet written |
-| `apps/checkpoint_explorer.py` | App | P3 | Not yet written |
+| `explore/00_first_look.py` | Explore | P0 | Written — Q1 reconnaissance. **Q1 is resolved** (Q3-normalised; `normalisation_check.tsv`), so this is scratch. No PEP 723 block yet — a P6-T4b item |
+| `review/design_review.py` | Review | P0 | Written (P0-T3) |
+| `review/qc_review.py` | Review | P0 | Written (P0-T5) |
+| `apps/landscape_explorer.py` | App | P1 | Written (P1-T5) — exported by `p1t5_landscape_explorer` to `results/reports/landscape_explorer`. Known: renders on a black background; left alone so the rule's rerun trigger does not fire |
+| `apps/checkpoint_explorer.py` | App | P3 | Written (P3-T6, ADR 0019) — exported by `p3t6_checkpoint_explorer` to `results/reports/checkpoint_explorer`. **Browser-verified 2026-09-11** |
+
+Statuses are checked against the tree, not remembered: `find notebooks -name "*.py"`
+must return exactly the rows above. This table sat three phases out of date once.
