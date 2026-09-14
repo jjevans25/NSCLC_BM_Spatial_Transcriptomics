@@ -1,15 +1,16 @@
 # Next steps — Phase 5 (prognostic association) or Phase 6 (FAIR packaging)
 
 **Last session:** 2026-09-14
-**Branch:** `P4`, **not yet merged**. Two commits on top of `main` at `3ccabe0`.
+**Branch:** `main` at `4c23db7`, **pushed**; `origin/main` is the same commit and
+the working tree is clean. Phase 4 was squash-merged with the Gate 4 verdict in
+the message (ADR 0004) and the `P4` branch is deleted.
 **Gate 0:** PASSED. **Gate 1:** PASSED. **Gate 2:** PASSED (ADR 0014).
 **Gate 3:** PASSED (ADR 0020). **Gate 4:** **PASSED (ADR 0022).**
-**Next free ADR number: 0023.**
+**Next free ADR number: 0024.**
 
-**Phase 4 is complete and everything it produced is committed.** `snakemake
---lint` is clean and a re-run reports "nothing to be done". Squash-merge `P4`
-into `main` with the Gate 4 verdict in the message (ADR 0004) before starting
-anything new.
+**Phase 4 is complete, merged and pushed.** `snakemake --lint` is clean and a
+plain dry run reports "nothing to be done". **Nothing is outstanding from
+Phase 4 or from P6-T1** — start the next phase directly.
 
 ---
 
@@ -45,13 +46,15 @@ time-to-event columns — so it is viable. Three constraints from
   have no expression data. P5-T1's hard gate is that it joins cleanly on patient
   ID; if it does not, stop the phase rather than spend days on fuzzy matching.
 
-**Phase 6 is arguably the primary deliverable** (PROJECT_PLAN §6's own words),
-and **P6-T1 has a known blocker that will not fix itself**: see below.
+**Phase 6 is arguably the primary deliverable** (PROJECT_PLAN §6's own words).
+**P6-T1's blocker is resolved** (ADR 0023) — the environments are pinned and
+verified, so the task is no longer gated on anything. What remains of it is the
+clean-room run itself: a fresh clone, fresh envs, `snakemake --cores 4 all` from
+nothing, timed.
 
-**Recommendation — do P6-T1 first even if you intend to do Phase 5.** It is the
-only task whose failure invalidates everything else, and it is currently blocked
-on a stale lock file. Finding that out in week 6 is worse than finding it out
-now.
+**One caveat carries forward into that run:** the pins are `osx-arm64` only, so
+a clean-room reproduction on Linux solves the YAMLs unpinned. That is no worse
+than before, but it is not a guarantee — see below.
 
 ---
 
@@ -125,7 +128,17 @@ fit. The three dead `*.conda-lock.yml` files are removed.
 4. **A grep that cannot tell a prohibition from a claim is unrunnable.**
    PROJECT_PLAN §6 P4-T7's literal instruction fails on `CLAUDE.md`'s own hard
    constraint 6, because the files that state a rule must name what they forbid.
-5. **`config/config.yaml` has been edited for the last time in the analysis
+5. **An explicit-looking seed can still be an implicit one.** The permutation
+   null was seeded `default_rng([seed, hash(site) % 2**31])`, which reads as
+   correct and is not: **Python salts string hashing per process**, so two runs
+   of the same commit gave different nulls (min FDR 0.228 vs 0.225). Derive
+   stream ids from a stable digest, never from `hash()` of a string. It survived
+   review and was caught only because a branch operation forced a re-run.
+6. **A check with no rerun trigger reports a stale pass.** `p4t7_language_audit`
+   declared no inputs, so it would have run once and never again — and its green
+   output would have kept asserting something nobody re-tested. It now keys on a
+   digest of every file it scans.
+7. **`config/config.yaml` has been edited for the last time in the analysis
    phases.** Every further threshold belongs in a sibling YAML. The Phase 4 edit
    cost a full Phases 1–3 rebuild and was verified at 58 of 59 tables
    byte-identical; there is no reason to pay it again.
@@ -150,6 +163,12 @@ fit. The three dead `*.conda-lock.yml` files are removed.
   trigger. The fix is the `plt.rcParams` reset in
   `notebooks/apps/checkpoint_explorer.py`. Worth doing when something else
   touches Phase 1, and P6-T4b is that occasion.
+- **Regenerate the pin after ANY edit to an env YAML** (ADR 0023). A stale pin
+  installs the wrong environment *silently* rather than failing, which is the
+  same failure shape as the blocker just cleaned up. The edit also invalidates
+  the env hash, so it needs the full transition: `--conda-create-envs-only`, a
+  **scoped** `-f` on the two `env_repair` sentinels (a bare `--forcerun` aborts
+  on protected outputs), then `--touch`.
 - **`Markdowns/PROJECT_PLAN.md` is gitignored** — ADRs are the durable record.
   ADR 0022 §5 records two further defects in §6's Phase 4 text.
 
@@ -158,7 +177,6 @@ fit. The three dead `*.conda-lock.yml` files are removed.
 ```bash
 conda activate nsclc_bm_spatial
 ln -sfn "$PWD/.snakemake/conda" "$HOME/nsclc-envs"   # once per machine
-git switch main && git merge --squash P4             # ADR 0004, Gate 4 verdict in the message
 snakemake -n --use-conda --conda-prefix "$HOME/nsclc-envs"   # must stay clean
 snakemake --lint                                             # must stay clean
 snakemake --use-conda --conda-prefix "$HOME/nsclc-envs" --cores 4
