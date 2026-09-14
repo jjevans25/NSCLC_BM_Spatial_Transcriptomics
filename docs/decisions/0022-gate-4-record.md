@@ -21,7 +21,7 @@ its own second clause.**
 | paired patients | 13 | **8** |
 | primary direction-rows tested | 268 | 260 |
 | **clearing the empirical FDR at 0.05** | **0** | **0** |
-| smallest empirical FDR | 0.497 | 0.228 |
+| smallest empirical FDR | 0.499 | 0.224 |
 | largest observed \|rho\| | 0.742 | 0.952 |
 
 The observed distribution sits **on top of** the null rather than beside it —
@@ -106,6 +106,19 @@ Recorded because each is a defect a plausible-looking result would have hidden.
   within a spot, which is **undirected**, so the lookup now matches either
   orientation — the orientation was a hand-transcription step with nothing
   checking it.
+- **The permutation null was not reproducible, and the bug was wearing the
+  costume of a fix.** The per-site RNG stream was seeded
+  `default_rng([seed, hash(site) % 2**31])` — which *looks* like an explicit
+  seed and is not one: **Python salts string hashing per process**, so
+  `hash("brain")` differs between runs. Two runs of the same commit gave min
+  empirical FDR 0.228 and 0.225. This is exactly the implicit RNG
+  PROJECT_PLAN §4.3 forbids, and it would have made P6-T1's clean-room
+  reproduction fail on values rather than on machinery. Now derived from a
+  sha256 of the site name, which is stable across processes, machines and
+  Python versions; **verified by two independent runs producing byte-identical
+  `crosstalk_fdr.tsv`.** Caught only because the squash-merge rewrote every
+  file's mtime and forced a re-run — nothing in the pipeline would otherwise
+  have re-executed a rule whose inputs had not changed.
 - **Both figures clipped on first render.** The network's right-hand labels
   showed "CEACAM" for both CEACAM1 and CEACAM5, and the colourbar label rendered
   off-canvas. Fixed with the `main | colourbar` gridspec `checkpoint_dotplot.py`

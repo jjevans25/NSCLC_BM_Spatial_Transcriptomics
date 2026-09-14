@@ -152,7 +152,7 @@ opposite ways under the same gradient (ADR 0018).
 
 **GATE 4 (ADR 0022): the empirical FDR was computed and honoured, and nothing
 survived it.** 0 of 268 lung and 0 of 260 brain primary direction-rows clear
-FDR 0.05; smallest 0.497 and 0.228; observed |rho| sits ON the permuted-pairing
+FDR 0.05; smallest 0.499 and 0.224; observed |rho| sits ON the permuted-pairing
 null (median 0.231 vs 0.203 lung, 0.262 vs 0.286 brain). Gate 4 licenses this in
 terms — "no LR pair exceeded chance expectation at n=13" — and it is an
 **assay-sensitivity limit, never evidence that the crosstalk is absent**. The

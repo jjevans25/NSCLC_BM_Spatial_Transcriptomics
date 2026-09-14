@@ -11,7 +11,7 @@
     },
     "lung": {
       "n_admitted_rows": 268,
-      "n_clears_abundance_matched": 14,
+      "n_clears_abundance_matched": 15,
       "n_clears_empirical_fdr": 0,
       "n_interactions_in_database": 1256,
       "n_nominated": 0,

@@ -153,7 +153,7 @@ snakemake --use-conda --conda-prefix "$HOME/nsclc-envs" \
 
 **Gate 4 (ADR 0022) passed on its second clause.** The empirical FDR was
 computed and honoured; **0 of 268 lung and 0 of 260 brain** primary
-direction-rows clear FDR 0.05, smallest 0.497 and 0.228. Observed |rho| sits
+direction-rows clear FDR 0.05, smallest 0.499 and 0.224. Observed |rho| sits
 **on** the permuted-pairing null. The gate turns on P4-T4, not P4-T5:
 `lr_nominations.py` was written with no fallback and no second threshold, so an
 empty table was reachable rather than escapable.

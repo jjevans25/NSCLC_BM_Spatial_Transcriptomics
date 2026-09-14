@@ -51,6 +51,13 @@ All notable changes to this project are recorded here. Format loosely follows
 - **`CD96–NECTIN1` was entered into the P4-T6 comparator backwards** and
   reported as absent from a database that contains it. The comparator's measure
   is undirected, so the lookup now matches either orientation.
+- **The permutation null was not reproducible.** The per-site RNG stream was
+  seeded from `hash(site)`, and Python salts string hashing per process — so it
+  looked like an explicit seed and was not one. Two runs of the same commit gave
+  min empirical FDR 0.228 and 0.225. Now derived from a sha256 of the site name;
+  two independent runs verified byte-identical. The conclusion is unchanged
+  (0 rows clear FDR 0.05 in either arm); the quoted minima are now 0.499 lung
+  and 0.224 brain.
 - **Both figures clipped on first render** — the network's right-hand labels
   ("CEACAM" for CEACAM1 and CEACAM5) and the colourbar label. Fixed with the
   `main | colourbar` gridspec. Caught only by opening the PNGs.

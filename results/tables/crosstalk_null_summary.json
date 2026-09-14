@@ -3,7 +3,7 @@
   "by_site": {
     "brain": {
       "max_abs_rho": 0.9523809523809524,
-      "min_empirical_fdr": 0.22785,
+      "min_empirical_fdr": 0.2241,
       "n_clears_abundance_matched": 14,
       "n_clears_both": 0,
       "n_clears_empirical_fdr": 0,
@@ -12,8 +12,8 @@
     },
     "lung": {
       "max_abs_rho": 0.7417582417582417,
-      "min_empirical_fdr": 0.4965333333333334,
-      "n_clears_abundance_matched": 14,
+      "min_empirical_fdr": 0.49859333333333333,
+      "n_clears_abundance_matched": 15,
       "n_clears_both": 0,
       "n_clears_empirical_fdr": 0,
       "n_patients": 13,

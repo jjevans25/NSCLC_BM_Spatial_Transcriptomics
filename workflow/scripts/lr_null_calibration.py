@@ -74,6 +74,27 @@ from scipy import stats
 OBS_COLOUR = "#C1666B"
 NULL_COLOUR = "#4F6D7A"
 
+def _site_stream(name):
+    """A stable integer stream id for a site name.
+
+    NOT `hash(name)`. Python salts string hashing per process
+    (PYTHONHASHSEED), so `hash("brain")` differs between runs and the
+    permutation null would be reseeded differently every time — which is
+    exactly the implicit RNG PROJECT_PLAN §4.3 forbids, wearing the costume of
+    an explicit seed. It cost this phase a non-reproducible table: two runs of
+    the same commit gave min empirical FDR 0.228 and 0.225.
+
+    sha256 of the name is stable across processes, machines and Python
+    versions, which is what "seeded from config['seed'], passed explicitly"
+    has to mean if P6-T1's clean-room reproduction is to be byte-identical.
+    """
+    import hashlib
+
+    return int.from_bytes(
+        hashlib.sha256(name.encode("utf-8")).digest()[:4], "big"
+    )
+
+
 log_path = Path(snakemake.log[0])
 log_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -172,8 +193,6 @@ with open(log_path, "w", encoding="utf-8") as log:
     )
     axes = np.atleast_1d(axes)
 
-    rng_master = np.random.default_rng(seed)
-
     for ax, site in zip(axes, sorted(adjacencies)):
         sel = corr[corr["site"] == site].reset_index(drop=True)
         n = len(patients[site])
@@ -215,7 +234,7 @@ with open(log_path, "w", encoding="utf-8") as log:
         emit(f"  identity-permutation check vs p4t3b: max |delta| = {delta:.3g}")
 
         # ------------------------------------------------ Null A, the gate
-        rng = np.random.default_rng([seed, hash(site) % (2**31)])
+        rng = np.random.default_rng([seed, _site_stream(site)])
         # float64 throughout: the null and the observed statistic are separate
         # computations, and at n = 8 rho is heavily tied (42 distinct values
         # across 260 rows), so a float32 null would shift tie counts by
@@ -323,7 +342,7 @@ with open(log_path, "w", encoding="utf-8") as log:
 
         # One null per (decile, decile) cell, shared by every row in it.
         cell_null = {}
-        rng_b = np.random.default_rng([seed, 99, hash(site) % (2**31)])
+        rng_b = np.random.default_rng([seed, 99, _site_stream(site)])
         for dt in range(n_deciles):
             it = np.flatnonzero(pools["tumour"]["decile"] == dt)
             if not len(it):

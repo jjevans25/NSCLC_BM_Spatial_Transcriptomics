@@ -222,7 +222,7 @@
     {
       "category": "quotation",
       "file": "docs/decisions/0022-gate-4-record.md",
-      "line": 136,
+      "line": 149,
       "match": "colocaliz",
       "pattern": "spatial_claim",
       "text": "comparator's own sentence, which says \"colocalized\" \u2014 because that is what",
