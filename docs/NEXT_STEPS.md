@@ -1,20 +1,112 @@
 # Next steps — Phase 5 (prognostic association) or Phase 6 (FAIR packaging)
 
 **Last session:** 2026-09-14
-**Branch:** `main` at `4c23db7`, **pushed**; `origin/main` is the same commit and
-the working tree is clean. Phase 4 was squash-merged with the Gate 4 verdict in
-the message (ADR 0004) and the `P4` branch is deleted.
+**Branch:** `main`, pushed and in sync with `origin/main`, working tree clean.
+Phase 4 was squash-merged with the Gate 4 verdict in the message (ADR 0004) and
+the `P4` branch is deleted. *(No SHA is quoted here on purpose: a commit hash in
+this file is stale the moment the next commit lands, and a stale one reads as
+authoritative. Run `git log --oneline -1`.)*
 **Gate 0:** PASSED. **Gate 1:** PASSED. **Gate 2:** PASSED (ADR 0014).
 **Gate 3:** PASSED (ADR 0020). **Gate 4:** **PASSED (ADR 0022).**
 **Next free ADR number: 0024.**
 
 **Phase 4 is complete, merged and pushed.** `snakemake --lint` is clean and a
-plain dry run reports "nothing to be done". **Nothing is outstanding from
-Phase 4 or from P6-T1** — start the next phase directly.
+plain dry run reports "nothing to be done". Nothing is outstanding from Phase 4
+or from P6-T1.
+
+**Phase 5 is NOT start-writing-code, though — work the setup block below first.
+Item 1 blocks P5-T1 outright.**
 
 ---
 
-## READ THIS FIRST — the one sentence Phase 4 earned
+## START HERE — Phase 5 setup
+
+**Work these in order. Item 1 blocks everything: P5-T1's primary input is not in
+this repository.** All six were checked against the repo, not assumed.
+
+### 1. Fetch Supplementary Data 1 — BLOCKING
+
+`docs/data-provenance.md` §Q5 establishes that the clinical and time-to-event
+data live in **Supplementary Data 1 = `41467_2022_33365_MOESM4_ESM.xlsx`**.
+`resources/supplementary/` holds **MOESM5, MOESM6 and MOESM9 only — MOESM4 was
+never fetched**, because no earlier phase needed it. P5-T1 cannot run until it
+is there.
+
+Add it as an artifact with a pinned `sha256` under ADR 0005's rules. Two
+mechanical facts, both verified, so nothing gets rebuilt from scratch:
+
+- **No new rule is needed.** `p3t2b_fetch_supplementary` builds its wildcard
+  constraint from `EXTERNAL_KEY_BY_DEST` (`workflow/rules/05_checkpoints.smk:153`),
+  so a new artifact entry is picked up automatically.
+- **It re-triggers `p3t2b_external_validation`.** `EXTERNAL_VALIDATION` is a
+  `params:` of that rule (`05_checkpoints.smk:255`), so adding an artifact
+  changes the params hash and re-parses the 45 MB Source Data xlsx. Expected,
+  not a fault.
+
+**One decision to make first, not a detail:** put the clinical artifact in
+`config/external_validation.yaml` (simplest — the wildcard rule already works),
+**or** give it its own manifest as a *fifth* sanctioned writer. That file is
+named for external *validation* and this is analysis *input*; reusing it is
+convenient and slightly dishonest. Decide deliberately and record it.
+
+### 2. Edit `config/config.yaml` once, and expect the rebuild
+
+`phases.survival` must flip to `true`. That file's SHA-256 is recorded in the
+`.h5ad` `uns`, so the edit **re-runs Phases 1–4 (~40 min)**. Pay it exactly
+once, with every Phase 5 key present, and verify it the way P3-T1 and P4-T1
+verified theirs: every pre-existing table byte-identical except
+`h5ad_summary.json`'s `git_sha` and `config_sha256`.
+
+### 3. A `survival:` block needs schema work *before* it will parse
+
+`workflow/schemas/config.schema.yaml` is `additionalProperties: false` at the
+root, so a new top-level block fails at load until `survival` is added to
+`properties` (and to `required` if it is mandatory). Flipping the phase switch
+alone needs no schema change — `phases` is `additionalProperties: {type: boolean}`.
+
+---
+
+**The next three are not tasks — they are constraints on the join that item 1
+feeds, and each one is a way P5-T1 can silently produce a wrong answer.** Taken
+from `docs/data-provenance.md` §Q5, which is more complete than
+`docs/limitations.md` §8.
+
+### 4. Age is banded, not exact
+
+`40s`, `50s`, `60s`, `70s`, `90s` — de-identified. It enters a model as an
+**ordered factor, never as a continuous covariate**.
+
+### 5. Missingness and free text are both inconsistently coded
+
+`N/A`, `NA`, `n/a` and `Unspecified` all appear. So does inconsistent
+capitalisation in the histology strings, **with trailing spaces** —
+`Adenocarcinoma/solid` and `adenocarcinoma/solid `. **The parser must normalise
+these, not trust them.**
+
+### 6. Coverage is 35 of 44, and the join is not established until it is asserted
+
+The table covers the full 44-patient cohort; GEO carries **35**. Nine
+supplementary rows have no expression data.
+
+`docs/data-provenance.md` sets two assertions that must pass before the join
+counts as established: **every GEO patient must appear in Supplementary Data 1**,
+and **the AOI-code numeric suffix must equal the patient number**. P5-T1's hard
+gate is that it joins cleanly on patient ID — if it does not, **stop the phase**
+rather than spend days on fuzzy matching.
+
+---
+
+**The framing, before any of it.** Gate 5 is *"timebox respected"*.
+PROJECT_PLAN calls Phase 5 a stretch goal, the slip rule says cut it to protect
+Phase 6, and P5-T1's own acceptance criterion permits **"a documented
+abandonment"**. At ~35 patients a KM split is descriptive, not inferential. **If
+the join does not come out cleanly, stopping is the designed outcome, not a
+failure** — and Phase 6, which the plan calls the primary deliverable, is
+already unblocked.
+
+---
+
+## The one sentence Phase 4 earned
 
 > No inferred ligand–receptor pair exceeded chance expectation in either
 > adjacency — lung n = 13, brain **`TIME-B` n = 8** — and the assay resolves
@@ -36,15 +128,9 @@ four-phase project beats a sprawling six-phase one that nobody can run."*
 
 **Phase 5 is a stretch goal with a one-week timebox and Gate 5 is "timebox
 respected".** Q5 resolved **yes** — Supplementary Data 1 carries two
-time-to-event columns — so it is viable. Three constraints from
-`docs/limitations.md` §8 bind it before P5-T1 starts:
-
-- **Age is banded** (`40s`, `60s`), so it enters a model as an ordered factor,
-  never as a continuous covariate.
-- **Missingness is inconsistently coded** — `N/A`, `NA`, `n/a`, `Unspecified`.
-- **The table covers all 44 cohort patients while GEO carries 35**, so nine rows
-  have no expression data. P5-T1's hard gate is that it joins cleanly on patient
-  ID; if it does not, stop the phase rather than spend days on fuzzy matching.
+time-to-event columns — so it is viable. Its three prerequisites and the three
+constraints binding the join are in **START HERE** at the top of this file; they
+are not repeated here.
 
 **Phase 6 is arguably the primary deliverable** (PROJECT_PLAN §6's own words).
 **P6-T1's blocker is resolved** (ADR 0023) — the environments are pinned and
@@ -92,41 +178,6 @@ fit. The three dead `*.conda-lock.yml` files are removed.
   software-env trigger on every rule in that env AND invalidates the pin, so it
   needs the ADR 0023 transition (rebuild, re-repair, `--touch`) — do it in a
   commit where that is the point, not casually.
-
----
-
-## Before Phase 5 can start — three prerequisites, none of them optional
-
-Phase 5 is **not** a start-writing-code phase. Checked against the repository,
-not assumed:
-
-1. **Its primary input is not here.** `docs/data-provenance.md` §Q5 establishes
-   that the clinical and time-to-event data live in **Supplementary Data 1 =
-   `41467_2022_33365_MOESM4_ESM.xlsx`**. `resources/supplementary/` holds
-   MOESM5, MOESM6 and MOESM9 — **MOESM4 was never fetched.** P5-T1 cannot run
-   until it is, which means adding an artifact to
-   `config/external_validation.yaml` with a pinned `sha256` under ADR 0005's
-   rules. The existing `p3t2b_fetch_supplementary` wildcard rule will pick it up
-   with no new rule needed.
-
-2. **`config/config.yaml` must be edited, and it rebuilds everything.**
-   `phases.survival` has to flip to `true`, and that file's SHA-256 is recorded
-   in the `.h5ad` `uns` — so the edit re-runs Phases 1–4 (~40 min). Do it
-   **once**, with every Phase 5 key present, and verify it as P3-T1 and P4-T1
-   did: every pre-existing table byte-identical except `h5ad_summary.json`'s
-   `git_sha` and `config_sha256`.
-
-3. **A `survival:` block needs schema work first.** `config.schema.yaml` has
-   `additionalProperties: false` at the root, so a new top-level block fails at
-   parse until `survival` is added to both `properties` and (if required)
-   `required`. Flipping `phases.survival` alone needs no schema change —
-   `phases` is `additionalProperties: {type: boolean}`.
-
-**And the honest framing before any of it:** Gate 5 is *"timebox respected"*.
-PROJECT_PLAN calls Phase 5 a stretch goal, the slip rule says cut it to protect
-Phase 6, and P5-T1's own acceptance criterion permits "a documented
-abandonment". At ~35 patients a KM split is descriptive. If the join in (1)
-does not come out cleanly, stopping is the *designed* outcome, not a failure.
 
 ---
 
