@@ -5,6 +5,32 @@ All notable changes to this project are recorded here. Format loosely follows
 
 ## [Unreleased]
 
+### Fixed — P6-T1: environments are actually pinned now (ADR 0023) (2026-09-14)
+- **The recorded blocker was wrong on both counts.** `conda-lock` was installed
+  all along, and Snakemake 8.30 never read `*.conda-lock.yml` — it reads
+  `<env>.<platform>.pin.txt` (`deployment/conda.py:128`). **No environment was
+  pinned at all**; the three committed lock files were read by nothing.
+- Two of the three locks were also stale in content, missing `xarray`
+  (py-analysis) and `r-reformulas` (r-geomx). Both had been added to fix real
+  failures — a numpy ABI fall-through and the lme4 2.0 / SpatialDecon breakage —
+  so installing from those locks would have reproduced two known bugs.
+- **Added** `workflow/envs/{py-analysis,r-stats,r-geomx}.osx-arm64.pin.txt`,
+  generated with `conda list --explicit --md5` from the environments that
+  produced every committed result, so the pin describes what happened rather
+  than predicting what would happen.
+- **Removed** the three dead `*.conda-lock.yml` files.
+- **Corrected** `environment.yml`'s header, which documented the conda-lock
+  workflow and is what let the misreading persist.
+- Transition needed three steps, recorded in ADR 0023 §3: suppressing the
+  software-env trigger alone leaves the repo dirty, because no job runs and
+  Snakemake never updates its provenance record. `--touch` is what absorbs it,
+  and is truthful only because the pins came from the envs that ran.
+- Verified: all three envs load their libraries (including
+  `SpatialDecon` + `lme4 2.0.6` + `reformulas 0.4.4`, the combination ADR 0013
+  documents as broken), one rule per env forced to re-execute reproduced
+  byte-identical output, and **97 of 97 tables and figures are unchanged**.
+
+
 ### Added — Phase 4: inferred crosstalk between adjacent compartments (2026-09-14)
 - **GATE 4 PASSED (ADR 0022).** The empirical FDR was computed and honoured and
   nothing survived it: 0 of 268 lung and 0 of 260 brain primary direction-rows

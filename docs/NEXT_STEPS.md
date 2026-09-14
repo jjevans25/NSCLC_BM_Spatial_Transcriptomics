@@ -55,20 +55,40 @@ now.
 
 ---
 
-## The P6-T1 blocker, which is older than Phase 4
+## The P6-T1 blocker is RESOLVED (ADR 0023), and the note about it was wrong
 
-- **`py-analysis.conda-lock.yml` is stale and `conda-lock` is not installed.**
-  Phase 4 deliberately added no Python dependency, so the lock is no more stale
-  than it was — but a clean-room reproduction regenerates envs from the lock,
-  and that is P6-T1's whole point.
+The long-standing note read "`py-analysis.conda-lock.yml` is stale and
+`conda-lock` is not installed". **Both halves were false and the truth was
+worse:** `conda-lock` was installed all along, and Snakemake never read
+`*.conda-lock.yml` at all — it reads `<env>.<platform>.pin.txt`
+(`deployment/conda.py:128`). **Nothing was pinned.** Two of the three locks were
+also stale in content, missing `xarray` and `r-reformulas`, both of which were
+added to fix real failures — so wiring them up would have reproduced two known
+bugs in the very run meant to prove the pipeline works.
+
+**Now fixed.** `workflow/envs/<env>.osx-arm64.pin.txt` exists for all three
+envs, generated with `conda list --explicit --md5` from the environments that
+actually produced every committed result. Verified by forcing one rule per env
+to re-execute: all three outputs byte-identical, including the R mixed-model
+fit. The three dead `*.conda-lock.yml` files are removed.
+
+**What remains for P6-T1:**
+
+- **The pins are `osx-arm64` only.** On `linux-64` Snakemake finds no pin and
+  solves the YAML, exactly as it did before — nothing is lost, but nothing is
+  guaranteed either. **P6-T6's limitations document must say so.** If
+  cross-platform reproduction is wanted, render a `linux-64.pin.txt` from a
+  `conda-lock` solve; `conda-lock` is still in `environment.yml` for that.
+- **Regenerating a pin is now mandatory after any env YAML edit**, because a
+  stale pin installs the wrong environment silently instead of failing.
 - **P6-T1 must be run on a path containing a space**, or it will not exercise
   `p2t0_repair_r_env` and will report a false pass. This working directory has
   one ("Biomedical Data Science"); a clean clone elsewhere may not.
-- **Three env YAMLs now carry stale headers.** `r-stats.yaml` says "Phases 2-3"
-  and is still correct — Phase 4 added no R rule to it. **`r-geomx.yaml` is the
-  one that moved**: `p4t2c_export_lr_database` runs in it. Fixing a header fires
-  the software-env rerun trigger on every rule in that env, so do it in a commit
-  where re-running Phase 2's deconvolution is acceptable, not casually.
+- **`r-geomx.yaml`'s header is stale**: it says "Phase 0" but
+  `p4t2c_export_lr_database` now runs in it too. Editing it fires the
+  software-env trigger on every rule in that env AND invalidates the pin, so it
+  needs the ADR 0023 transition (rebuild, re-repair, `--touch`) — do it in a
+  commit where that is the point, not casually.
 
 ---
 

@@ -12,8 +12,20 @@
 # GeomxTools, etc. here — duplicating them is how this env and py-analysis.yaml
 # silently drift apart, which is the failure mode §4.4 warns about.
 #
-# Lock before Phase 6 clean-room reproduction (§4.4, P6-T1):
-#   conda-lock lock -f environment.yml -p osx-arm64 -p linux-64
+# PINNING THE ANALYSIS ENVS IS NOT DONE WITH conda-lock. Snakemake 8.30 reads
+# an auxiliary file named workflow/envs/<env>.<platform>.pin.txt
+# (snakemake/deployment/conda.py:128) and has NO support for a
+# <env>.conda-lock.yml beside the environment file. The three committed
+# *.conda-lock.yml files were therefore read by nothing, and two of them were
+# also stale — see ADR 0023, which is where this misunderstanding was found and
+# corrected. Regenerate a pin after ANY edit to an env YAML:
+#
+#   conda list --explicit --md5 -p "$HOME/nsclc-envs/<hash>_" \
+#     > workflow/envs/<env>.osx-arm64.pin.txt
+#
+# The pins come from the environments that actually produced the results, not
+# from a fresh solve (ADR 0023 §2). This environment file — the driver env — is
+# not pinned and does not need to be; it orchestrates, it does not analyse.
 
 name: nsclc_bm_spatial
 
@@ -28,7 +40,10 @@ dependencies:
 
   # --- orchestration -------------------------------------------------------
   - snakemake=8.*     # PROJECT_PLAN.md §4.3
-  - conda-lock        # §4.4: commit the locks
+  # Kept for rendering a multi-platform lock if linux-64 support is ever added
+  # (ADR 0023 Consequences). It is NOT what pins the analysis envs — Snakemake
+  # reads .pin.txt, not .conda-lock.yml.
+  - conda-lock
   - pyyaml            # config.yaml / signatures.yaml / compartment_map.yaml
   - jsonschema        # schemas/*.schema.yaml validation at Snakefile top
 
