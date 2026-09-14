@@ -202,6 +202,56 @@ contrasts). **The background artefact is a compartment-contrast problem, not a
 site-contrast one** — which is the opposite of what ADR 0008 anticipated, and is
 now a number rather than an assumption.
 
+### Phase 4 measured it class by class, on 2,239 interactions (P4-T2)
+
+Phase 2 measured the ligand side on six signatures and Phase 3 on nine genes.
+Phase 4 measured it on the whole of CellChatDB v2 — 1,062 of the 1,148 symbols
+it names are on the panel — and the limit resolves into a **class gradient**
+rather than a flat ceiling. Fraction of database interactions admitted, both
+partners above background in the compartment each is measured in:
+
+| class | brain | lung |
+|---|---|---|
+| **ECM-Receptor** | **45.3%** | **39.6%** |
+| Cell-Cell Contact | 13.7% | 17.3% |
+| **Secreted Signaling** | **6.4%** | **5.3%** |
+
+**The matrix-associated axis is measurable roughly eight times as often as the
+secreted one.** That is ADR 0014's claim generalised from cytokine signatures to
+the whole ligand side, and it is the sharpest statement this project can make
+about what the assay resolves.
+
+Two consequences:
+
+- **An absent LR result is an assay-sensitivity limit, never evidence that the
+  crosstalk is absent.** No pair exceeded chance expectation in either adjacency
+  (0 of 268 lung, 0 of 260 brain at empirical FDR 0.05; ADR 0022). At a floor
+  where 19 of 20 secreted interactions cannot be measured at all, that null
+  carries no information about secreted signalling whatever.
+- **`LGALS9` is not on the panel at all**, which is a different limitation again:
+  the WTA panel carries `LGALS1`, `LGALS3`, `LGALS8` and `LGALS9C` but not
+  `LGALS9`. A published comparator resting on it is not checkable here, and
+  substituting the paralog would be a membership change made to keep a
+  comparator alive (ADR 0021 §8).
+
+### Background is a patient-level property, not only a compartment one (P4-T3a)
+
+§5 records that background varies by compartment. Phase 4 needed a different
+question — it correlates expression **across patients**, so what matters is
+whether one patient's two paired AOIs *share* their background. Measured across
+the paired sets:
+
+| | `negprobe_log2` | `gene_detection_rate` |
+|---|---|---|
+| brain (n = 8) | ρ **+0.548** | ρ **+0.667** |
+| lung (n = 13) | ρ **+0.352** | ρ +0.231 |
+
+**Three of four exceed the 0.3 threshold**, so AOI quality travels with the
+patient and two genes that merely track background would correlate for no
+biological reason. P3-T4 found the *site* gradient negligible; **that is a
+different gradient**, and any future cross-patient analysis in this project must
+measure its own rather than inherit either verdict.
+
 ## 9. Scope
 
 - **`mLN` is out of scope** for the core comparison by design (§A.2), and is

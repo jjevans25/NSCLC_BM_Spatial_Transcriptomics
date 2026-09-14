@@ -1,0 +1,263 @@
+{
+  "classification_rule": "A match inside a prohibition \u2014 the line, or the one before it, carrying never / not / forbid / avoid / rather than / instead of / cannot \u2014 is the rule being STATED and is counted separately. Everything else fails the build. PROJECT_PLAN \u00a76's literal 'fix every hit' would fail on CLAUDE.md's own hard constraint 6: the files that state a rule have to name what they forbid. A match inside a declared quotation field is a third category: the P4-T6 comparator's own sentence says 'colocalized', and editing a quotation to satisfy this project's style rule would falsify the source (ADR 0021 \u00a72).",
+  "clean": true,
+  "n_files_scanned": 151,
+  "n_prohibitions": 22,
+  "n_quotations": 5,
+  "n_violations": 0,
+  "patterns": [
+    "spatial_claim",
+    "cell_type_label"
+  ],
+  "prohibitions": [
+    {
+      "category": "prohibition",
+      "file": ".claude/skills/geomx-dsp-analysis/SKILL.md",
+      "line": 143,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "- Adjacent compartments profiled separately do not show **colocalisation**.",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "CLAUDE.md",
+      "line": 225,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "6. **Never write \"colocalisation.\"** Write \"inferred crosstalk between adjacent",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "CLAUDE.md",
+      "line": 316,
+      "match": "CD45+ AOI",
+      "pattern": "cell_type_label",
+      "text": "CD45-sorted population; same for `TBME` and GFAP. Never write \"CD45+ AOI\", and",
+      "why": "PanCK was the only collection mask (Q2) \u2014 a compartment label is not a cell-type label"
+    },
+    {
+      "category": "prohibition",
+      "file": "CLAUDE.md",
+      "line": 318,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "hard constraint 6 forbids for \"colocalisation\", and it is why P0-T6's marker",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "config/compartment_map.yaml",
+      "line": 14,
+      "match": "CD45+ AOI",
+      "pattern": "cell_type_label",
+      "text": "# CD45-sorted population. Do not write \"CD45+ AOI\" or treat a compartment label",
+      "why": "PanCK was the only collection mask (Q2) \u2014 a compartment label is not a cell-type label"
+    },
+    {
+      "category": "prohibition",
+      "file": "config/compartment_map.yaml",
+      "line": 16,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "# \"colocalisation\". P0-T6's marker sanity check is what evidences these labels.",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "config/config.yaml",
+      "line": 258,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "# \"colocalisation\" and never \"spatially adjacent\": there are no coordinates",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "docs/data-provenance.md",
+      "line": 138,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "Same reasoning as hard constraint 6, which forbids \"colocalisation\": state the",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "docs/limitations.md",
+      "line": 69,
+      "match": "CD45+ AOI",
+      "pattern": "cell_type_label",
+      "text": "\"CD45+ AOI\", and never treat a compartment label as a cell-type label. Cell-type",
+      "why": "PanCK was the only collection mask (Q2) \u2014 a compartment label is not a cell-type label"
+    },
+    {
+      "category": "prohibition",
+      "file": "workflow/report/crosstalk_network.rst",
+      "line": 8,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "**This is not colocalisation and it is not spatial proximity.** This assay",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "workflow/report/crosstalk_null.rst",
+      "line": 62,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "compartments**. It is not colocalisation and not spatial proximity: this assay",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "workflow/rules/06_crosstalk.smk",
+      "line": 6,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "# NEVER \"colocalisation\" and never \"spatially adjacent\" (hard constraint 6).",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "workflow/rules/06_crosstalk.smk",
+      "line": 583,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "NEVER colocalisation and never spatially adjacent. There are no",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "workflow/rules/06_crosstalk.smk",
+      "line": 648,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "* Never a claim of colocalisation, spatial adjacency or spatial",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "workflow/rules/06_crosstalk.smk",
+      "line": 652,
+      "match": "GFAP+ AOI",
+      "pattern": "cell_type_label",
+      "text": "* Never a CD45+ or GFAP+ AOI \u2014 PanCK was the ONLY collection mask (Q2).",
+      "why": "PanCK was the only collection mask (Q2) \u2014 a compartment label is not a cell-type label"
+    },
+    {
+      "category": "prohibition",
+      "file": "workflow/scripts/crosstalk_pairs.py",
+      "line": 310,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "\"crosstalk is absent. Never write 'colocalisation' or 'spatially \"",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "workflow/scripts/language_audit.py",
+      "line": 15,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "* **Never a claim of colocalisation, spatial adjacency or spatial",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "workflow/scripts/language_audit.py",
+      "line": 22,
+      "match": "GFAP+ AOI",
+      "pattern": "cell_type_label",
+      "text": "* **Never a CD45+ or GFAP+ AOI.** PanCK was the ONLY collection mask (Q2).",
+      "why": "PanCK was the only collection mask (Q2) \u2014 a compartment label is not a cell-type label"
+    },
+    {
+      "category": "prohibition",
+      "file": "workflow/scripts/lr_network.py",
+      "line": 11,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "**Never \"colocalisation\" and never \"spatially adjacent.\"** There are no",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "workflow/scripts/lr_network.py",
+      "line": 73,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "emit(\"  NEVER 'colocalisation' and never 'spatially adjacent'. There are no\")",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "workflow/scripts/lr_network.py",
+      "line": 210,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "\"NOT colocalisation: this assay carries no coordinates\",",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "workflow/scripts/lr_network.py",
+      "line": 251,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "\"colocalisation, never spatially adjacent \u2014 this assay carries no \"",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    }
+  ],
+  "quotations": [
+    {
+      "category": "quotation",
+      "file": "config/ligand_receptor.yaml",
+      "line": 139,
+      "match": "colocaliz",
+      "pattern": "spatial_claim",
+      "text": "colocalized significantly more in tumour than in background sections,",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "quotation",
+      "file": "docs/decisions/0022-gate-4-record.md",
+      "line": 136,
+      "match": "colocaliz",
+      "pattern": "spatial_claim",
+      "text": "comparator's own sentence, which says \"colocalized\" \u2014 because that is what",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "quotation",
+      "file": "workflow/scripts/language_audit.py",
+      "line": 46,
+      "match": "colocaliz",
+      "pattern": "spatial_claim",
+      "text": "says \"colocalized\" \u2014 because that is what the authors wrote, and ADR 0021 \u00a72",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "quotation",
+      "file": "workflow/scripts/language_audit.py",
+      "line": 106,
+      "match": "colocaliz",
+      "pattern": "spatial_claim",
+      "text": "# P4-T6 comparator's own sentence says \"colocalized\"; editing it to satisfy this",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "quotation",
+      "file": "workflow/scripts/language_audit.py",
+      "line": 248,
+      "match": "colocaliz",
+      "pattern": "spatial_claim",
+      "text": "\"comparator's own sentence says 'colocalized', and editing a \"",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    }
+  ],
+  "rule": "This assay carries no coordinates. The supported phrase is 'inferred crosstalk between adjacent compartments' (hard constraint 6). PanCK was the only collection mask, so a compartment label is never a cell-type label (Q2).",
+  "scope": "git ls-files, excluding binary/generated suffixes and results/. What is committed is what makes a claim.",
+  "task": "P4-T7",
+  "violations": []
+}

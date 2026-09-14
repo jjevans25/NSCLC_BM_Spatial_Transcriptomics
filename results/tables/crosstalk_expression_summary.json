@@ -1,0 +1,76 @@
+{
+  "aim": "A5",
+  "background_check": [
+    {
+      "immune_iqr": 0.4094827717909988,
+      "immune_median": 5.259505294498774,
+      "metric": "negprobe_log2",
+      "n_patients": 8,
+      "p_raw": 0.1600256425388966,
+      "site": "brain",
+      "spearman_rho": 0.5476190476190477,
+      "threshold": 0.3,
+      "tumour_iqr": 0.28143357571453365,
+      "tumour_median": 4.935440025957961,
+      "verdict": "shared"
+    },
+    {
+      "immune_iqr": 0.2066035,
+      "immune_median": 0.3520915,
+      "metric": "gene_detection_rate",
+      "n_patients": 8,
+      "p_raw": 0.07098765432098757,
+      "site": "brain",
+      "spearman_rho": 0.6666666666666669,
+      "threshold": 0.3,
+      "tumour_iqr": 0.09458875,
+      "tumour_median": 0.428747,
+      "verdict": "shared"
+    },
+    {
+      "immune_iqr": 0.30951845972757397,
+      "immune_median": 5.323009710612814,
+      "metric": "negprobe_log2",
+      "n_patients": 13,
+      "p_raw": 0.23869970534203375,
+      "site": "lung",
+      "spearman_rho": 0.3516483516483516,
+      "threshold": 0.3,
+      "tumour_iqr": 0.8136750789324685,
+      "tumour_median": 5.060912049587874,
+      "verdict": "shared"
+    },
+    {
+      "immune_iqr": 0.11714999999999998,
+      "immune_median": 0.349738,
+      "metric": "gene_detection_rate",
+      "n_patients": 13,
+      "p_raw": 0.4481273823153657,
+      "site": "lung",
+      "spearman_rho": 0.23076923076923078,
+      "threshold": 0.3,
+      "tumour_iqr": 0.21450800000000003,
+      "tumour_median": 0.390018,
+      "verdict": "negligible"
+    }
+  ],
+  "background_rule": "Reported, never adjusted for and never gated on. Phase 4 correlates across patients, so the relevant gradient is whether a patient's two paired AOIs share their quality \u2014 not the site gradient P3-T4 measured. ADR 0021 \u00a76's Null B is the pre-registered response and runs regardless.",
+  "background_threshold": 0.3,
+  "collapse_rule": "mean_log2",
+  "collapse_sensitivity": "highest_detection_rate",
+  "detected_definition": "clears qc.detection_background_multiple x that AOI's NegProbe-WTX in EVERY constituent AOI \u2014 the conservative reading, because n_detected_both is what tells a reader how much of a rho rests on values at background",
+  "exploratory": true,
+  "exploratory_adr": "ADR 0014",
+  "h5ad": "results/interim/aoi_normalised.h5ad",
+  "n_assertions": 7,
+  "n_genes": 244,
+  "n_patients": {
+    "brain": 8,
+    "lung": 13
+  },
+  "n_rows": 10248,
+  "n_shared_background_measurements": 3,
+  "pre_registered": "ADR 0021 \u00a71",
+  "single_aoi_max_delta": 0.0,
+  "task": "P4-T3a"
+}

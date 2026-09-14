@@ -1,0 +1,191 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: >
+  config/ligand_receptor.yaml — the pinned ligand–receptor interaction database
+  Phase 4 (A5) draws its interaction panel from.
+
+  Shaped after the `reference` block of config.schema.yaml and after
+  external_validation.schema.yaml, with the same addition the latter makes: an
+  `expect` block declaring, BEFORE the parse runs, what the pinned file is
+  supposed to contain. A database whose contents are recorded after reading it
+  documents nothing, and this is where that intent is structural rather than a
+  comment.
+
+  As with checkpoints.schema.yaml, the schema is a floor: it can enforce that a
+  digest is present and well-formed, never that it is the right digest, and it
+  can enforce that `expect` is populated, never that the numbers are true.
+  p4t2a_fetch_lr_db re-verifies the digest from disk on every run and
+  p4t2c_resolve_lr_pairs asserts every `expect` value against the parsed file.
+
+  The interaction panel is PRE-REGISTERED (ADR 0021 §2). Nothing downstream may
+  filter it before the detection rule runs: which interactions turn out to be
+  measurable is the Phase 4 RESULT, not a Phase 4 input. The one exception is
+  `exclude_annotations`, which is pre-registered here and counted separately,
+  because a metabolite ligand has no transcript and its absence is not a
+  detection failure.
+type: object
+required: [ligand_receptor]
+additionalProperties: false
+properties:
+  ligand_receptor:
+    type: object
+    required: [database, version, organism, source, repository, base_url,
+               artifacts, exclude_annotations, expect, external_comparator]
+    additionalProperties: false
+    properties:
+
+      database:
+        type: string
+        enum: [CellChatDB]
+        description: >
+          CellChatDB rather than CellPhoneDB, for one column: `annotation`
+          classifies every interaction as Secreted Signaling, ECM-Receptor or
+          Cell-Cell Contact, and ADR 0014's demotion of A5 was a claim about
+          exactly that axis. The enum is the mechanism — swapping the database
+          changes what every Phase 4 count means, so it cannot happen in a
+          config edit.
+
+      version:
+        type: string
+        description: >
+          v2 (jinworks). Chosen over v1 (sqjin) by measurement rather than
+          argument: against the 18,694 measured symbols v2 yields 1,149
+          one-to-one interactions with both partners on the panel where v1
+          yields 963, and 138 of the 186 extra sit in Cell-Cell Contact — the
+          membrane-bound class this assay resolves — against +45 in the
+          Secreted Signaling class that is largely below background at both
+          sites. ADR 0021 §2 carries the table.
+
+      organism: {type: string, enum: [human]}
+
+      source:
+        type: string
+        pattern: "^(PMID:\\d+)(; ?PMID:\\d+)*$"
+        description: >
+          PMIDs for the database, semicolon-separated. Free text is rejected by
+          pattern, the same contract checkpoints.schema.yaml imposes — and for
+          the same reason ADR 0015 exists: a schema can enforce that a source is
+          PRESENT, never that it is CORRECT, so the least it can do is make the
+          identifier checkable.
+
+      repository: {type: string, pattern: "^https://"}
+
+      base_url:
+        type: string
+        pattern: "/[0-9a-f]{40}$"
+        description: >
+          Must pin a COMMIT, not a branch — the same pattern
+          config.schema.yaml's reference.base_url enforces. The library is a
+          live GitHub repository, so a branch ref would silently change the
+          database under a rerun and the pinned digest would become a failure
+          rather than a control.
+
+      artifacts:
+        type: object
+        minProperties: 1
+        description: >
+          Manifest key -> one file. Same shape as config.yaml's
+          acquire.artifacts, so workflow/scripts/acquire_geo.py and
+          record_provenance.py drive it UNMODIFIED — editing either would fire
+          the code rerun-trigger on p0t2_fetch_geo, whose outputs are
+          protected() (ADR 0005).
+        additionalProperties:
+          type: object
+          required: [remote, dest, stability, sha256]
+          additionalProperties: false
+          properties:
+            remote: {type: string}
+            dest: {type: string}
+            stability:
+              type: string
+              enum: [fixed]
+              description: >
+                `fixed` only. A commit-pinned raw file cannot move, so drift is
+                a failure rather than an observation — unlike GEO's SOFT family
+                file, which is regenerated server-side and is `volatile` there.
+            sha256: {type: string, pattern: "^[0-9a-f]{64}$"}
+
+      exclude_annotations:
+        type: array
+        uniqueItems: true
+        items: {type: string}
+        description: >
+          Interaction classes dropped BEFORE the detection filter and counted
+          separately from it (ADR 0021 §2). v2's 994 `Non-protein Signaling`
+          interactions have metabolite or neurotransmitter ligands with no
+          transcript to measure; leaving them in would let them be counted as
+          "filtered out for low detection" and inflate the before/after gap
+          P4-T2 exists to report honestly. An absence of a gene is not an
+          absence of signal, and the two must not share a denominator.
+
+      external_comparator:
+        type: object
+        required: [citation, source, doi, assay, database_used, tissue,
+                   source_claim, pairs]
+        additionalProperties: false
+        description: >
+          P4-T6's comparator, declared BEFORE any concordance was computed.
+          Informal concordance, never validation — and the schema names
+          `assay`, `database_used` and `tissue` as REQUIRED because the three
+          differences they record are what stop the table being read as a
+          replication. A pair absent from this project's panel is a database
+          difference; a disagreement is two different quantities measured on
+          two different assays, and is evidence against neither result.
+        properties:
+          citation: {type: string}
+          source: {type: string, pattern: "^PMID:\\d+$"}
+          doi: {type: string, pattern: "^10\\."}
+          assay: {type: string}
+          database_used: {type: string}
+          tissue: {type: string}
+          source_claim:
+            type: string
+            description: >
+              The comparator's own words, quoted. A verdict paraphrased from a
+              paper is a verdict written by the person doing the comparing —
+              ADR 0015 exists because citation checking caught four errors a
+              schema could not, and this is the cheapest available guard
+              against the fifth.
+          pairs:
+            type: array
+            minItems: 1
+            uniqueItems: true
+            items:
+              type: object
+              required: [ligand, receptor, reported]
+              additionalProperties: false
+              properties:
+                ligand: {type: string}
+                receptor: {type: string}
+                reported:
+                  type: string
+                  enum: [enriched_in_tumour, not_enriched]
+
+      expect:
+        type: object
+        required: [n_interactions, n_complex, n_excluded_by_annotation, n_usable,
+                   annotations, n_one_to_one, n_one_to_one_measured,
+                   n_complex_usable, n_complex_measured]
+        additionalProperties: false
+        description: >
+          Asserted by p4t2c_resolve_lr_pairs against the parsed file, not
+          discovered from it. If the pinned database parses to different
+          numbers, the pin moved or the parse is wrong, and either stops the
+          phase rather than proceeding against a database nobody checked.
+
+          Everything here is a property of the DATABASE crossed with the measured
+          panel, so it is fixed and checkable in advance. What survives
+          DETECTION is deliberately absent: that is the Phase 4 result, and
+          writing it here would be pre-registering an answer.
+        properties:
+          n_interactions: {type: integer, minimum: 1}
+          n_complex: {type: integer, minimum: 0}
+          n_excluded_by_annotation: {type: integer, minimum: 0}
+          n_usable: {type: integer, minimum: 1}
+          annotations:
+            type: object
+            minProperties: 1
+            additionalProperties: {type: integer, minimum: 0}
+          n_one_to_one: {type: integer, minimum: 1}
+          n_one_to_one_measured: {type: integer, minimum: 1}
+          n_complex_usable: {type: integer, minimum: 0}
+          n_complex_measured: {type: integer, minimum: 0}

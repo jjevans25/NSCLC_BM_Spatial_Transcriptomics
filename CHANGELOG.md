@@ -5,6 +5,57 @@ All notable changes to this project are recorded here. Format loosely follows
 
 ## [Unreleased]
 
+### Added — Phase 4: inferred crosstalk between adjacent compartments (2026-09-14)
+- **GATE 4 PASSED (ADR 0022).** The empirical FDR was computed and honoured and
+  nothing survived it: 0 of 268 lung and 0 of 260 brain primary direction-rows
+  clear FDR 0.05. Gate 4 licenses this outcome in terms. It is an
+  **assay-sensitivity limit, never evidence that the crosstalk is absent**.
+- **ADR 0021** pre-registers Phase 4 in nine sections, committed before the
+  first rule ran: the duplicate-AOI collapse rule, the CellChatDB v2 pin, the
+  0.5 detection floor, the 1:1-primary/complex-exploratory split, keeping every
+  paired patient in the primary, two nulls with one multiplicity family per
+  site, the nomination cap, the `LGALS9` non-substitution, and testing both
+  directions.
+- `config/config.yaml` gains a `crosstalk:` block and `phases.crosstalk: true`
+  in one edit; 12 negative tests against the new schema block were rejected as
+  intended. The rebuild returned **58 of 59 tables byte-identical**, differing
+  only in `h5ad_summary.json`'s `git_sha` and `config_sha256`.
+- `workflow/rules/06_crosstalk.smk`: 12 rules (`p4t1_build_pairs` …
+  `p4t7_language_audit`) and 10 new scripts. **Pure Python plus one 
+  narrow R rule** that reads the pinned `.rda` with base `load()` in the
+  existing `r-geomx` env — no conda env YAML edited, no dependency added.
+- `config/ligand_receptor.yaml` + schema: CellChatDB v2 pinned at commit
+  `75253cd`, the project's **fourth sanctioned writer** under ADR 0005, with an
+  `expect` block asserted against the parsed database and the P4-T6 comparator
+  declared with the source paper's own sentence quoted.
+- **The detection gap by interaction class is the phase's larger result** and is
+  ADR 0014's claim made numeric on 2,239 interactions: ECM-Receptor 45.3% brain
+  / 39.6% lung admitted, Cell-Cell Contact 13.7% / 17.3%, Secreted Signaling
+  6.4% / 5.3%. The matrix axis is measurable roughly eightfold more often.
+- **Background is a patient-level property** (P4-T3a): across a patient's two
+  paired AOIs, `negprobe_log2` ρ +0.548 brain / +0.352 lung and
+  `gene_detection_rate` ρ +0.667 / +0.231. Measured rather than inherited from
+  P3-T4's negligible *site* gradient, which is a different gradient.
+- `p4t7_language_audit` makes PROJECT_PLAN §6's "grep the repo" a **build-time
+  assertion**, and classifies a match inside a prohibition separately from a
+  claim — the literal instruction fails on CLAUDE.md's own hard constraint 6.
+  0 violations, 14 prohibitions across 8 files.
+- Figures `crosstalk_null.png` and `crosstalk_network.png`, both wrapped in
+  `report()` with captions.
+
+### Fixed — Phase 4 defects caught by checks rather than by eye (2026-09-14)
+- **The empirical-FDR step-down was wrong under ties.** At n = 8 Spearman takes
+  42 distinct values across 260 rows; per-row ranks gave tied rows different
+  denominators. Now computed once per distinct |rho| and mapped back by value.
+  Caught by the monotonicity assertion.
+- **`CD96–NECTIN1` was entered into the P4-T6 comparator backwards** and
+  reported as absent from a database that contains it. The comparator's measure
+  is undirected, so the lookup now matches either orientation.
+- **Both figures clipped on first render** — the network's right-hand labels
+  ("CEACAM" for CEACAM1 and CEACAM5) and the colourbar label. Fixed with the
+  `main | colourbar` gridspec. Caught only by opening the PNGs.
+
+
 ### Added — P0-T1: repo scaffold and workflow skeleton (2026-08-23)
 - Full repository tree per PROJECT_PLAN §4.2.
 - `workflow/Snakefile` with target rules `all`, `qc_only`, `phase2`, `phase3`,

@@ -184,6 +184,102 @@ if EXTERNAL_VALIDATION_YAML.exists():
         )
 
 
+
+# --- ligand_receptor.yaml --------------------------------------------------
+# P4-T2. The pinned ligand–receptor interaction database Phase 4 draws its
+# panel from, PRE-REGISTERED in ADR 0021 §2 and committed before the first
+# Phase 4 rule ran.
+#
+# Same contract as CHECKPOINTS and EXTERNAL_VALIDATION above: loaded and
+# validated here so a malformed manifest fails at parse rather than after a
+# 1.5 MB download, and guarded by exists() so the workflow parses cleanly on a
+# checkout that has not fetched it.
+#
+# The path comes from config["crosstalk"]["lr_yaml"] rather than being a literal
+# — unlike EXTERNAL_VALIDATION, whose path is hardcoded in 05_checkpoints.smk.
+# The difference is not an inconsistency: Phase 4 had to edit config.yaml once
+# anyway to add its `crosstalk:` block (ADR 0021 Consequences), so naming the
+# file there costs nothing, whereas P3-T2b would have paid a whole Phase 1–2
+# rebuild for the same key. What both share is the thing that matters — the
+# DATABASE PIN itself lives outside config.yaml, so re-pinning never rebuilds
+# the .h5ad.
+LIGAND_RECEPTOR = None
+LIGAND_RECEPTOR_YAML = Path(config["crosstalk"]["lr_yaml"])
+
+if LIGAND_RECEPTOR_YAML.exists():
+    import yaml
+
+    with open(LIGAND_RECEPTOR_YAML, encoding="utf-8") as _handle:
+        _lr_doc = yaml.safe_load(_handle)
+
+    validate(_lr_doc, "../schemas/ligand_receptor.schema.yaml")
+    LIGAND_RECEPTOR = _lr_doc["ligand_receptor"]
+
+    # Two artifacts sharing a `dest` would collide in resources/ligand_receptor/
+    # and the wildcard fetch rule would offer to produce the same path twice.
+    # The same check REF_KEY_BY_DEST and EXTERNAL_KEY_BY_DEST make.
+    LR_KEY_BY_DEST = {
+        _spec["dest"]: _key
+        for _key, _spec in LIGAND_RECEPTOR["artifacts"].items()
+    }
+    if len(LR_KEY_BY_DEST) != len(LIGAND_RECEPTOR["artifacts"]):
+        raise ValueError(
+            "config ligand_receptor.artifacts: two artifacts share a `dest` "
+            "filename."
+        )
+
+    # The `expect` block is asserted against the parsed database by
+    # p4t2c_resolve_lr_pairs, but one class of error is catchable here, for
+    # free, before anything is downloaded: an exclusion naming a class the
+    # manifest does not itself expect to exist. That is a typo, and a silently
+    # ineffective exclusion would inflate the detection filter's before/after
+    # gap — the exact number ADR 0021 §2 exists to keep honest.
+    _known = set(LIGAND_RECEPTOR["expect"]["annotations"])
+    _unknown = sorted(set(LIGAND_RECEPTOR["exclude_annotations"]) - _known)
+    if _unknown:
+        raise ValueError(
+            f"config ligand_receptor.exclude_annotations names {_unknown}, "
+            f"which is absent from expect.annotations ({sorted(_known)}). An "
+            "exclusion that matches nothing is a typo, and it would quietly "
+            "move non-protein interactions into the detection filter's "
+            "denominator."
+        )
+
+
+# The language audit scans every tracked file, which Snakemake cannot express as
+# an `input:` list without enumerating the repository into the DAG. Without a
+# trigger it would run once and then never again — and a check that goes stale
+# the moment someone edits a doc is worse than no check, because the green
+# output keeps asserting something nobody re-tested.
+#
+# So its trigger is a digest of what it actually scans, computed at parse time.
+# Params are a rerun trigger in Snakemake 8, so editing any tracked prose
+# re-runs the audit and nothing else.
+def _tracked_text_digest():
+    import hashlib
+    import subprocess
+
+    skip = {".png", ".pdf", ".h5ad", ".rda", ".RData", ".gz", ".tar", ".xlsx",
+            ".sha256", ".lock", ".ipynb"}
+    try:
+        tracked = subprocess.run(
+            ["git", "ls-files"], capture_output=True, text=True, check=True
+        ).stdout.split("\n")
+    except Exception:
+        # No git (a tarball export, say). The audit still runs; it just cannot
+        # detect a change, which is the honest degradation rather than a crash.
+        return "no-git"
+    h = hashlib.sha256()
+    for f in sorted(tracked):
+        if not f or Path(f).suffix in skip or f.startswith("results/"):
+            continue
+        h.update(f.encode())
+        try:
+            h.update(Path(f).read_bytes())
+        except OSError:
+            continue
+    return h.hexdigest()
+
 def targets(*phase_names):
     """Union of the target lists of the named phases, honouring config switches.
 

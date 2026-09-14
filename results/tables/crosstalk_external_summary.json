@@ -1,0 +1,43 @@
+{
+  "aim": "A5",
+  "comparator": {
+    "assay": "10x Visium, co-expression within a spot; tumour vs background section",
+    "citation": "De Zuani et al. 2024, Nat Commun 15:4388",
+    "database_used": "CellPhoneDB",
+    "doi": "10.1038/s41467-024-48700-8",
+    "n_pairs": 5,
+    "source": "PMID:38782901",
+    "source_claim": "\"we confirmed that several of the aforementioned tumour-specific L-Rs colocalized significantly more in tumour than in background sections, including NRP1-VEGFA and the ICIs NECTIN2-TIGIT, LGALS9-HAVCR2, and CD96-NECTIN1\". PD1-PDL1 appears in the same figure panel and is absent from that list, which is the basis for its `not_enriched` verdict here.",
+    "tissue": "primary lung (LUAD/LUSC), treatment-naive; NO brain metastasis arm"
+  },
+  "concordance_counts": {
+    "agrees": 2,
+    "not_assessable": 16,
+    "not_recovered": 2
+  },
+  "exploratory": true,
+  "exploratory_adr": "ADR 0014",
+  "is_validation": false,
+  "lgals9_rule": "LGALS9 is absent from the panel and is reported not_on_panel. LGALS9C is NOT substituted \u2014 adding a gene to an analysis panel is a stop-and-ask (ADR 0021 \u00a78, ADR 0011, ADR 0015).",
+  "n_assertions": 3,
+  "plan_defect": "PROJECT_PLAN \u00a76 P4-T6 names four comparator pairs; the source reports FIVE \u2014 NRP1-VEGFA, NECTIN2-TIGIT, LGALS9-HAVCR2 and CD96-NECTIN1 enriched, PD1-PDL1 not. CD96-NECTIN1 is included here because a comparator list that drops one of the source's own results is a comparison chosen after the fact. Recorded in the Gate 4 ADR, since the plan is gitignored.",
+  "reading_rule": "`not_recovered` means UNINFORMATIVE, never contradicted: the power floor is 1.1-1.3 SD (P0-T8) and the two designs measure different quantities. `not_on_panel`, `not_in_database` and `below_detection_floor` are kept separate from `not_recovered` so an assay limit cannot become a biological claim.",
+  "status_counts": {
+    "below_detection_floor": 8,
+    "evaluable": 4,
+    "not_in_database": 4,
+    "not_on_panel": 4
+  },
+  "status_meanings": {
+    "below_detection_floor": "both partners are on the panel but at least one is below background in its compartment \u2014 not measurable, NOT a disagreement",
+    "evaluable": "both partners above the floor; a rho and an FDR exist",
+    "not_in_database": "the pair is not an interaction in CellChatDB v2",
+    "not_on_panel": "the symbol is absent from the 18,694 measured genes"
+  },
+  "task": "P4-T6",
+  "three_differences": [
+    "They used CellPhoneDB; this project uses CellChatDB. A pair missing from our panel is a DATABASE difference, never a biological one.",
+    "They measured co-expression within a Visium spot, tumour vs background section. This project measures a cross-patient correlation between two compartments with NO coordinates. Different quantities: agreement is encouraging, disagreement is evidence against neither.",
+    "They profiled primary lung (LUAD/LUSC). The brain arm has NO comparator, and TIME-B n = 8."
+  ]
+}

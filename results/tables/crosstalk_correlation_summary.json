@@ -1,0 +1,50 @@
+{
+  "aim": "A5",
+  "complex_value_rule": "mean of subunit log2 values \u2014 the arithmetic mean of log2 is the geometric mean on the linear scale, CellChat's own convention for scoring a heteromer",
+  "exploratory": true,
+  "exploratory_adr": "ADR 0014",
+  "interpretation_rule": "UNCALIBRATED. With ~1000 interactions at n = 13, |rho| > 0.7 arises by chance; PROJECT_PLAN \u00a76 P4-T4 says the ranking is uninterpretable without an empirical null. This table is an INPUT to P4-T4, not a result, and Gate 4 turns on P4-T4.",
+  "method": "spearman",
+  "min_n_patients_sensitivity": 6,
+  "n_assertions": 5,
+  "n_exploratory_rows": 267,
+  "n_patients": {
+    "brain": 8,
+    "lung": 13
+  },
+  "n_primary_rows": 528,
+  "n_sensitivity_fitted": 370,
+  "n_sensitivity_sign_flips": 68,
+  "n_time_b": 8,
+  "patients": {
+    "brain": [
+      "P5",
+      "P12",
+      "P14",
+      "P15",
+      "P19",
+      "P20",
+      "P31",
+      "P35"
+    ],
+    "lung": [
+      "P5",
+      "P12",
+      "P15",
+      "P18",
+      "P19",
+      "P24",
+      "P26",
+      "P29",
+      "P30",
+      "P32",
+      "P35",
+      "P40",
+      "P43"
+    ]
+  },
+  "power_floor_sd": "1.1-1.3",
+  "pre_registered": "ADR 0021 \u00a7\u00a75, 9",
+  "reporting_rule": "Every row carries n, n_detected_both and both partners' per-site detection counts (ADR 0014). TIME-B n = 8 (hard constraint 8). The exploratory table gets no q of any kind, ever (ADR 0021 \u00a74).",
+  "task": "P4-T3b"
+}

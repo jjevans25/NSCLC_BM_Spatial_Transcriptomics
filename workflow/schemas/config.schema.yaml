@@ -4,7 +4,8 @@ description: >
   snakemake.utils.validate() at Snakefile load time, so a hand-edit that
   breaks the contract fails at parse rather than three rules later.
 type: object
-required: [project, paths, samples, seed, qc, normalisation, phases, acquire, landscape, contexture, checkpoints, reference]
+required: [project, paths, samples, seed, qc, normalisation, phases, acquire, landscape,
+           contexture, checkpoints, crosstalk, reference]
 additionalProperties: false
 properties:
   project:
@@ -369,6 +370,151 @@ properties:
               Gene refit in statsmodels.MixedLM as an implementation
               cross-check. Estimates and SEs are compared; df and p are not,
               because lmerTest uses Satterthwaite and statsmodels a Wald z.
+  crosstalk:
+    type: object
+    description: >
+      Phase 4 (A5) — inferred crosstalk between adjacent compartments,
+      EXPLORATORY per ADR 0014. Every threshold here was pre-registered in
+      ADR 0021 and committed before any Phase 4 result was computed; a ranked
+      correlation is the easiest quantity in this project to manufacture by
+      choosing a threshold late, which is why P4-T1's own acceptance criterion
+      is "ADR committed before running anything".
+    required: [lr_yaml, adjacencies, pairing, detection, correlation, null_calibration]
+    additionalProperties: false
+    properties:
+      lr_yaml:
+        type: string
+        description: >
+          Path to the pinned ligand–receptor database manifest, validated
+          against ligand_receptor.schema.yaml at Snakefile load. A separate file
+          for the same reason signatures.yaml and checkpoints.yaml are: this
+          file is a declared input of p0t7_assemble_h5ad, so editing it rebuilds
+          the .h5ad and re-runs Phases 1–3. Re-pinning a database must not cost
+          that.
+      adjacencies:
+        type: object
+        description: >
+          The compartment pairs Phase 4 correlates across, keyed on aoi_code and
+          never on compartment — `compartment` is degenerate across sites (L, LB
+          and mLN are all `tumour`), so keying on it would pool lung and brain.
+          TBME is deliberately absent despite being the glial side of a brain
+          adjacency: 20 of 20 of its AOIs sit in one DSP run, so batch is
+          inseparable from biology there (ADR 0009 §3, ADR 0014 §3). Re-scoping
+          this list is a stop-and-ask.
+        minProperties: 2
+        additionalProperties:
+          type: object
+          required: [tumour, immune]
+          additionalProperties: false
+          properties:
+            tumour: {type: string}
+            immune: {type: string}
+      pairing:
+        type: object
+        required: [duplicate_rule, duplicate_sensitivity, expected_n_patients]
+        additionalProperties: false
+        properties:
+          duplicate_rule:
+            type: string
+            enum: [mean_log2, highest_detection_rate]
+            description: >
+              How a patient's duplicate AOIs on one side of an adjacency are
+              collapsed. ADR 0021 §1 pre-registers mean_log2 as the primary,
+              because the alternative needs a tiebreak rule that does not exist
+              in this project and inventing one after seeing the correlations is
+              the ADR 0016 §3 failure. Affects P12 and P24 only — 2 of 13 lung
+              patients, 0 of 8 brain — so it cannot be load-bearing. This is
+              flag-don't-drop applied to a collapse: no AOI is discarded.
+          duplicate_sensitivity:
+            type: string
+            enum: [mean_log2, highest_detection_rate]
+            description: >
+              The rejected collapse rule, run in full and reported beside the
+              primary with a delta column. ADR 0012's shape, applied to a third
+              choice.
+          expected_n_patients:
+            type: object
+            required: [lung, brain]
+            additionalProperties: false
+            description: >
+              Asserted by p4t1_build_pairs against design_matrix.tsv, not
+              discovered. If either count moves, the design changed and the
+              phase stops rather than adapting to it. brain = 8 is the binding
+              constraint on the whole project and every brain claim states it
+              inline (hard constraint 8).
+            properties:
+              lung: {type: integer, minimum: 2}
+              brain: {type: integer, minimum: 2}
+      detection:
+        type: object
+        required: [detected_in_aoi_fraction]
+        additionalProperties: false
+        properties:
+          detected_in_aoi_fraction:
+            type: number
+            exclusiveMinimum: 0
+            maximum: 1
+            description: >
+              Fraction of a compartment's AOIs in which a gene must clear
+              qc.detection_background_multiple × that AOI's NegProbe-WTX level
+              (ADR 0007) to count as present there. Identical to
+              contexture.scoring's and checkpoints.detection's value by design:
+              Phase 4 introduces no threshold the project did not already
+              operate under, so its coverage numbers compare directly with the
+              earlier phases'. A pair enters only if BOTH members clear it, each
+              in the compartment that member is measured in, evaluated per
+              direction — CellChatDB is directed. ADR 0021 §3.
+      correlation:
+        type: object
+        required: [method, min_n_patients]
+        additionalProperties: false
+        properties:
+          method:
+            type: string
+            enum: [spearman]
+            description: >
+              Spearman, never Pearson: at n = 13 and n = 8 Pearson is a coin
+              flip on one outlier (PROJECT_PLAN §6, P4-T3). The enum is the
+              mechanism — a config edit cannot quietly switch it.
+          min_n_patients:
+            type: integer
+            minimum: 3
+            description: >
+              Binds the DETECTED-BOTH SENSITIVITY ONLY. The primary keeps every
+              paired patient at fixed n with n_detected_both as a column,
+              because dropping on detection is expression-dependent selection —
+              it removes the low values of both members preferentially, which
+              induces correlation rather than removing it — and because a
+              varying n would force the permutation null to be recalibrated at
+              every distinct n. ADR 0021 §5.
+      null_calibration:
+        type: object
+        required: [n_permutations, n_matched_draws, n_expression_deciles, fdr_alpha]
+        additionalProperties: false
+        properties:
+          n_permutations:
+            type: integer
+            minimum: 1000
+            description: >
+              NULL A, the one Gate 4 turns on: permute THE PAIRING, not the
+              expression — patient labels on the immune side, within site, so
+              the null preserves both n's. Seeded from config.seed and passed
+              explicitly; no implicit RNG. p1t3_variance_partition is the
+              in-repo precedent.
+          n_matched_draws:
+            type: integer
+            minimum: 1000
+            description: >
+              NULL B, the abundance-matched control (ADR 0021 §6): random gene
+              pairs from the same mean-expression decile as the real ligand and
+              receptor, true pairing intact. It asks whether a nomination beats
+              "high-expression genes correlate with high-expression genes",
+              which is the likeliest way this phase produces a wrong answer
+              given that the surviving ligand class is the broadly-expressed
+              membrane and matrix one. It qualifies a nomination; it is not a
+              second gate and adds no second FDR family.
+          n_expression_deciles: {type: integer, minimum: 2}
+          fdr_alpha: {type: number, exclusiveMinimum: 0, maximum: 1}
   reference:
     type: object
     description: >

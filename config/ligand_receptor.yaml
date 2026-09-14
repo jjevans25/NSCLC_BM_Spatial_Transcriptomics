@@ -1,0 +1,155 @@
+# ---------------------------------------------------------------------------
+# P4-T2 — the pinned ligand-receptor interaction database for Phase 4 (A5).
+#
+# CellChatDB human, v2, from the maintained jinworks/CellChat repository.
+# PRE-REGISTERED in ADR 0021 section 2, committed before the first Phase 4 rule
+# ran. Which interactions exist is Phase 4's panel, and a panel chosen after
+# seeing which pairs correlate is not a panel.
+#
+# WHY CellChatDB AND NOT CellPhoneDB: one column. `annotation` classifies every
+# interaction as Secreted Signaling, ECM-Receptor or Cell-Cell Contact, and
+# ADR 0014's case for demoting A5 was a claim about exactly that axis --
+# "secreted ligands and chemokines are systematically undetected". With the
+# class column, P4-T2's before-and-after filtering counts are reported BY CLASS,
+# which turns ADR 0014's sentence into a measured number.
+#
+# WHY v2 AND NOT v1: measured, not argued (ADR 0021 section 2). Against the
+# 18,694 measured symbols, v2 yields 1,149 one-to-one interactions with both
+# partners on the panel where v1 yields 963 -- and 138 of those 186 extra sit in
+# Cell-Cell Contact, the membrane-bound class this assay actually resolves,
+# against +45 in the Secreted Signaling class that is largely below background
+# at both sites. v2 adds coverage where Phase 4 can measure something.
+#
+# WHY AN .rda AND NOT A SPREADSHEET: the CellChat paper's Springer supplementary
+# files were probed first, to reuse P3-T2b's dependency-free xlsx reader.
+# 41467_2021_21246_MOESM4_ESM.xlsx is a METHOD COMPARISON (sheets: CellChat,
+# CellPhoneDB, iTALK, SingleCellSignalR) and MOESM5 is developmental trajectory
+# data; the paper does not deposit the database. Recorded so the route is not
+# re-probed. The .rda is read with base R `load()` -- a base function, no
+# CellChat installation -- in the EXISTING, UNMODIFIED r-geomx env, which
+# already reads .RData in deconvolve.R. No conda env YAML is edited and no
+# dependency is added anywhere.
+#
+# THIS FILE IS NOT config/config.yaml, deliberately. config.yaml's SHA-256 goes
+# into the .h5ad `uns`, so an edit there rebuilds Phases 1-3; Phase 4 paid that
+# once when it opened its config block and must not pay it again to re-pin a
+# database. Same reasoning as config/external_validation.yaml (P3-T2b).
+#
+# Fetched into resources/ligand_receptor/ under ADR 0005's rules: protected()
+# outputs, a pinned digest, `fixed` because a commit-pinned raw file cannot move.
+# This is the project's FOURTH sanctioned writer, after P0-T2 (GEO), P2-T5
+# (SpatialDecon references) and P3-T2b (the source publication's supplementary).
+# ---------------------------------------------------------------------------
+ligand_receptor:
+
+  database: CellChatDB
+  version: "v2"
+  organism: human
+  # Cited for the database; v2's protocol paper is PMID 39289562. The v1
+  # description is PMID 33597522 (Jin et al. 2021, Nat Commun 12:1088), which is
+  # where the Secreted / ECM-Receptor / Cell-Cell Contact taxonomy is defined.
+  source: "PMID:33597522; PMID:39289562"
+  repository: https://github.com/jinworks/CellChat
+
+  # Pins a COMMIT, not `master` -- the same rule config.yaml's reference.base_url
+  # follows, and for the same reason: a branch ref would silently change the
+  # database under a rerun, and the sha256 below would then be a failure rather
+  # than a control.
+  base_url: https://raw.githubusercontent.com/jinworks/CellChat/75253cd0c9e68410e6e721a6d3a0419a1d7e358f
+
+  artifacts:
+    cellchatdb_human:
+      # A base-R .rda holding one object, `CellChatDB.human`, with four
+      # components: interaction (3,233 rows), complex (338), cofactor and
+      # geneInfo. Only `interaction` and `complex` are used; `cofactor` and
+      # `geneInfo` are exported for provenance and read by nothing.
+      remote: data/CellChatDB.human.rda
+      dest: CellChatDB.human.rda
+      stability: fixed
+      sha256: "582e99db2bb1b1e05c0364553893d804952bd007fef870720a9cc659a7bd3ad8"
+
+  # Pre-registered EXCLUSION, applied before the detection filter and counted
+  # separately from it (ADR 0021 section 2). These 994 interactions have
+  # metabolite or neurotransmitter ligands with no transcript to measure.
+  # Leaving them in would let them be counted as "filtered out for low
+  # detection" and silently inflate the before/after gap P4-T2 exists to report
+  # honestly -- an absence of a gene is not an absence of signal.
+  exclude_annotations:
+    - "Non-protein Signaling"
+
+  # ASSERTED on read, not discovered. If the pinned file parses to different
+  # numbers, the pin moved or the parse is wrong, and either stops the phase
+  # rather than proceeding against a database nobody checked. Counts verified
+  # against the pinned commit at P4-T2.
+  expect:
+    n_interactions: 3233
+    n_complex: 338
+    n_excluded_by_annotation: 994
+    n_usable: 2239
+    annotations:
+      "Cell-Cell Contact": 535
+      "ECM-Receptor": 424
+      "Non-protein Signaling": 994
+      "Secreted Signaling": 1280
+    # Resolution against the 18,694 measured symbols, BEFORE any detection
+    # filter. These are a property of the database crossed with the panel, so
+    # they are fixed and checkable; what survives DETECTION is the Phase 4
+    # result and is deliberately absent from this file.
+    n_one_to_one: 1256
+    n_one_to_one_measured: 1149
+    n_complex_usable: 983
+    n_complex_measured: 967
+
+  # ---------------------------------------------------------------------------
+  # P4-T6 — the external comparator, PRE-REGISTERED before any concordance was
+  # computed. Informal concordance, NOT validation (PROJECT_PLAN section 6).
+  #
+  # De Zuani M, Xue H, Park JS, et al. "Single-cell and spatial transcriptomics
+  # analysis of non-small cell lung cancer." Nat Commun 2024;15:4388.
+  # PMID 38782901, PMC11116453, DOI 10.1038/s41467-024-48700-8.
+  #
+  # The pairs and their verdicts are TAKEN FROM THE PAPER'S OWN FULL TEXT, quoted
+  # in `source_claim` below, not from a summary of it. The plan named four pairs;
+  # the paper reports FIVE, and CD96-NECTIN1 is included here because a comparator
+  # list that drops one of the source's own results is a comparison chosen after
+  # the fact. Recorded as a plan defect in ADR 0022 (Markdowns/PROJECT_PLAN.md is
+  # gitignored, so the ADR is the durable record).
+  #
+  # THREE DIFFERENCES THAT ARE NOT DETAILS, and the P4-T6 paragraph must carry
+  # them or the table is misleading:
+  #   1. THEY USED CellPhoneDB; THIS PROJECT USES CellChatDB. A pair absent from
+  #      our panel is a DATABASE difference, never a biological one.
+  #   2. THEY MEASURED CO-EXPRESSION WITHIN A VISIUM SPOT, tumour section against
+  #      background section. This project measures a CROSS-PATIENT CORRELATION
+  #      between two compartments with NO coordinates. These are different
+  #      quantities; agreement is encouraging and disagreement is evidence against
+  #      neither.
+  #   3. THEY PROFILED PRIMARY LUNG (LUAD/LUSC). The brain arm has no comparator
+  #      at all, and TIME-B n = 8.
+  # ---------------------------------------------------------------------------
+  external_comparator:
+    citation: "De Zuani et al. 2024, Nat Commun 15:4388"
+    source: "PMID:38782901"
+    doi: "10.1038/s41467-024-48700-8"
+    assay: "10x Visium, co-expression within a spot; tumour vs background section"
+    database_used: CellPhoneDB
+    tissue: "primary lung (LUAD/LUSC), treatment-naive; NO brain metastasis arm"
+    source_claim: >
+      "we confirmed that several of the aforementioned tumour-specific L-Rs
+      colocalized significantly more in tumour than in background sections,
+      including NRP1-VEGFA and the ICIs NECTIN2-TIGIT, LGALS9-HAVCR2, and
+      CD96-NECTIN1". PD1-PDL1 appears in the same figure panel and is absent from
+      that list, which is the basis for its `not_enriched` verdict here.
+    # Orientation follows CellChatDB's own, NOT the paper's prose order: the
+    # comparator measured CO-EXPRESSION WITHIN A SPOT, which is undirected, so
+    # "NRP1-VEGFA" and "CD96-NECTIN1" carry no ligand/receptor claim. The lookup
+    # in lr_external_crossref.py matches EITHER orientation for the same reason —
+    # orienting each pair by hand is a transcription step with nothing to check
+    # it, and it initially entered CD96-NECTIN1 backwards and reported a pair the
+    # database does contain as absent.
+    pairs:
+      - {ligand: VEGFA,   receptor: NRP1,    reported: enriched_in_tumour}
+      - {ligand: NECTIN2, receptor: TIGIT,   reported: enriched_in_tumour}
+      - {ligand: LGALS9,  receptor: HAVCR2,  reported: enriched_in_tumour}
+      - {ligand: CD96,    receptor: NECTIN1, reported: enriched_in_tumour}
+      - {ligand: CD274,   receptor: PDCD1,   reported: not_enriched}

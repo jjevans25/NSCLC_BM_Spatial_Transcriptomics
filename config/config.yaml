@@ -67,7 +67,7 @@ phases:
   landscape: true       # P1-T1/T2
   contexture: true         # P2-T1..T7
   checkpoints: true       # P3-T1..T7 (ADR 0015, ADR 0016)
-  crosstalk: false
+  crosstalk: true        # P4-T1..T7 (ADR 0021)
   survival: false          # gated on Q5 (P0-T4)
   fair: false
 
@@ -252,6 +252,109 @@ checkpoints:
     # AOIs), so it is the best-conditioned fit -- a cross-check should test the
     # implementation, not the optimiser's behaviour at the detection floor.
     crosscheck_gene: CD276
+
+crosstalk:
+  # Phase 4 / A5 -- inferred crosstalk between adjacent compartments. Never
+  # "colocalisation" and never "spatially adjacent": there are no coordinates
+  # (hard constraint 6). EXPLORATORY per ADR 0014 -- Phase 4 computes
+  # everything, but no A5 result may be a headline claim, every nomination
+  # states the per-site detection of BOTH partners, and the anticipated null is
+  # an assay-sensitivity limit, never evidence that the crosstalk is absent.
+  #
+  # Every threshold in this block was PRE-REGISTERED in ADR 0021 and committed
+  # before any Phase 4 result was computed. A ranked correlation is the single
+  # easiest thing in this project to manufacture by choosing a threshold late.
+
+  # The pinned ligand-receptor database (CellChatDB human), validated against
+  # ligand_receptor.schema.yaml at Snakefile load. A separate file from this one
+  # for the same reason signatures.yaml and checkpoints.yaml are: config.yaml is
+  # a declared input of p0t7_assemble_h5ad, so editing it rebuilds the .h5ad and
+  # re-runs Phases 1-3. Re-pinning a database has no business costing that.
+  lr_yaml: config/ligand_receptor.yaml
+
+  # The two adjacencies, keyed on aoi_code and NEVER on compartment.
+  # `compartment` is degenerate across sites -- L, LB and mLN are all `tumour`
+  # -- so keying on it would pool lung and brain and destroy the contrast.
+  #
+  # TBME is deliberately absent despite being the glial side of a brain
+  # adjacency: all 20 of its AOIs sit in one DSP run, so batch is inseparable
+  # from biology there (Q3, ADR 0009 section 3). ADR 0014 section 3 records the
+  # reasoning, and re-scoping this list is a stop-and-ask.
+  adjacencies:
+    lung:
+      tumour: "L"
+      immune: "TIME-L"
+    brain:
+      tumour: "LB"
+      immune: "TIME-B"
+
+  pairing:
+    # ADR 0021 section 1. P12 and P24 each contribute two TIME-L AOIs and one L;
+    # nothing in the brain set is duplicated. The primary averages them on the
+    # log2 scale, pre-registered before any rho was computed, because the
+    # alternative needs a tiebreak rule that does not exist anywhere in this
+    # project and inventing one after seeing the correlations is the failure
+    # ADR 0016 section 3 exists to prevent.
+    duplicate_rule: mean_log2
+    # The rejected option, run in full as a declared sensitivity and reported
+    # beside the primary with a delta column -- ADR 0012's shape. It moves 2 of
+    # 13 lung patients and 0 of 8 brain ones, so it cannot be load-bearing.
+    duplicate_sensitivity: highest_detection_rate
+    # Asserted by p4t1_build_pairs, not discovered. If either count moves, the
+    # design changed and the phase stops rather than adapting to it.
+    expected_n_patients:
+      lung: 13
+      brain: 8
+
+  detection:
+    # ADR 0021 section 3. Identical to contexture.scoring's and
+    # checkpoints.detection's value, and deliberately so: Phase 4 introduces no
+    # threshold the project did not already operate under, and its coverage
+    # numbers stay directly comparable with Phases 2 and 3.
+    #
+    # The per-value rule underneath is unchanged and is NOT re-derived --
+    # q3 > qc.detection_background_multiple x that AOI's NegProbe-WTX (ADR 0007),
+    # lifted from checkpoint_detection.py rather than written a third time.
+    #
+    # A pair enters only if BOTH members clear this, each in the compartment
+    # that member is measured in, evaluated PER DIRECTION (CellChatDB is
+    # directed). Detection is computed over all AOIs of an aoi_code, not over
+    # the paired subset, so the numbers compare with the earlier phases'.
+    detected_in_aoi_fraction: 0.5
+
+  correlation:
+    # Spearman, never Pearson: at n = 13 and n = 8 Pearson is a coin flip on one
+    # outlier (PROJECT_PLAN section 6, P4-T3).
+    method: spearman
+    # Binds the DETECTED-BOTH SENSITIVITY ONLY. The primary keeps every paired
+    # patient at fixed n (13 lung, 8 brain) with n_detected_both as a column,
+    # because dropping on detection is expression-dependent selection -- it
+    # removes the low values of both members preferentially, which is a
+    # mechanism for inducing a correlation rather than removing one -- and
+    # because a varying n would force the permutation null to be recalibrated
+    # at every distinct n. ADR 0021 section 5.
+    min_n_patients: 6
+
+  null_calibration:
+    # P4-T4, and THE TASK GATE 4 TURNS ON. With ~1000 pairs at n = 13, |rho|
+    # above 0.7 arises by chance; without an empirical null the ranking is
+    # uninterpretable. Gate 4's pass condition is this number being computed and
+    # honoured -- a surviving list and an empty list both pass, a ranked list
+    # with no null does not.
+    #
+    # NULL A (the gate): permute THE PAIRING, not the expression -- patient
+    # labels on the immune side, WITHIN site, so the null preserves both n's.
+    n_permutations: 10000
+    # NULL B (the control, ADR 0021 section 6): random gene pairs drawn from the
+    # same mean-expression decile as the real ligand and receptor, with the TRUE
+    # pairing intact. It asks whether a nomination beats "high-expression genes
+    # correlate with high-expression genes" -- the single most likely way this
+    # phase produces a wrong answer, given that the surviving ligand class is
+    # the broadly-expressed membrane and matrix one. It qualifies a nomination;
+    # it is NOT a second gate and introduces no second FDR family.
+    n_matched_draws: 10000
+    n_expression_deciles: 10
+    fdr_alpha: 0.05
 
 acquire:
   # P0-T2 source manifest. Fetched into paths.raw; resources/ is read-only

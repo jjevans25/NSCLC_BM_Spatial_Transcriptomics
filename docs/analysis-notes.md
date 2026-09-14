@@ -163,3 +163,68 @@ sits wholly within one DSP run, so batch is inseparable from biology there
 (ADR 0009 §3). Those three are audited and plotted but never modelled
 (ADR 0016 §2), which is why §6's "tumour vs. immune vs. glial" is answered here
 as tumour vs. immune only.
+
+---
+
+## P4-T6 — what agreement and disagreement with the Visium study each mean
+
+The comparator is De Zuani et al. 2024, *Nat Commun* 15:4388 (PMID 38782901),
+pre-registered in `config/ligand_receptor.yaml` with the paper's own sentence
+quoted before any concordance was computed. **It is an informal concordance
+check and not validation**, and three differences make that structural rather
+than cautionary.
+
+**They used CellPhoneDB; this project uses CellChatDB v2.** A pair missing from
+our panel is a *database* difference, never a biological one — and that is not a
+hypothetical caveat here. `VEGFA–NRP1` was the comparator the Phase 3 handoff
+called "the one where both partners are detected nearly everywhere and the
+concordance check is genuinely informative". Both partners *are* detected. But
+CellChatDB v2 carries VEGFA to FLT1 and to KDR, with NRP1 appearing only as a
+SEMA3x co-receptor; CellPhoneDB pairs them directly. The one informative
+comparator turned out to be unevaluable for a reason nobody anticipated, and it
+had nothing to do with this assay.
+
+**They measured co-expression within a Visium spot**, tumour section against
+background section. This project measures a **cross-patient correlation between
+two compartments**, and has no coordinates at all. These are different
+quantities. Neither design can falsify the other.
+
+**They profiled primary lung (LUAD/LUSC).** The brain metastasis arm — the thing
+this project exists to ask about — **has no comparator**, and `TIME-B` n = 8.
+
+### What each verdict is worth
+
+**Agreement is encouraging and is not confirmation.** Two assays measuring
+different quantities can agree for a shared reason that is neither of the
+biologies proposed: high expression in the same tissue will do it. That is what
+the abundance-matched Null B exists to separate (ADR 0021 §6), and a concordant
+pair that fails Null B has not been corroborated by anything. Both agreements
+here are of this weak kind — `CD274–PDCD1`, which the comparator reports as
+*not* enriched and which does not clear our FDR either. Two analyses agreeing
+that they found nothing is the least informative form of agreement there is.
+
+**Disagreement is evidence against neither result.** The power floor here is
+1.1–1.3 SD (P0-T8) and no pair cleared the empirical FDR in either arm, so
+`not_recovered` means **uninformative, never contradicted**. `NECTIN2–TIGIT` and
+`CD96–NECTIN1` both fall here in lung, and in both cases the detected-in-both
+count is the number that explains it: 6 of 13 and 3 of 13.
+
+**Most of the comparator was not assessable at all, for four distinct reasons,
+and they are kept apart on purpose.** Of five pairs: two are *not in our
+database*, one is *not on the panel* (`LGALS9` — the WTA panel carries
+`LGALS1`, `LGALS3`, `LGALS8` and `LGALS9C`, and substituting a paralog to keep a
+comparator alive would be a membership change, ADR 0021 §8), and one arm of a
+fourth is *below the detection floor*. Collapsing `not_on_panel`,
+`not_in_database` and `below_detection_floor` into "did not replicate" is how an
+assay limit becomes a biological claim, so `crosstalk_external_concordance.tsv`
+keeps all four statuses distinct.
+
+### The honest summary
+
+Sixteen of twenty comparator × site × direction cells are `not_assessable`, two
+`agree` on a shared absence, and two are `not_recovered` and uninformative.
+**The concordance check established almost nothing about the biology, and
+establishing that is its actual result** — it is a measurement of how little
+overlap two ligand–receptor analyses have when one has coordinates and 55 µm
+spots and the other has 21 patients and two compartments. Aim A5 is exploratory
+(ADR 0014); no line of this may be a headline claim.

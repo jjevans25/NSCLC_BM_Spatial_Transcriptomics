@@ -61,6 +61,19 @@ rule phase3:
         targets("acquire", "annotate", "qc", "landscape", "contexture", "checkpoints"),
 
 
+rule phase4:
+    input:
+        targets(
+            "acquire",
+            "annotate",
+            "qc",
+            "landscape",
+            "contexture",
+            "checkpoints",
+            "crosstalk",
+        ),
+
+
 rule fair:
     input:
         targets(*ALL_PHASES),

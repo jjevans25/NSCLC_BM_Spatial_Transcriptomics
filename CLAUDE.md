@@ -12,9 +12,9 @@ learning and methods project, not a publication. The full plan lives in
 `Markdowns/PROJECT_PLAN.md` — when this file and the plan disagree, the plan
 wins, and the disagreement is a bug in this file.
 
-**GATE 2 PASSED (2026-08-28). Phases 0, 1 and 2 are complete (P0-T1 … P0-T8,
-P1-T1 … P1-T6, P2-T1 … P2-T7); current phase is Phase 3 (A4 — the checkpoint
-landscape by compartment, exploratory per ADR 0008).** All five open questions
+**GATE 4 PASSED (2026-09-14). Phases 0-4 are complete (P0-T1 … P0-T8,
+P1-T1 … P1-T6, P2-T1 … P2-T7, P3-T1 … P3-T7, P4-T1 … P4-T7); current phase is
+Phase 5 (survival, gated on Q5 = yes) or Phase 6 per the slip rule.** All five open questions
 are answered (`docs/data-provenance.md`), and `docs/limitations.md` records what
 the design cannot support.
 
@@ -72,6 +72,18 @@ Phase 2 is uninformative, not negative.
 Phase 2 therefore estimates the lung-vs-brain contrast **within** compartment,
 never pooled across compartments, and every model carries `(1|patient)` for the
 reason ADR 0009 gives — non-independence, not variance share.
+
+Phase 4 output: `crosstalk_pairs.tsv`, `crosstalk_lr_membership.tsv`,
+`crosstalk_lr_filtered.tsv`, `crosstalk_lr_exploratory.tsv`,
+`crosstalk_expression.tsv`, `crosstalk_background_check.tsv`,
+`crosstalk_correlation.tsv`, `crosstalk_fdr.tsv`, `crosstalk_null.tsv`,
+`crosstalk_nominations.tsv` (**empty, and that is the deliverable**),
+`crosstalk_external_concordance.tsv`, `crosstalk_language_audit.json`; figures
+`crosstalk_null.png`, `crosstalk_network.png`; prose in `docs/analysis-notes.md`.
+The LR database is CellChatDB v2 pinned at a commit in
+`config/ligand_receptor.yaml` — the project's **fourth sanctioned writer** under
+ADR 0005, read from its `.rda` with base R `load()` in the existing `r-geomx`
+env. **No conda env YAML was edited and no dependency was added anywhere.**
 
 Phase 2 output: `signature_scores.tsv`, `signature_coverage.tsv`,
 `signature_models.tsv`, `paired_concordance.tsv`, `decon_composition.tsv`,
@@ -138,8 +150,33 @@ computed at it. Model estimates sit in their own section **below** the plot and
 never on it: the plot is detection, they are expression, and the two move
 opposite ways under the same gradient (ADR 0018).
 
-Next: Phase 3 P3-T7. A4's honest output is reconnaissance, not a claim
-(ADR 0008).
+**GATE 4 (ADR 0022): the empirical FDR was computed and honoured, and nothing
+survived it.** 0 of 268 lung and 0 of 260 brain primary direction-rows clear
+FDR 0.05; smallest 0.497 and 0.228; observed |rho| sits ON the permuted-pairing
+null (median 0.231 vs 0.203 lung, 0.262 vs 0.286 brain). Gate 4 licenses this in
+terms — "no LR pair exceeded chance expectation at n=13" — and it is an
+**assay-sensitivity limit, never evidence that the crosstalk is absent**. The
+gate turns on P4-T4, not P4-T5: `lr_nominations.py` has no fallback path and no
+second threshold, so an empty table was reachable rather than escapable.
+
+**Phase 4's larger result is the detection gap by interaction class, which is
+ADR 0014's claim made numeric on 2,239 interactions.** Fraction admitted (both
+partners above background, each in the compartment it is measured in):
+**ECM-Receptor 45.3% brain / 39.6% lung, Cell-Cell Contact 13.7% / 17.3%,
+Secreted Signaling 6.4% / 5.3%.** The matrix axis is measurable roughly
+**eightfold** more often than the soluble one. Same shape as Gate 3's answer —
+the audit is larger than the estimate.
+
+**Background is a patient-level property, and Phase 4 had to measure its own
+gradient rather than inherit one.** Across a patient's two paired AOIs:
+`negprobe_log2` ρ +0.548 brain / +0.352 lung, `gene_detection_rate` ρ +0.667 /
++0.231 — three of four above threshold. So two background-tracking genes would
+correlate across patients for no biological reason. P3-T4's *site* gradient was
+negligible; **that is a different gradient**. The pre-registered response is
+ADR 0021 §6's abundance-matched Null B, decided before the number was seen.
+
+Next: Phase 5 (survival) or Phase 6 per the slip rule. A5's output is a measured
+assay limit plus an honest null, not a claim (ADR 0014, ADR 0022).
 
 ## The design table — use these numbers, never estimates
 

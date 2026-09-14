@@ -1,0 +1,2 @@
+artifact	file	url	accessed_utc	last_modified	bytes	sha256	stability	pin_status
+cellchatdb_human	CellChatDB.human.rda	https://raw.githubusercontent.com/jinworks/CellChat/75253cd0c9e68410e6e721a6d3a0419a1d7e358f/data/CellChatDB.human.rda	2026-09-14T19:58:04+00:00		1519587	582e99db2bb1b1e05c0364553893d804952bd007fef870720a9cc659a7bd3ad8	fixed	verified

@@ -1,0 +1,83 @@
+{
+  "aim": "A5",
+  "by_site": {
+    "brain": {
+      "exploratory": {
+        "admitted": {
+          "Cell-Cell Contact": 9,
+          "ECM-Receptor": 88,
+          "Secreted Signaling": 29
+        },
+        "in_database": {
+          "Cell-Cell Contact": 62,
+          "ECM-Receptor": 265,
+          "Secreted Signaling": 656
+        }
+      },
+      "primary": {
+        "admitted": {
+          "Cell-Cell Contact": 65,
+          "ECM-Receptor": 72,
+          "Secreted Signaling": 40
+        },
+        "in_database": {
+          "Cell-Cell Contact": 473,
+          "ECM-Receptor": 159,
+          "Secreted Signaling": 624
+        }
+      }
+    },
+    "lung": {
+      "exploratory": {
+        "admitted": {
+          "Cell-Cell Contact": 11,
+          "ECM-Receptor": 49,
+          "Secreted Signaling": 37
+        },
+        "in_database": {
+          "Cell-Cell Contact": 62,
+          "ECM-Receptor": 265,
+          "Secreted Signaling": 656
+        }
+      },
+      "primary": {
+        "admitted": {
+          "Cell-Cell Contact": 82,
+          "ECM-Receptor": 63,
+          "Secreted Signaling": 33
+        },
+        "in_database": {
+          "Cell-Cell Contact": 473,
+          "ECM-Receptor": 159,
+          "Secreted Signaling": 624
+        }
+      }
+    }
+  },
+  "database": "CellChatDB",
+  "detected_in_aoi_fraction": 0.5,
+  "detection_rule": "q3 > 2.0 x that AOI's NegProbe-WTX (ADR 0007), lifted from checkpoint_detection.py, not re-derived",
+  "exploratory": true,
+  "exploratory_adr": "ADR 0014",
+  "exploratory_rule": "complex interactions, every subunit clearing the floor. NO FDR of any kind, ever. No Phase 4 sentence may rest on it (ADR 0021 \u00a74).",
+  "h5ad": "results/interim/aoi_normalised.h5ad",
+  "n_admitted_exploratory_rows": 267,
+  "n_admitted_primary_rows": 528,
+  "n_aoi_per_compartment": {
+    "L": 30,
+    "LB": 27,
+    "TIME-B": 8,
+    "TIME-L": 15
+  },
+  "n_assertions": 5,
+  "n_interactions_usable": 2239,
+  "n_symbols_absent": 86,
+  "n_symbols_named": 1148,
+  "n_symbols_on_panel": 1062,
+  "n_time_b": 8,
+  "pre_registered": "ADR 0021 \u00a7\u00a72-4",
+  "primary_rule": "one-to-one interactions, both partners clearing the floor in the compartment that partner is measured in, per direction. The only Phase 4 table that carries an empirical FDR.",
+  "reporting_rule": "The before/after gap is reported BY INTERACTION CLASS and is the quantitative form of ADR 0014's claim. A class that vanishes is a class this assay cannot resolve, NEVER a class that is biologically absent. TIME-B n = 8 (hard constraint 8).",
+  "task": "P4-T2",
+  "version": "v2"
+}

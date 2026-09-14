@@ -1,0 +1,27 @@
+{
+  "aim": "A5",
+  "by_site": {
+    "brain": {
+      "n_clears_fdr": 0,
+      "n_edges_drawn": 25,
+      "n_nodes": 45,
+      "n_patients": 8
+    },
+    "lung": {
+      "n_clears_fdr": 0,
+      "n_edges_drawn": 25,
+      "n_nodes": 40,
+      "n_patients": 13
+    }
+  },
+  "edge_colour": "RdBu_r on rho. A deliberate REUSE, not a borrow: rho is a signed effect on [-1, 1], the quantity class P2-T7 established RdBu_r for. PRGn centred on the detection multiple stays reserved for a background ratio (ADR 0016 \u00a75).",
+  "edge_style": "Solid clears the empirical FDR, dashed does not. Style rather than presence, because drawing only survivors would make a blank panel for an outcome Gate 4 explicitly licenses, and a blank panel reads as a broken rule rather than a finding.",
+  "excluded": "Complex interactions are not on this figure \u2014 they carry no FDR of any kind (ADR 0021 \u00a74), so they have no style to draw.",
+  "exploratory": true,
+  "exploratory_adr": "ADR 0014",
+  "fdr_alpha": 0.05,
+  "node_identity": "(gene, side). The same gene measured in the two compartments is two measurements; merging them would draw an edge across a compartment it never touched.",
+  "task": "P4-T7",
+  "top_n_edges_per_site": 25,
+  "wording": "inferred crosstalk between adjacent compartments. NEVER colocalisation, never spatially adjacent \u2014 this assay carries no coordinates (hard constraint 6)."
+}
