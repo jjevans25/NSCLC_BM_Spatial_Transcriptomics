@@ -95,6 +95,41 @@ fit. The three dead `*.conda-lock.yml` files are removed.
 
 ---
 
+## Before Phase 5 can start — three prerequisites, none of them optional
+
+Phase 5 is **not** a start-writing-code phase. Checked against the repository,
+not assumed:
+
+1. **Its primary input is not here.** `docs/data-provenance.md` §Q5 establishes
+   that the clinical and time-to-event data live in **Supplementary Data 1 =
+   `41467_2022_33365_MOESM4_ESM.xlsx`**. `resources/supplementary/` holds
+   MOESM5, MOESM6 and MOESM9 — **MOESM4 was never fetched.** P5-T1 cannot run
+   until it is, which means adding an artifact to
+   `config/external_validation.yaml` with a pinned `sha256` under ADR 0005's
+   rules. The existing `p3t2b_fetch_supplementary` wildcard rule will pick it up
+   with no new rule needed.
+
+2. **`config/config.yaml` must be edited, and it rebuilds everything.**
+   `phases.survival` has to flip to `true`, and that file's SHA-256 is recorded
+   in the `.h5ad` `uns` — so the edit re-runs Phases 1–4 (~40 min). Do it
+   **once**, with every Phase 5 key present, and verify it as P3-T1 and P4-T1
+   did: every pre-existing table byte-identical except `h5ad_summary.json`'s
+   `git_sha` and `config_sha256`.
+
+3. **A `survival:` block needs schema work first.** `config.schema.yaml` has
+   `additionalProperties: false` at the root, so a new top-level block fails at
+   parse until `survival` is added to both `properties` and (if required)
+   `required`. Flipping `phases.survival` alone needs no schema change —
+   `phases` is `additionalProperties: {type: boolean}`.
+
+**And the honest framing before any of it:** Gate 5 is *"timebox respected"*.
+PROJECT_PLAN calls Phase 5 a stretch goal, the slip rule says cut it to protect
+Phase 6, and P5-T1's own acceptance criterion permits "a documented
+abandonment". At ~35 patients a KM split is descriptive. If the join in (1)
+does not come out cleanly, stopping is the *designed* outcome, not a failure.
+
+---
+
 ## What Phase 4 left for Phase 6 to use
 
 | need | where |
@@ -138,10 +173,12 @@ fit. The three dead `*.conda-lock.yml` files are removed.
    declared no inputs, so it would have run once and never again — and its green
    output would have kept asserting something nobody re-tested. It now keys on a
    digest of every file it scans.
-7. **`config/config.yaml` has been edited for the last time in the analysis
-   phases.** Every further threshold belongs in a sibling YAML. The Phase 4 edit
-   cost a full Phases 1–3 rebuild and was verified at 58 of 59 tables
-   byte-identical; there is no reason to pay it again.
+7. **Every THRESHOLD belongs in a sibling YAML, not in `config/config.yaml`.**
+   The Phase 4 edit cost a full Phases 1–3 rebuild, verified at 58 of 59 tables
+   byte-identical. Note this is *not* the same as "config.yaml will never be
+   edited again": a phase switch lives there, so **Phase 5 must edit it and will
+   pay the rebuild once**, exactly as Phases 3 and 4 each did. Pay it once, with
+   every key present, and verify it the same way.
 
 ---
 
