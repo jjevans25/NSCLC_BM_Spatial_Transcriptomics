@@ -2,7 +2,7 @@
   "classification_rule": "A match inside a prohibition \u2014 the line, or the one before it, carrying never / not / forbid / avoid / rather than / instead of / cannot \u2014 is the rule being STATED and is counted separately. Everything else fails the build. PROJECT_PLAN \u00a76's literal 'fix every hit' would fail on CLAUDE.md's own hard constraint 6: the files that state a rule have to name what they forbid. A match inside a declared quotation field is a third category: the P4-T6 comparator's own sentence says 'colocalized', and editing a quotation to satisfy this project's style rule would falsify the source (ADR 0021 \u00a72).",
   "clean": true,
   "n_files_scanned": 171,
-  "n_prohibitions": 22,
+  "n_prohibitions": 24,
   "n_quotations": 5,
   "n_violations": 0,
   "patterns": [
@@ -44,6 +44,24 @@
       "match": "colocalis",
       "pattern": "spatial_claim",
       "text": "hard constraint 6 forbids for \"colocalisation\", and it is why P0-T6's marker",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "README.md",
+      "line": 96,
+      "match": "CD45+ AOI",
+      "pattern": "cell_type_label",
+      "text": "a CD45-rich region \u2014 **not** a CD45-sorted population. Never \"CD45+ AOI\".",
+      "why": "PanCK was the only collection mask (Q2) \u2014 a compartment label is not a cell-type label"
+    },
+    {
+      "category": "prohibition",
+      "file": "README.md",
+      "line": 97,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "- **This project does not claim colocalisation.** The assay has no coordinates,",
       "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
     },
     {
