@@ -1,0 +1,131 @@
+{
+  "arms": {
+    "brain": {
+      "aoi_code": "TIME-B",
+      "n_censored": 1,
+      "n_events": 7,
+      "n_patients": 8,
+      "patients": [
+        5,
+        12,
+        14,
+        15,
+        19,
+        20,
+        31,
+        35
+      ]
+    },
+    "lung": {
+      "aoi_code": "TIME-L",
+      "n_censored": 1,
+      "n_events": 12,
+      "n_patients": 13,
+      "patients": [
+        5,
+        12,
+        15,
+        18,
+        19,
+        24,
+        26,
+        29,
+        30,
+        32,
+        35,
+        40,
+        43
+      ]
+    }
+  },
+  "censoring": {
+    "brain_is_blank": true,
+    "censored_patients": [
+      6,
+      11,
+      35
+    ],
+    "lung_token": "Alive",
+    "note": "The two endpoint columns spell censoring differently and the sets are asserted identical. A censored patient carries no follow-up time in either column; the time is left missing rather than imputed.",
+    "sets_identical": true
+  },
+  "gate": "Gate 5 is 'timebox respected', not 'a result was found'",
+  "join": {
+    "aoi_suffix_equals_patient": true,
+    "every_geo_patient_present": true,
+    "fuzzy_matching": "none \u2014 forbidden by PROJECT_PLAN \u00a76 and ADR 0024 \u00a75",
+    "n_geo_aoi_checked": 113
+  },
+  "n_assertions": 9,
+  "n_cohort": 44,
+  "n_in_geo": 35,
+  "n_phase5_patients": 16,
+  "patients_by_aoi_code": {
+    "TIME-B": [
+      5,
+      12,
+      14,
+      15,
+      19,
+      20,
+      31,
+      35
+    ],
+    "TIME-L": [
+      5,
+      12,
+      15,
+      18,
+      19,
+      24,
+      26,
+      29,
+      30,
+      32,
+      35,
+      40,
+      43
+    ]
+  },
+  "phase": 5,
+  "phase5_patients": [
+    5,
+    12,
+    14,
+    15,
+    18,
+    19,
+    20,
+    24,
+    26,
+    29,
+    30,
+    31,
+    32,
+    35,
+    40,
+    43
+  ],
+  "phase5_shared_patients": [
+    5,
+    12,
+    15,
+    19,
+    35
+  ],
+  "pre_registered": "ADR 0024",
+  "reporting_rule": "No Phase 5 result may be a headline claim. Brain is TIME-B n = 8 (hard constraint 8). With 12 events in lung and 7 in brain a null is an assay- and cohort-size limit \u2014 UNINFORMATIVE, NOT NEGATIVE (ADR 0024 \u00a77) \u2014 and a separation at 6 vs 7 patients describes this cohort rather than supporting an inference. Every p-value carries n, effect size and a confidence interval (hard constraint 7). Three of the six signatures failed their Phase 2 detection floor and are 'not assessable' wherever they did, never a prognostic null (ADR 0008).",
+  "source": {
+    "artifact": "resources/clinical/41467_2022_33365_MOESM4_ESM.xlsx",
+    "data_rows": [
+      3,
+      46
+    ],
+    "header_row": 2,
+    "n_header_cells_normalised": 8,
+    "n_trailing_rows_excluded": 3,
+    "sheet": "Supplementary Data 1"
+  },
+  "stretch": true,
+  "task": "P5-T1"
+}

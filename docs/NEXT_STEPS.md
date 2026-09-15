@@ -1,108 +1,146 @@
-# Next steps — Phase 5 (prognostic association) or Phase 6 (FAIR packaging)
+# Next steps — Phase 5 (prognostic association), setup complete
 
-**Last session:** 2026-09-14
-**Branch:** `main`, pushed and in sync with `origin/main`, working tree clean.
-Phase 4 was squash-merged with the Gate 4 verdict in the message (ADR 0004) and
-the `P4` branch is deleted. *(No SHA is quoted here on purpose: a commit hash in
-this file is stale the moment the next commit lands, and a stale one reads as
-authoritative. Run `git log --oneline -1`.)*
+**Last session:** 2026-09-15
+**Branch:** `P5`, branched from `main` at ADR 0004's one-branch-per-phase rule.
+*(No SHA is quoted here on purpose: a commit hash in this file is stale the
+moment the next commit lands, and a stale one reads as authoritative. Run
+`git log --oneline -1`.)*
 **Gate 0:** PASSED. **Gate 1:** PASSED. **Gate 2:** PASSED (ADR 0014).
-**Gate 3:** PASSED (ADR 0020). **Gate 4:** **PASSED (ADR 0022).**
-**Next free ADR number: 0024.**
+**Gate 3:** PASSED (ADR 0020). **Gate 4:** PASSED (ADR 0022).
+**Gate 5:** not yet reached — it is *"timebox respected"*, not "a result".
+**Next free ADR number: 0025.**
 
-**Phase 4 is complete, merged and pushed.** `snakemake --lint` is clean and a
-plain dry run reports "nothing to be done". Nothing is outstanding from Phase 4
-or from P6-T1.
+**The Phase 5 setup block is DONE.** All three items that gated it are closed,
+and the three constraints on the join are now enforced by the manifest rather
+than remembered:
 
-**Phase 5 is NOT start-writing-code, though — work the setup block below first.
-Item 1 blocks P5-T1 outright.**
+| was | now |
+|---|---|
+| MOESM4 absent from the repo | fetched, pinned, **fifth sanctioned writer** at `resources/clinical/` |
+| `phases.survival: false` | `true`, with a complete `survival:` block, rebuild paid once |
+| no schema for a `survival:` block | `config.schema.yaml` has one; `clinical.schema.yaml` is new |
 
----
-
-## START HERE — Phase 5 setup
-
-**Work these in order. Item 1 blocks everything: P5-T1's primary input is not in
-this repository.** All six were checked against the repo, not assumed.
-
-### 1. Fetch Supplementary Data 1 — BLOCKING
-
-`docs/data-provenance.md` §Q5 establishes that the clinical and time-to-event
-data live in **Supplementary Data 1 = `41467_2022_33365_MOESM4_ESM.xlsx`**.
-`resources/supplementary/` holds **MOESM5, MOESM6 and MOESM9 only — MOESM4 was
-never fetched**, because no earlier phase needed it. P5-T1 cannot run until it
-is there.
-
-Add it as an artifact with a pinned `sha256` under ADR 0005's rules. Two
-mechanical facts, both verified, so nothing gets rebuilt from scratch:
-
-- **No new rule is needed.** `p3t2b_fetch_supplementary` builds its wildcard
-  constraint from `EXTERNAL_KEY_BY_DEST` (`workflow/rules/05_checkpoints.smk:153`),
-  so a new artifact entry is picked up automatically.
-- **It re-triggers `p3t2b_external_validation`.** `EXTERNAL_VALIDATION` is a
-  `params:` of that rule (`05_checkpoints.smk:255`), so adding an artifact
-  changes the params hash and re-parses the 45 MB Source Data xlsx. Expected,
-  not a fault.
-
-**One decision to make first, not a detail:** put the clinical artifact in
-`config/external_validation.yaml` (simplest — the wildcard rule already works),
-**or** give it its own manifest as a *fifth* sanctioned writer. That file is
-named for external *validation* and this is analysis *input*; reusing it is
-convenient and slightly dishonest. Decide deliberately and record it.
-
-### 2. Edit `config/config.yaml` once, and expect the rebuild
-
-`phases.survival` must flip to `true`. That file's SHA-256 is recorded in the
-`.h5ad` `uns`, so the edit **re-runs Phases 1–4 (~40 min)**. Pay it exactly
-once, with every Phase 5 key present, and verify it the way P3-T1 and P4-T1
-verified theirs: every pre-existing table byte-identical except
-`h5ad_summary.json`'s `git_sha` and `config_sha256`.
-
-### 3. A `survival:` block needs schema work *before* it will parse
-
-`workflow/schemas/config.schema.yaml` is `additionalProperties: false` at the
-root, so a new top-level block fails at load until `survival` is added to
-`properties` (and to `required` if it is mandatory). Flipping the phase switch
-alone needs no schema change — `phases` is `additionalProperties: {type: boolean}`.
+**The join gate PASSES, and a rule says so.** `p5t1_clinical_join` re-derives
+both `docs/data-provenance.md` §Q5 assertions on every run: all 35 GEO patients
+appear in Supplementary Data 1, and all 113 non-control AOI-code suffixes equal
+their patient number. It carries **no fuzzy matching and no fallback path** —
+the shape `lr_nominations.py` has, so an honest abandonment stayed reachable
+rather than escapable. 9 of 9 assertions pass. Outputs:
+`results/tables/clinical_cohort.tsv` (44 rows, 35 `in_geo`, 16 `in_phase5`) and
+`clinical_join_summary.json`.
 
 ---
 
-**The next three are not tasks — they are constraints on the join that item 1
-feeds, and each one is a way P5-T1 can silently produce a wrong answer.** Taken
-from `docs/data-provenance.md` §Q5, which is more complete than
-`docs/limitations.md` §8.
+## START HERE — Phase 6, the primary deliverable
 
-### 4. Age is banded, not exact
+**Phase 5 is COMPLETE and Gate 5 PASSED (ADR 0028).** Nothing is outstanding.
 
-`40s`, `50s`, `60s`, `70s`, `90s` — de-identified. It enters a model as an
-**ordered factor, never as a continuous covariate**.
+**P6-T1 is the clean-room reproduction** and its blocker was resolved at
+ADR 0023: fresh clone, fresh envs, `snakemake --cores 4 all` from nothing,
+timed. Three things carry into it, all already recorded further down this file:
+the pins are `osx-arm64` only, regenerating a pin is mandatory after any env
+YAML edit, and **the run must happen on a path containing a space** or it will
+not exercise `p2t0_repair_r_env` and will report a false pass.
 
-### 5. Missingness and free text are both inconsistently coded
-
-`N/A`, `NA`, `n/a` and `Unspecified` all appear. So does inconsistent
-capitalisation in the histology strings, **with trailing spaces** —
-`Adenocarcinoma/solid` and `adenocarcinoma/solid `. **The parser must normalise
-these, not trust them.**
-
-### 6. Coverage is 35 of 44, and the join is not established until it is asserted
-
-The table covers the full 44-patient cohort; GEO carries **35**. Nine
-supplementary rows have no expression data.
-
-`docs/data-provenance.md` sets two assertions that must pass before the join
-counts as established: **every GEO patient must appear in Supplementary Data 1**,
-and **the AOI-code numeric suffix must equal the patient number**. P5-T1's hard
-gate is that it joins cleanly on patient ID — if it does not, **stop the phase**
-rather than spend days on fuzzy matching.
+`resources/` now has **six** sanctioned writers — `raw/`, `reference/`,
+`supplementary/`, `ligand_receptor/`, `clinical/`, `tcga/` — and **P6-T2's
+RO-Crate must describe all six**, each with its `*_checksums.sha256` and
+`*_provenance.tsv` pair.
 
 ---
 
-**The framing, before any of it.** Gate 5 is *"timebox respected"*.
-PROJECT_PLAN calls Phase 5 a stretch goal, the slip rule says cut it to protect
-Phase 6, and P5-T1's own acceptance criterion permits **"a documented
-abandonment"**. At ~35 patients a KM split is descriptive, not inferential. **If
-the join does not come out cleanly, stopping is the designed outcome, not a
-failure** — and Phase 6, which the plan calls the primary deliverable, is
-already unblocked.
+## What Phase 5 found, stated correctly
+
+**0 of 14 pre-registered tests survive BH at FDR 0.05.** Smallest q = **0.2563**
+(TCGA `antigen_presentation`, HR 0.70 [0.52, 0.94], raw p 0.018, n = 502 with
+182 events).
+
+| | |
+|---|---|
+| cells considered | **18** (12 GeoMx signature × arm, 6 TCGA) |
+| tested | **14** (8 GeoMx assessable + 6 TCGA) |
+| not assessable | **4** — `exhaustion` brain, `tls` brain, `myeloid_m1` both sites |
+| survive FDR 0.05 | **0** |
+
+**Only q is reportable — never a raw p from P5-T3 or P5-T4.** The TCGA
+`antigen_presentation` signal is the strongest in the phase and it lands at
+q = 0.26: a hypothesis, not a finding. P5-T5 exists so that raw p = 0.018 cannot
+be quoted alone.
+
+### The one distinction P6-T7 must not collapse
+
+**The two nulls are not the same kind of null.**
+
+- **This study**: 12 lung and 7 brain patients fitted, splits 6/6 and 3/4,
+  intervals spanning eight- to thirty-fold. A null is **uninformative, not
+  negative** (ADR 0024 §7).
+- **TCGA**: 502 patients, 182 events, intervals ~0.5–1.2 wide. A null is a
+  **much stronger** statement — though still not proof of absence.
+
+**That asymmetry is the deliverable, not any q-value.** Writing "no signature was
+prognostic" without distinguishing the two cohorts' power converts a measurement
+of this study's *size* into a claim about *biology* — the same error ADR 0022
+guards against for Phase 4.
+
+And the comparison is **bounded structurally** (ADR 0027 §5): GeoMx measures the
+**PanCK-negative segment**, TCGA **whole bulk tumour**, so a disagreement is not
+necessarily about biology — and **there is no brain comparator at all**, so
+nothing in Phase 5 externally checks `TIME-B` n = 8.
+
+One live example: the cohorts' `antigen_presentation` point estimates point
+**opposite ways** (GeoMx HR 2.19 [0.65, 7.35] vs TCGA 0.70 [0.52, 0.94]). **Not a
+contradiction** — the GeoMx interval spans 1 and is consistent with both
+directions, on a different measurement. "The cohorts disagree" would be wrong
+twice over.
+
+### Three things Phase 5 learned that Phase 6 should not relearn
+
+1. **A declared family size is a number someone wrote down.** ADR 0024 §8's "12"
+   forgot that §2 of the same ADR splits this study into two arms. The true
+   family is 14 and P5-T5 **counts it from the upstream tables**. The direction
+   matters: an undercounted denominator makes every q **too small**, and a
+   q-value carries no evidence of the denominator behind it.
+2. **Ties are where an FDR implementation goes wrong quietly** — Phase 4's
+   lesson, and this family has **two tied pairs**. The correction is computed by
+   `statsmodels` *and* an independent hand-rolled step-up (agreeing to 1.1e-16)
+   with monotonicity asserted directly.
+3. **Open the PNG — four occurrences now.** P5-T3's annotations collided with
+   the curves (an interval read as a different number); P5-T4's suptitle ran off
+   **both** edges, because matplotlib neither wraps nor clips one. Both were
+   caught only by looking.
+
+---
+
+## The number that governs Phase 5
+
+**n = 16, not ~35 — and 19 events across both arms.**
+
+`signature_scores.tsv` covers 13 lung + 8 brain patients, 5 shared. PROJECT_PLAN
+§6 P5-T3's "at ~35 patients this is descriptive" counts patients with a *tumour*
+AOI, **none of which carries a signature score**. ADR 0024 §2 records why Phase 5
+does not chase the larger number: reaching it means scoring `L`/`LB`, a
+stop-and-ask scope change that re-opens the detection floor where the panel
+clears far less (P3-T2: `L` 2/9 genes, `LB` 3/9, against `TIME-L` 8/9). **A
+larger n bought with a less measurable compartment is not a larger n.**
+
+Measured by `p5t1_clinical_join`, not quoted: **lung 13 patients / 12 events / 1
+censored; brain `TIME-B` n = 8 / 7 events / 1 censored.** After ADR 0025's
+exclusion of the one patient with no follow-up time, **12 and 7 enter a fit** and
+the median split is **6/6 and 3/4** — the brain arm exactly on
+`min_arm_size = 3`, with no patient to spare.
+
+**So a Phase 5 null is uninformative, not negative** — as the 1.1–1.3 SD power
+floor makes a Phase 2 null uninformative and ADR 0022 makes Phase 4's empty table
+an assay limit. Fixed in ADR 0024 §7 **before the first curve**, so it cannot be
+softened later if something happens to separate. A separation at 6 versus 7
+patients describes this cohort; it is never an inferential claim.
+
+**Three of the six signatures failed their Phase 2 detection floor** —
+`exhaustion` 1/6 and `tls` 1/5 in brain, `myeloid_m1` 2/10 at *both* sites. They
+are scored and corrected within the family and reported as **"not assessable"**
+wherever they failed, never as a prognostic null. ADR 0008's rule is not
+suspended by a change of outcome variable: a score built from genes at background
+measures background, whatever it is regressed against.
 
 ---
 
@@ -127,10 +165,9 @@ entirely and protect Phase 6. A finished, reproducible, well-documented
 four-phase project beats a sprawling six-phase one that nobody can run."*
 
 **Phase 5 is a stretch goal with a one-week timebox and Gate 5 is "timebox
-respected".** Q5 resolved **yes** — Supplementary Data 1 carries two
-time-to-event columns — so it is viable. Its three prerequisites and the three
-constraints binding the join are in **START HERE** at the top of this file; they
-are not repeated here.
+respected".** Q5 resolved **yes**, and its setup and join are now done (ADR 0024,
+P5-T1) — what remains is P5-T2..T5, at the top of this file. The binding
+constraint is no longer availability; it is **n = 16 with 19 events**.
 
 **Phase 6 is arguably the primary deliverable** (PROJECT_PLAN §6's own words).
 **P6-T1's blocker is resolved** (ADR 0023) — the environments are pinned and
@@ -242,10 +279,11 @@ fit. The three dead `*.conda-lock.yml` files are removed.
 - **A bare `snakemake -n` is not a clean dry run.** Always run from the
   `nsclc_bm_spatial` env (Snakemake 8.30); base anaconda's 9.20 writes
   `.snakemake/metadata` in a format 8.30 reads as stale.
-- **`resources/` now has four sanctioned writers** — `raw/` (P0-T2),
-  `reference/` (P2-T5), `supplementary/` (P3-T2b) and `ligand_receptor/`
-  (P4-T2). Each has a `*_checksums.sha256` and `*_provenance.tsv` pair, and
-  P6-T2's RO-Crate must describe all four.
+- **`resources/` now has FIVE sanctioned writers** — `raw/` (P0-T2),
+  `reference/` (P2-T5), `supplementary/` (P3-T2b), `ligand_receptor/` (P4-T2)
+  and **`clinical/` (P5-T1)**. Each has a `*_checksums.sha256` and
+  `*_provenance.tsv` pair, and P6-T2's RO-Crate must describe all five. A
+  **sixth**, `tcga/` (P5-T4), is named in `config.yaml` but not yet created.
 - **`results/reports/landscape_explorer` still renders on a black background** —
   P1-T5's notebook, left alone because editing it fires that rule's rerun
   trigger. The fix is the `plt.rcParams` reset in

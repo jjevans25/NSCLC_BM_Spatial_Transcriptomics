@@ -1,0 +1,194 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: >
+  config/tcga.yaml — TCGA LUAD, the external cohort for Phase 5's prognostic
+  check (P5-T4).
+
+  Shaped after clinical.schema.yaml, which already has the artifacts / columns /
+  expect shape this needs. Everything in `expect` was pre-registered in ADR 0027
+  and committed before any TCGA number was computed. An expectation written
+  after seeing the answer is not an expectation.
+
+  As with every other manifest schema, this is a floor: it can enforce that a
+  digest is present and well-formed, never that it is the right digest. The
+  digests were computed from the files fetched at P5-T4 and are re-verified from
+  disk on every run by p5t4b_record_tcga_provenance.
+type: object
+required: [tcga]
+additionalProperties: false
+properties:
+  tcga:
+    type: object
+    required:
+      [cohort, endpoint_source, provider, base_url, artifacts, columns, expect]
+    additionalProperties: false
+    properties:
+
+      cohort:
+        type: string
+        minLength: 1
+        description: The TCGA study code, e.g. TCGA-LUAD.
+      endpoint_source:
+        type: string
+        minLength: 1
+        description: >
+          Citation for the survival endpoints. These are the Liu et al. 2018
+          TCGA-CDR curated endpoints, not raw TCGA follow-up, and which one is
+          in use is a provenance claim rather than a detail.
+      provider:
+        type: string
+        minLength: 1
+        description: >
+          Who serves the bytes. Recorded because it is NOT the source ADR 0024
+          §1 preferred: cBioPortal's bulk files return 403/404 and only its live
+          REST API answers, which cannot be digest-pinned under ADR 0005.
+
+      base_url:
+        type: string
+        pattern: "^https://"
+        description: >
+          HTTPS required by pattern: these bytes are a provenance claim, and an
+          http:// fetch cannot support one.
+
+      artifacts:
+        type: object
+        minProperties: 2
+        description: >
+          Manifest key -> one Xena file. Same shape as config.yaml's
+          acquire.artifacts, so workflow/scripts/acquire_geo.py and
+          record_provenance.py drive it unmodified — editing either would fire
+          the code rerun-trigger on p0t2_fetch_geo and abort the DAG on its
+          protected() outputs (ADR 0005, ADR 0013).
+        additionalProperties:
+          type: object
+          required: [remote, dest, stability, sha256]
+          additionalProperties: false
+          properties:
+            remote:
+              type: string
+              minLength: 1
+              description: >
+                Object key under base_url. Xena names its objects with a literal
+                slash that is PERCENT-ENCODED in the path
+                ("TCGA.LUAD.sampleMap%2FHiSeqV2.gz"). Do not normalise the %2F
+                away — the request 404s without it.
+            dest:
+              type: string
+              pattern: "^[A-Za-z0-9._-]+$"
+              description: >
+                Filename under resources/tcga/. Constrained to a bare filename:
+                a `dest` containing a separator would let the manifest write
+                outside the directory the rule declares. This is also why the
+                dest names differ from the remote keys, which contain %2F.
+            stability:
+              type: string
+              enum: [fixed, volatile]
+              description: >
+                ADR 0005's two tiers. Both artifacts are `fixed` — static since
+                2021 with stable ETags — so a digest mismatch is a hard failure.
+            sha256:
+              type: string
+              pattern: "^[0-9a-f]{64}$"
+              description: >
+                Pinned and enforced. An unpinned external comparator would let
+                the thing being compared against drift silently, which defeats
+                the purpose of the check.
+
+      columns:
+        type: object
+        required: [sample, patient, event, time, redaction]
+        additionalProperties: false
+        description: >
+          Column names in the survival file. Named explicitly so a renamed
+          column fails at parse rather than producing a silently empty cohort.
+        properties:
+          sample:
+            type: string
+            minLength: 1
+            description: Sample-level barcode, e.g. TCGA-05-4244-01.
+          patient:
+            type: string
+            minLength: 1
+            description: >
+              Patient-level barcode. The analysis is per PATIENT, so samples are
+              collapsed onto this the way P5-T2 collapses duplicate AOIs.
+          event:
+            type: string
+            minLength: 1
+            description: >
+              Event indicator. OS, not DSS (ADR 0027 §3): OS is the analogue of
+              the GeoMx lung column, and swapping the endpoint would compare two
+              different questions.
+          time:
+            type: string
+            minLength: 1
+            description: Follow-up time. IN DAYS — see expect.days_per_month.
+          redaction:
+            type: string
+            minLength: 1
+            description: >
+              Upstream redaction flag. Non-empty means exclude; recorded rather
+              than silently dropped.
+
+      expect:
+        type: object
+        required:
+          [
+            sample_type_code,
+            days_per_month,
+            min_followup_days,
+            min_patients,
+            n_signatures,
+            min_gene_presence,
+          ]
+        additionalProperties: false
+        properties:
+          sample_type_code:
+            type: string
+            pattern: "^[0-9]{2}$"
+            description: >
+              TCGA barcode positions 14-15. "01" is Primary Solid Tumor. "11"
+              (Solid Tissue Normal) IS present in this matrix, so this is a real
+              filter rather than a formality — keeping normals would score
+              non-tumour tissue as though it were tumour.
+          days_per_month:
+            type: number
+            exclusiveMinimum: 0
+            description: >
+              OS.time is in DAYS and every GeoMx endpoint is in MONTHS.
+              365.25 / 12 = 30.4375. Declared here rather than inlined so the
+              factor is reviewable beside the data it applies to.
+          min_followup_days:
+            type: integer
+            minimum: 1
+            description: >
+              Below this a case cannot be placed on a time axis and is excluded
+              and counted — the ADR 0025 shape, recorded and never imputed. Zero
+              times are present in this file.
+          min_patients:
+            type: integer
+            minimum: 1
+            description: >
+              Floor on the joined cohort. TCGA LUAD is ~500 cases; below this the
+              source changed, and an underpowered "properly powered comparator"
+              would defeat the entire purpose of P5-T4. The phase stops rather
+              than adapting.
+          n_signatures:
+            type: integer
+            minimum: 1
+            description: >
+              How many signatures are tested here, and therefore TCGA's
+              contribution to the multiplicity family ADR 0026 left to be
+              measured. All six: the Phase 2 detection floor is a property of
+              THIS assay (q3 above a multiple of NegProbe-WTX, ADR 0007) and
+              TCGA has no negative-probe channel, so restricting would import a
+              limitation the external cohort does not have.
+          min_gene_presence:
+            type: number
+            exclusiveMinimum: 0
+            maximum: 1
+            description: >
+              Fraction of a signature's genes that must be PRESENT in the Xena
+              matrix for the set to be scoreable. PRESENCE, NEVER DETECTION —
+              "the gene is not in this matrix" and "the gene is at background in
+              this assay" are unrelated limitations, and the two must not be
+              read as the same measurement.

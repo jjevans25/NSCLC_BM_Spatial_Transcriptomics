@@ -269,7 +269,14 @@ quirk: `pmc.ncbi.nlm.nih.gov/articles/instance/9551067/bin/…` returns an HTML
 interstitial rather than the file; `static-content.springer.com/esm/art%3A10.1038%2Fs41467-022-33365-y/MediaObjects/…`
 serves the xlsx itself.
 
-Columns:
+Columns — **normalised, not verbatim.** The deposited header cells carry
+**embedded newlines** (`Age at \nNSCLC diagnosis`, `Primary lung cancer
+\ndiagnosis to death (Months)`) and ` Location of BrM ` has a leading *and*
+trailing space. The list below was transcribed already-tidied, so it must not be
+matched against the file as written. P5-T1's rule normalises first — collapse
+every whitespace run to one space, then strip — and `config/clinical.yaml`
+records that rule beside the data it describes (ADR 0024 §4). Verified against
+the deposited file at P5-T1, 2026-09-15:
 
 `Patient ID`, `Age at NSCLC diagnosis`, `Gender`, `Histological type of NSCLC`,
 `Grade`, `Largest dimension (cm)`, `Visc Pleural Invasion`, `Margins`,
@@ -279,7 +286,22 @@ Columns:
 **`Brain metastasis diagnosis to death (Months)`**.
 
 Two time-to-event variables, with `Alive` appearing as a value — i.e. censoring
-is representable. That the cohort has usable outcome data is corroborated by the
+is representable.
+
+**The two columns spell censoring differently, and this is measured rather than
+inferred.** The lung column carries the literal string `Alive`; the brain column
+carries an **empty cell** for the same patients. Patients **6, 11 and 35** are
+`Alive` in the lung column, and *exactly* those three are blank in the brain
+column — the sets are identical. That identity is what licenses reading a blank
+brain value as **censored rather than missing**, and P5-T1 asserts it rather than
+assuming it. Reading those blanks as missing would silently drop the only
+censored observations in the study: there are **three in 44**.
+
+The sheet also ends in three blank rows and a three-line treatment-abbreviation
+legend (`SR: Surgical resection`, `Rad: Radiation therapy`,
+`Chemo: Chemotherapy`), which a read-to-end-of-sheet ingests as three patients
+with a null ID. `config/clinical.yaml` bounds the data rows explicitly for that
+reason. That the cohort has usable outcome data is corroborated by the
 paper's own use of it:
 
 > Kaplan–Meier survival analysis and Cox proportional hazards of the current
@@ -296,10 +318,17 @@ GEO sample titles have the form `Patient <n> [<AOI code><n>]`, e.g.
 renumbering its 35-case subset. The join to Supplementary Data 1's `Patient ID`
 should therefore be direct.
 
-*Expected clean, not verified.* **Assert it at P0-T3** — every GEO patient number
-must appear in Supplementary Data 1, and the AOI-code numeric suffix must equal
-the patient number (§6 already requires that second assertion). Do not treat the
-join as established until those pass.
+Two assertions establish it — every GEO patient number must appear in
+Supplementary Data 1, and the AOI-code numeric suffix must equal the patient
+number (§6 already requires that second assertion). This paragraph previously
+assigned them to **P0-T3**, which never ran them: Supplementary Data 1 was not
+in the repository until P5-T1 fetched it, so there was nothing to assert
+against. **They are P5-T1's hard gate** (ADR 0024 §5), re-derived on every run,
+and their failure action is to stop the phase — no fuzzy matching, at all.
+
+**`Grade` carries `n/a` and `Gender` carries a lowercase `m`** beside `M`/`F`, so
+categorical values are casefolded before comparison. Neither is in the three
+constraints below; both are in `config/clinical.yaml`'s normalisation block.
 
 ### Three constraints on how the clinical data may be used
 
@@ -313,8 +342,13 @@ join as established until those pass.
 3. **Coverage is 35 of 44.** The table covers the full 44-patient cohort; GEO
    carries 35. Nine supplementary rows have no expression data.
 
-**`config.yaml → phases.survival` stays `false`** until Phase 5 has rules. Q5 no
-longer gates it; the remaining risk is n, not availability.
+**`config.yaml → phases.survival` is now `true`** (P5-T1, ADR 0024). Q5 never
+gated it; the remaining risk is n, not availability — and the n is **smaller than
+this section implies**. Phase 2 scored signatures on `TIME-L`/`TIME-B` only, so
+the patients carrying a signature score number **16, not 35**: 13 lung + 8 brain,
+5 shared. The 35 are the patients with a *tumour* AOI, and none of them has a
+score. PROJECT_PLAN §6 P5-T3's "~35 patients" is wrong on this point; ADR 0024 §2
+records why Phase 5 does not chase it.
 
 ---
 

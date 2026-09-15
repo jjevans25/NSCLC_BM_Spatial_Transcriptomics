@@ -1,0 +1,54 @@
+{
+  "accounting": {
+    "cells_considered": 18,
+    "cells_not_assessable": 4,
+    "cells_tested": 14
+  },
+  "correction": {
+    "alpha": 0.05,
+    "implementations": [
+      "statsmodels.multipletests",
+      "hand-rolled BH step-up"
+    ],
+    "max_disagreement": 1.1102230246251565e-16,
+    "method": "fdr_bh",
+    "n_tied_p_values": 2
+  },
+  "family": {
+    "counted_not_quoted": true,
+    "n": 14,
+    "note": "Derived by counting rows in survival_km_models.tsv and tcga_km_models.tsv. ADR 0026 exists because ADR 0024 \u00a78's family size was written down rather than counted, and was wrong \u2014 an undercounted denominator makes every q too small.",
+    "tcga": 6,
+    "this_study": 8
+  },
+  "n_assertions": 6,
+  "out_of_family": {
+    "not_assessable_cells": 4,
+    "reason": "Sensitivities do not double the search (ADR 0012). Not-assessable cells may not be reported as prognostic nulls at all (ADR 0008), so correcting over them would deflate every q.",
+    "sensitivities": [
+      "zscore (both cohorts)",
+      "TCGA continuous Cox"
+    ]
+  },
+  "phase": 5,
+  "pre_registered": "ADR 0024 \u00a78, corrected by ADR 0026, completed by ADR 0027",
+  "reporting_rule": "This is the ONLY Phase 5 table carrying a q-value, and only q is reportable \u2014 a raw p from P5-T3 or P5-T4 is not. No Phase 5 result may be a headline claim. Every brain claim states TIME-B n = 8 inline (hard constraint 8); every p carries n, effect size and a confidence interval (hard constraint 7). A null remains UNINFORMATIVE, NOT NEGATIVE in this study (ADR 0024 \u00a77) \u2014 but NOT in TCGA, where n = 502 with 182 events, and that asymmetry is the deliverable. Cross-cohort comparison is bounded by ADR 0027 \u00a75: GeoMx measures the PanCK-negative segment and TCGA whole bulk tumour, and there is no brain comparator at all.",
+  "result": {
+    "min_p_raw": 0.018306338891452143,
+    "min_q": 0.25628874448033,
+    "n_survive_fdr": 0,
+    "smallest_q_test": {
+      "ci": [
+        0.5229987499428436,
+        0.9434332402915269
+      ],
+      "cohort": "TCGA-LUAD",
+      "hazard_ratio": 0.702434627084254,
+      "p_raw": 0.018306338891452143,
+      "q_bh": 0.25628874448033,
+      "signature": "antigen_presentation",
+      "stratum": "lung (bulk tumour)"
+    }
+  },
+  "task": "P5-T5"
+}

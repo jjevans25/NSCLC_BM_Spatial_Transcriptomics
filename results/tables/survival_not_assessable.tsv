@@ -1,0 +1,5 @@
+arm	signature	coverage	status	note	cohort	in_family
+brain	exhaustion	0.16666666666666666	not_assessable	below the Phase 2 coverage floor in brain (coverage 0.167; absent: CTLA4,LAG3,PDCD1,TIGIT,TOX). Not assessable, never a prognostic null (ADR 0008).	this study (GeoMx)	False
+brain	myeloid_m1	0.20000000000000001	not_assessable	below the Phase 2 coverage floor in brain (coverage 0.2; absent: CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF). Not assessable, never a prognostic null (ADR 0008).	this study (GeoMx)	False
+lung	myeloid_m1	0.20000000000000001	not_assessable	below the Phase 2 coverage floor in lung (coverage 0.2; absent: CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF). Not assessable, never a prognostic null (ADR 0008).	this study (GeoMx)	False
+brain	tls	0.20000000000000001	not_assessable	below the Phase 2 coverage floor in brain (coverage 0.2; absent: CCL19,CCL21,CR2,MS4A1). Not assessable, never a prognostic null (ADR 0008).	this study (GeoMx)	False

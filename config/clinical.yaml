@@ -1,0 +1,155 @@
+# ---------------------------------------------------------------------------
+# P5-T1 — Supplementary Data 1, the clinical and time-to-event table.
+#
+# PRE-REGISTERED in ADR 0024, committed before any Phase 5 result was computed.
+# Which endpoint belongs to which arm, what counts as censored, and what counts
+# as missing are all fixed here rather than chosen after seeing a curve — a
+# median-split Kaplan-Meier at n = 13 and n = 8 is the easiest quantity in this
+# project to manufacture after the fact.
+#
+# THIS IS ANALYSIS INPUT, NOT EXTERNAL VALIDATION, and that is why it is not in
+# config/external_validation.yaml (ADR 0024 section 1). Two reasons:
+#
+#   - That file is named for external VALIDATION. This table is the thing
+#     Phase 5 models, not a comparator this project is checked against.
+#   - EXTERNAL_VALIDATION is a params: of p3t2b_external_validation
+#     (05_checkpoints.smk:255), so adding an artifact there changes that rule's
+#     params hash and re-parses the 45 MB Source Data workbook for no reason
+#     connected to Phase 5.
+#
+# THIS FILE IS NOT config/config.yaml, deliberately. config.yaml's SHA-256 goes
+# into the .h5ad `uns`, so an edit there rebuilds Phases 1-4; Phase 5 pays that
+# once when it opens its `survival:` block and must not pay it again to re-pin
+# an artifact. Same reasoning as config/external_validation.yaml (P3-T2b) and
+# config/ligand_receptor.yaml (P4-T2). config.yaml names this file; the digest
+# lives here.
+#
+# Fetched into resources/clinical/ under ADR 0005's rules: protected() outputs,
+# a pinned digest, `fixed` because this is an author-uploaded static-content
+# file that has not moved since 2022. This is the project's FIFTH sanctioned
+# writer, after P0-T2 (GEO), P2-T5 (SpatialDecon references), P3-T2b (the source
+# publication's supplementary) and P4-T2 (CellChatDB).
+# ---------------------------------------------------------------------------
+clinical:
+
+  # Springer static-content, NOT the nature.com article URL and NOT the PMC
+  # instance path. The former 303s to an IdP authorize endpoint and returns no
+  # file; the latter returns an HTML interstitial rather than the xlsx
+  # (docs/data-provenance.md, Q5). The percent-encoding of the DOI in the path
+  # is required and must not be normalised away.
+  base_url: https://static-content.springer.com/esm/art%3A10.1038%2Fs41467-022-33365-y/MediaObjects
+
+  artifacts:
+
+    supplementary_data_1:
+      # 13,210 bytes. "Demographics and Pathological Information of the Study
+      # Patient Cohort" — 44 patients, 15 columns, two of them time-to-event.
+      # This is the whole of Q5's answer, and the only clinical data the project
+      # has.
+      remote: 41467_2022_33365_MOESM4_ESM.xlsx
+      dest: 41467_2022_33365_MOESM4_ESM.xlsx
+      stability: fixed
+      sha256: "3af54bfcef1a4f10a73344de4bc7233d94013dad47c64a3f4c6a60b369d10f08"
+
+  sheets:
+
+    cohort:
+      artifact: supplementary_data_1
+      # The workbook has exactly one sheet and its name carries no trailing
+      # space — unlike "Fig.4-6 & S4,5 " in the Source Data workbook. Still
+      # quoted and still transcribed exactly, because the next one might.
+      name: "Supplementary Data 1"
+      # 0-based, and this is a true sheet position rather than a count of
+      # non-empty rows: row 0 is the title, row 1 is BLANK, row 2 is the header.
+      # Excel omits blank rows from the XML entirely, so a reader that appends
+      # sequentially lands one row high here. The project's reader places rows
+      # at their declared `r` index precisely so this number stays countable by
+      # eye (external_validation.py, read_sheet).
+      header_row: 2
+      # Data is rows 3..46 inclusive. Rows 47-49 are blank and rows 50-52 are
+      # the treatment-abbreviation legend ("SR: Surgical resection", "Rad:
+      # Radiation therapy", "Chemo: Chemotherapy"), which a naive read to
+      # end-of-sheet would ingest as three patients with a null ID.
+      first_data_row: 3
+      last_data_row: 46
+
+  # HEADER CELLS CARRY EMBEDDED NEWLINES, and docs/data-provenance.md Q5
+  # transcribed them ALREADY NORMALISED. Its column list is therefore a
+  # normalised list and must not be matched against the file verbatim:
+  #
+  #     'Age at \nNSCLC diagnosis'
+  #     'Largest dimension\n (cm)'
+  #     'Primary lung cancer \ndiagnosis to death (Months)'
+  #     ' Location of BrM '          <- leading AND trailing space
+  #
+  # The rule below is applied to headers and to string values alike, and the
+  # names in `columns` are written in their NORMALISED form.
+  normalisation:
+    # Collapse every run of whitespace (newlines included) to a single space,
+    # then strip. Not a tidy-up: it is what makes the deposited headers
+    # addressable at all.
+    collapse_whitespace: true
+    strip: true
+    # Categorical values are compared casefolded. `Gender` carries a lowercase
+    # 'm' beside 'M' and 'F', and the histology strings mix capitalisation
+    # freely — a fourth inconsistency Q5 does not list. Does NOT apply to the
+    # values as reported, only to the comparison.
+    casefold_categoricals: true
+    # Every one of these occurs in the deposited file. A token OUTSIDE this set
+    # is a hard failure rather than a silent pass-through: a sixth spelling that
+    # reads as data is the failure this block exists to prevent.
+    missing_tokens: ["N/A", "NA", "n/a", "Unspecified", ""]
+
+  columns:
+    # Normalised names, per `normalisation` above. The join key and the two
+    # endpoints are named separately from the covariates because they are the
+    # only three the phase cannot proceed without.
+    patient_id: "Patient ID"
+    age_band: "Age at NSCLC diagnosis"
+    endpoints:
+      # Assigned BY SITE, once, before any curve (ADR 0024 section 3).
+      lung: "Primary lung cancer diagnosis to death (Months)"
+      brain: "Brain metastasis diagnosis to death (Months)"
+
+  expect:
+    # Declared before the join runs. A mismatch is a hard failure: the point of
+    # a pre-registered gate is that it can fail. Same contract as
+    # external_validation.yaml's `expect` block.
+
+    # The table covers the full cohort; GEO carries 35 (Q5 constraint 3). Nine
+    # supplementary rows have no expression data, and that is expected rather
+    # than a join failure.
+    n_cohort: 44
+    n_geo_patients: 35
+    # Patient IDs are 1..44 contiguous, so a gap means the footer rows were
+    # ingested or a row was dropped.
+    patient_id_min: 1
+    patient_id_max: 44
+    n_columns: 15
+
+    # Exactly five levels and there is NO 80s. Declared rather than inferred
+    # from what appears, so a band that vanishes under a re-fetch is caught.
+    # Ordered, and this is the order: age enters a model as an ordered factor,
+    # never as a continuous covariate (Q5 constraint 1, ADR 0024 section 4).
+    age_bands: ["40s", "50s", "60s", "70s", "90s"]
+
+    # CENSORING IS SPELLED TWO DIFFERENT WAYS IN THE TWO ENDPOINT COLUMNS, and
+    # this is measured from the file rather than assumed (ADR 0024 section 3).
+    # The lung column carries the literal string `Alive`; the brain column
+    # carries an EMPTY CELL for the same patients.
+    censoring_token_lung: "Alive"
+    censoring_is_blank_brain: true
+    # The two sets are IDENTICAL — patients 6, 11 and 35 — and that identity is
+    # what licenses reading a blank brain value as CENSORED rather than MISSING.
+    # Asserted, never trusted: if the sets ever differ, the phase stops. Reading
+    # those blanks as missing instead would silently drop the only censored
+    # observations in the study.
+    censored_patients: [6, 11, 35]
+    n_censored: 3
+
+    # The two join assertions from docs/data-provenance.md Q5. Both must pass
+    # before the join counts as established, and the failure action is to STOP
+    # THE PHASE — no fuzzy matching, at all (PROJECT_PLAN section 6 P5-T1,
+    # ADR 0024 section 5).
+    assert_every_geo_patient_present: true
+    assert_aoi_suffix_equals_patient: true

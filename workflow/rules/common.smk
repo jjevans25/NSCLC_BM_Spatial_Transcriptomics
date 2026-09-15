@@ -246,6 +246,137 @@ if LIGAND_RECEPTOR_YAML.exists():
         )
 
 
+# --- clinical.yaml ---------------------------------------------------------
+# P5-T1. Supplementary Data 1 — the clinical and time-to-event table Phase 5
+# models, and the project's FIFTH sanctioned writer into resources/ (after
+# raw/, reference/, supplementary/ and ligand_receptor/).
+#
+# Same contract as LIGAND_RECEPTOR above: loaded and validated here so a
+# malformed manifest fails at parse rather than after a download, and guarded by
+# exists() so the workflow parses cleanly on a checkout that has not fetched it.
+#
+# The path comes from config["survival"]["clinical_yaml"], following
+# ligand_receptor rather than external_validation's hardcoded literal — Phase 5
+# has to edit config.yaml once anyway to open its `survival:` block (ADR 0024
+# Consequences), so naming the file there costs nothing. What matters is the
+# same thing in both cases: the DIGEST itself lives outside config.yaml, so
+# re-pinning never rebuilds the .h5ad.
+CLINICAL = None
+CLINICAL_YAML = Path(config["survival"]["clinical_yaml"])
+
+if CLINICAL_YAML.exists():
+    import yaml
+
+    with open(CLINICAL_YAML, encoding="utf-8") as _handle:
+        _clinical_doc = yaml.safe_load(_handle)
+
+    validate(_clinical_doc, "../schemas/clinical.schema.yaml")
+    CLINICAL = _clinical_doc["clinical"]
+
+    # Cross-reference sheets against artifacts at LOAD time, exactly as
+    # EXTERNAL_VALIDATION does. The schema can enforce that `artifact` is a
+    # string; only this can enforce that it names something.
+    for _sheet, _spec in sorted(CLINICAL["sheets"].items()):
+        if _spec["artifact"] not in CLINICAL["artifacts"]:
+            raise ValueError(
+                f"clinical.sheets.{_sheet}.artifact = '{_spec['artifact']}' "
+                f"does not name an entry in clinical.artifacts "
+                f"({sorted(CLINICAL['artifacts'])})."
+            )
+        # The schema bounds each row index independently; only here can the
+        # ORDER be checked. A last_data_row above first_data_row would read an
+        # empty cohort and report n = 0 rather than failing.
+        if _spec["last_data_row"] < _spec["first_data_row"]:
+            raise ValueError(
+                f"clinical.sheets.{_sheet}: last_data_row "
+                f"({_spec['last_data_row']}) is above first_data_row "
+                f"({_spec['first_data_row']}), which would read an empty cohort."
+            )
+        if _spec["first_data_row"] <= _spec["header_row"]:
+            raise ValueError(
+                f"clinical.sheets.{_sheet}: first_data_row "
+                f"({_spec['first_data_row']}) must sit below header_row "
+                f"({_spec['header_row']}), or the header is read as a patient."
+            )
+
+    # Two artifacts sharing a `dest` would collide in resources/clinical/ and the
+    # wildcard fetch rule would offer to produce the same path twice. The same
+    # check REF_KEY_BY_DEST, EXTERNAL_KEY_BY_DEST and LR_KEY_BY_DEST make.
+    CLINICAL_KEY_BY_DEST = {
+        _spec["dest"]: _key for _key, _spec in CLINICAL["artifacts"].items()
+    }
+    if len(CLINICAL_KEY_BY_DEST) != len(CLINICAL["artifacts"]):
+        raise ValueError(
+            "config clinical.artifacts: two artifacts share a `dest` filename."
+        )
+
+    # n_censored is redundant with len(censored_patients) ON PURPOSE (ADR 0024
+    # §3), so a hand-edit to one and not the other must fail. Free to check
+    # here; expensive to discover after a survival table has been written.
+    _expect = CLINICAL["expect"]
+    if _expect["n_censored"] != len(_expect["censored_patients"]):
+        raise ValueError(
+            f"config clinical.expect: n_censored = {_expect['n_censored']} but "
+            f"censored_patients lists {len(_expect['censored_patients'])} "
+            f"({_expect['censored_patients']}). These are deliberately "
+            "redundant — reconcile them rather than removing one."
+        )
+
+    # The manifest says what the file CONTAINS; config.yaml's
+    # survival.model.endpoint_by_site says what the ANALYSIS USES. They must
+    # agree, and a silent divergence between them would be an endpoint swap
+    # nobody could see (ADR 0024 §3). Checked at parse, not at fit time.
+    _declared = config["survival"]["model"]["endpoint_by_site"]
+    _manifest = CLINICAL["columns"]["endpoints"]
+    if _declared != _manifest:
+        raise ValueError(
+            "survival.model.endpoint_by_site does not match "
+            f"clinical.columns.endpoints:\n  config.yaml   {_declared}\n"
+            f"  clinical.yaml {_manifest}\n"
+            "These are duplicated deliberately so a mismatch is visible. An "
+            "endpoint assigned to the wrong arm inverts the phase's result."
+        )
+
+    if CLINICAL["expect"]["censoring_token_lung"] != (
+        config["survival"]["model"]["censoring_token"]
+    ):
+        raise ValueError(
+            "survival.model.censoring_token does not match "
+            "clinical.expect.censoring_token_lung. Same reasoning as "
+            "endpoint_by_site: duplicated so a mismatch fails loudly."
+        )
+
+
+# --- tcga.yaml -------------------------------------------------------------
+# P5-T4's external cohort, and the project's SIXTH sanctioned writer. Its path
+# is named in config.yaml now so P5-T4 costs no second Phases 1-4 rebuild; the
+# manifest itself is created when that task fetches and pins the cohort.
+#
+# Absent for now, and that is the designed state rather than an oversight —
+# exists() leaves TCGA as None and the workflow parses clean, the same way it
+# did for EXTERNAL_VALIDATION before P3-T2b fetched anything. The schema arrives
+# with the manifest, so this guard deliberately does not reference one yet.
+TCGA = None
+TCGA_YAML = Path(config["survival"]["tcga_yaml"])
+
+if TCGA_YAML.exists():
+    import yaml
+
+    with open(TCGA_YAML, encoding="utf-8") as _handle:
+        _tcga_doc = yaml.safe_load(_handle)
+
+    validate(_tcga_doc, "../schemas/tcga.schema.yaml")
+    TCGA = _tcga_doc["tcga"]
+
+    TCGA_KEY_BY_DEST = {
+        _spec["dest"]: _key for _key, _spec in TCGA["artifacts"].items()
+    }
+    if len(TCGA_KEY_BY_DEST) != len(TCGA["artifacts"]):
+        raise ValueError(
+            "config tcga.artifacts: two artifacts share a `dest` filename."
+        )
+
+
 # The language audit scans every tracked file, which Snakemake cannot express as
 # an `input:` list without enumerating the repository into the DAG. Without a
 # trigger it would run once and then never again — and a check that goes stale

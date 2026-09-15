@@ -122,8 +122,46 @@ Survival analysis is possible — Supplementary Data 1 carries two time-to-event
 columns and a censoring value — but with three constraints. **Age is banded**
 (`40s`, `60s`, …), so it enters a model as an ordered factor, never as a
 continuous covariate. **Missingness is inconsistently coded** (`N/A`, `NA`,
-`n/a`, `Unspecified`). And the table covers all 44 cohort patients while GEO
-carries **35**, so nine rows have no expression data.
+`n/a`, `Unspecified`, and the empty cell; `Gender` also carries a lowercase `m`).
+And the table covers all 44 cohort patients while GEO carries **35**, so nine
+rows have no expression data.
+
+### The binding constraint is not 35, it is 16 (P5-T1, ADR 0024 §2)
+
+**Only 16 patients carry a signature score at all.** Phase 2 scored `TIME-L` and
+`TIME-B` only, giving 13 lung + 8 brain with 5 shared. The 35 are the patients
+with a *tumour* AOI, and none of them has a score. PROJECT_PLAN §6 P5-T3's
+"at ~35 patients this is descriptive" counts the wrong set, and the paragraph
+above inherited the error.
+
+Phase 5 does **not** close the gap by scoring `L`/`LB`. That is a stop-and-ask
+scope change, and it would re-open the detection floor in compartments where the
+panel clears far less — P3-T2 measured `L` at 2/9 genes and `LB` at 3/9 against
+`TIME-L`'s 8/9. **A larger n bought with a less measurable compartment is not a
+larger n.**
+
+**Censoring is almost absent**, which matters more than the patient count:
+lung 13 patients / **12 events** / 1 censored; brain **`TIME-B` n = 8** / 7
+events / 1 censored. Patient 35 is the censored one in both arms. A median split
+gives 6/7 in lung and 4/4 in brain.
+
+So **a Phase 5 null is uninformative, not negative** — the same status the
+1.1–1.3 SD power floor (P0-T8) gives a Phase 2 null and ADR 0022 gives Phase 4's
+empty nomination table. Fixed in ADR 0024 §7 before the first curve, so it cannot
+be softened afterwards. **A separation at 6 versus 7 patients describes this
+cohort and is never an inferential claim.**
+
+Three of the six signatures also failed their Phase 2 detection floor
+(`exhaustion` 1/6 and `tls` 1/5 in brain, `myeloid_m1` 2/10 at *both* sites).
+Wherever they failed they are **"not assessable"**, never a prognostic null: a
+score built from genes at background measures background, whatever it is
+regressed against.
+
+**One quirk of the source file is load-bearing.** The two endpoint columns spell
+censoring differently — `Alive` in the lung column, an **empty cell** in the
+brain column — for the same three patients (6, 11, 35). Treating the brain blanks
+as missing rather than censored would silently drop every censored observation in
+the study. P5-T1 asserts the two sets are identical rather than assuming it.
 
 ## 10. Detection is the dominant limitation, ahead of power (P2-T2)
 

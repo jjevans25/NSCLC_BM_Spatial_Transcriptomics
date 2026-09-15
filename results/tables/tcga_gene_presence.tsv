@@ -1,0 +1,7 @@
+signature	cohort	n_genes	n_genes_present	presence	scoreable	genes_absent	basis
+antigen_presentation	TCGA-LUAD	13	13	1	True		gene presence in the expression matrix, NOT detection above background
+cytotoxicity	TCGA-LUAD	4	4	1	True		gene presence in the expression matrix, NOT detection above background
+exhaustion	TCGA-LUAD	6	6	1	True		gene presence in the expression matrix, NOT detection above background
+myeloid_m1	TCGA-LUAD	10	10	1	True		gene presence in the expression matrix, NOT detection above background
+myeloid_m2	TCGA-LUAD	9	9	1	True		gene presence in the expression matrix, NOT detection above background
+tls	TCGA-LUAD	5	5	1	True		gene presence in the expression matrix, NOT detection above background

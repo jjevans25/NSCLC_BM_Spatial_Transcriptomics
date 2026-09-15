@@ -5,7 +5,7 @@ description: >
   breaks the contract fails at parse rather than three rules later.
 type: object
 required: [project, paths, samples, seed, qc, normalisation, phases, acquire, landscape,
-           contexture, checkpoints, crosstalk, reference]
+           contexture, checkpoints, crosstalk, survival, reference]
 additionalProperties: false
 properties:
   project:
@@ -515,6 +515,181 @@ properties:
               second gate and adds no second FDR family.
           n_expression_deciles: {type: integer, minimum: 2}
           fdr_alpha: {type: number, exclusiveMinimum: 0, maximum: 1}
+  survival:
+    type: object
+    description: >
+      Phase 5 / prognostic association. PRE-REGISTERED in ADR 0024 and committed
+      before any Phase 5 result was computed.
+
+      Phase 5's central quantity is a median-split Kaplan-Meier at n = 13 (lung)
+      and n = 8 (brain). That is the easiest quantity in this project to
+      manufacture after the fact — the split point, the endpoint, the censoring
+      convention and the covariate set are each a degree of freedom, and each can
+      be chosen to make a curve separate. Every one of them is fixed here.
+
+      Every key P5-T1..T5 needs is present, including P5-T4's, because
+      config.yaml is a declared input of the .h5ad build and its SHA-256 is
+      recorded in `uns`: opening this block rebuilds Phases 1-4 once, and a
+      second edit would cost that again.
+    required:
+      [clinical_yaml, tcga_yaml, aoi_codes, aggregation, model, multiplicity]
+    additionalProperties: false
+    properties:
+
+      clinical_yaml:
+        type: string
+        minLength: 1
+        description: >
+          Path to the clinical manifest (P5-T1), validated against
+          clinical.schema.yaml at load. The PIN lives there, not here, so
+          re-pinning never rebuilds the .h5ad — the rule ligand_receptor.yaml
+          follows (ADR 0021 §2) and external_validation.yaml follows one step
+          further.
+      tcga_yaml:
+        type: string
+        minLength: 1
+        description: >
+          Path to the TCGA LUAD manifest (P5-T4). Named NOW, in the same single
+          edit, so the external-cohort task costs no second Phases 1-4 rebuild.
+          The file is created when P5-T4 fetches and pins the cohort; until then
+          common.smk's exists() guard leaves it absent and the workflow parses
+          clean, exactly as it does for a checkout that has not fetched the
+          supplementary files.
+
+      aoi_codes:
+        type: array
+        minItems: 1
+        uniqueItems: true
+        items: {type: string, minLength: 1}
+        description: >
+          The AOIs Phase 5 draws scores from — TIME-L and TIME-B, the same 23
+          that Phase 2 scored. NOT extended to L/LB to reach the plan's "~35
+          patients": that is a stop-and-ask scope change, and it would re-open
+          the detection floor in compartments where the panel clears far less
+          (P3-T2: L 2/9 genes, LB 3/9, against TIME-L 8/9). A larger n bought
+          with a less measurable compartment is not a larger n. ADR 0024 §2.
+
+      aggregation:
+        type: object
+        required: [method, scoring_method]
+        additionalProperties: false
+        description: >
+          P5-T2. How per-AOI signature scores become one value per patient per
+          site. PROJECT_PLAN §6 requires the rule be specified; this is it.
+        properties:
+          method:
+            type: string
+            enum: [mean, median]
+            description: >
+              Only two patients contribute duplicate TIME AOIs (P12 and P24,
+              both TIME-L), so this moves 2 of 13 lung patients and 0 of 8 brain
+              ones and cannot be load-bearing. `mean` matches ADR 0021 §1's
+              duplicate_rule, so Phase 5 collapses duplicates the way Phase 4
+              already does rather than inventing a second convention.
+          scoring_method:
+            type: string
+            description: >
+              Which of contexture.scoring.methods to carry forward. Phase 2 ran
+              ssgsea and zscore and treated their AGREEMENT as the robustness
+              evidence, neither being the other's tiebreaker; Phase 5 must name
+              one as primary rather than silently pooling them, and the other is
+              a declared sensitivity (ADR 0012's shape).
+
+      model:
+        type: object
+        required:
+          [split, endpoint_by_site, censoring_token, test, alpha, min_arm_size]
+        additionalProperties: false
+        description: >
+          P5-T3. The stratification and the test, fixed before any curve.
+        properties:
+          split:
+            type: string
+            enum: [median]
+            description: >
+              Median only. Not a tertile, not an optimal cutpoint, not a
+              maximally-selected rank statistic — those are the standard routes
+              to a separation that does not replicate, and at 12 and 7 events
+              they are not defensible. Computed WITHIN the arm being split, so
+              arms are as balanced as an odd n allows (6/7 lung, 4/4 brain).
+              An enum of one is deliberate: widening it must be an edit a
+              reviewer can see, not a value someone passes.
+          endpoint_by_site:
+            type: object
+            required: [lung, brain]
+            additionalProperties: false
+            description: >
+              Which time-to-event column belongs to which arm. Duplicated from
+              clinical.yaml's columns.endpoints ON PURPOSE — the manifest says
+              what the file contains, this says what the analysis uses, and the
+              rule asserts they agree. A silent divergence between the two would
+              be an endpoint swap nobody could see.
+            properties:
+              lung: {type: string, minLength: 1}
+              brain: {type: string, minLength: 1}
+          censoring_token:
+            type: string
+            minLength: 1
+            description: >
+              The lung column's literal "still alive" value. The BRAIN column
+              spells censoring differently — an empty cell — and that asymmetry
+              is measured rather than assumed: the lung `Alive` set and the brain
+              blank set are identical (patients 6, 11, 35), which is what
+              licenses reading a blank as censored rather than missing. Asserted
+              by the rule; if the sets ever differ the phase stops.
+          test:
+            type: string
+            enum: [logrank]
+            description: >
+              Log-rank, reported with the hazard ratio and its confidence
+              interval beside it — CLAUDE.md hard constraint 7 forbids a p-value
+              without n, effect size and a CI, and a bare log-rank p is exactly
+              that.
+          alpha:
+            type: number
+            exclusiveMinimum: 0
+            maximum: 1
+          min_arm_size:
+            type: integer
+            minimum: 1
+            description: >
+              Floor below which an arm is reported as not assessable rather than
+              tested. At 4 per arm in brain this is close to binding, and that is
+              the point: it makes the limit explicit rather than letting a
+              two-patient arm produce a number.
+
+      multiplicity:
+        type: object
+        required: [n_signatures, n_cohorts, method, alpha]
+        additionalProperties: false
+        description: >
+          P5-T5. Declared BEFORE the first p-value. PROJECT_PLAN §6 says "you
+          tested 5 signatures x 2 cohorts — say so, with correction"; the
+          repository resolves SIX signatures, and the repository is what will be
+          tested.
+        properties:
+          n_signatures:
+            type: integer
+            minimum: 1
+            description: >
+              Asserted against the resolved contents of signatures.yaml, not
+              trusted — a set added or removed without updating this number must
+              fail rather than quietly change the family size.
+          n_cohorts:
+            type: integer
+            minimum: 1
+            description: >
+              This study and TCGA LUAD. ONE family, not two: "does the same
+              signature stratify an independent cohort" is a single question
+              asked twice, and correcting each cohort separately would understate
+              the search.
+          method:
+            type: string
+            description: The correction, named. fdr_bh everywhere else in this project.
+          alpha:
+            type: number
+            exclusiveMinimum: 0
+            maximum: 1
   reference:
     type: object
     description: >

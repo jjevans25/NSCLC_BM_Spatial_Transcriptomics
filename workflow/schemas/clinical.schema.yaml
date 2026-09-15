@@ -1,0 +1,300 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: >
+  config/clinical.yaml — Supplementary Data 1, the clinical and time-to-event
+  table Phase 5 models (P5-T1).
+
+  Shaped after external_validation.schema.yaml, which already has the
+  artifacts / sheets / expect shape this needs. Two blocks are new, and both
+  exist because this file describes ANALYSIS INPUT rather than a comparator:
+
+    normalisation  the deposited headers carry embedded newlines and the values
+                   carry four different spellings of "missing". The rule that
+                   makes them addressable is declared here rather than living in
+                   a script, so it is reviewable next to the data it describes.
+    columns        the three fields the phase cannot proceed without — the join
+                   key and the two endpoints — named explicitly, so a renamed
+                   column fails at parse rather than producing a silently empty
+                   survival table.
+
+  As with checkpoints.schema.yaml, the schema is a floor: it can enforce that a
+  digest is present and well-formed, never that it is the right digest. The
+  digest here was computed from the file fetched by hand at P5-T1 and is
+  re-verified from disk on every run by p5t1_record_clinical_provenance.
+
+  Everything in `expect` was pre-registered in ADR 0024 and committed before any
+  Phase 5 result was computed. An expectation written after seeing the answer is
+  not an expectation.
+type: object
+required: [clinical]
+additionalProperties: false
+properties:
+  clinical:
+    type: object
+    required: [base_url, artifacts, sheets, normalisation, columns, expect]
+    additionalProperties: false
+    properties:
+
+      base_url:
+        type: string
+        pattern: "^https://"
+        description: >
+          Springer static-content prefix. HTTPS is required by pattern: these
+          bytes are a provenance claim, and an http:// fetch cannot support one.
+
+      artifacts:
+        type: object
+        minProperties: 1
+        description: >
+          Manifest key -> one clinical file. Same shape as config.yaml's
+          acquire.artifacts, so workflow/scripts/acquire_geo.py and
+          record_provenance.py drive it unmodified — editing either would fire
+          the code rerun-trigger on p0t2_fetch_geo and abort the DAG on its
+          protected() outputs (ADR 0005, ADR 0013).
+        additionalProperties:
+          type: object
+          required: [remote, dest, stability, sha256]
+          additionalProperties: false
+          properties:
+            remote:
+              type: string
+              minLength: 1
+              description: Path under base_url.
+            dest:
+              type: string
+              pattern: "^[A-Za-z0-9._-]+$"
+              description: >
+                Filename under resources/clinical/. Constrained to a bare
+                filename: a `dest` containing a separator would let the manifest
+                write outside the directory the rule declares.
+            stability:
+              type: string
+              enum: [fixed, volatile]
+              description: >
+                ADR 0005's two tiers. This artifact is `fixed` — an
+                author-uploaded file, static since 2022, with nothing
+                regenerating it server-side. The enum is kept whole so this
+                manifest stays the same shape as the others.
+            sha256:
+              type: string
+              pattern: "^[0-9a-f]{64}$"
+              description: >
+                Pinned and enforced. No `null` case: this table is the sole
+                source of every Phase 5 outcome, and letting it drift silently
+                would invalidate the phase without any rule noticing.
+
+      sheets:
+        type: object
+        minProperties: 1
+        description: >
+          Logical name -> one worksheet inside one artifact, with its row
+          bounds. Named so a script refers to `cohort` rather than to a string.
+        additionalProperties:
+          type: object
+          required: [artifact, name, header_row, first_data_row, last_data_row]
+          additionalProperties: false
+          properties:
+            artifact:
+              type: string
+              minLength: 1
+              description: >
+                Key into `artifacts` above. Checked at load, not at read time,
+                so a typo fails at parse rather than after a download.
+            name:
+              type: string
+              minLength: 1
+              description: >
+                The worksheet name EXACTLY as deposited, trailing whitespace
+                included. Do not tidy these.
+            header_row:
+              type: integer
+              minimum: 0
+              description: >
+                0-based TRUE SHEET POSITION of the header row, not a count of
+                non-empty rows. Excel omits blank rows from the XML entirely and
+                this sheet has one between its title and its header, so a reader
+                that appends sequentially lands one row high. The project's
+                reader places rows at their declared `r` index so this number
+                stays countable by eye.
+            first_data_row:
+              type: integer
+              minimum: 0
+              description: 0-based index of the first patient row.
+            last_data_row:
+              type: integer
+              minimum: 0
+              description: >
+                0-based index of the LAST patient row, inclusive. Bounded rather
+                than read to end-of-sheet because the sheet ends in three blank
+                rows and a three-line treatment-abbreviation legend, which an
+                unbounded read ingests as patients with a null ID.
+
+      normalisation:
+        type: object
+        required:
+          [collapse_whitespace, strip, casefold_categoricals, missing_tokens]
+        additionalProperties: false
+        description: >
+          The deposited header cells carry EMBEDDED NEWLINES and
+          docs/data-provenance.md §Q5 transcribed them already-normalised, so
+          its column list is a normalised list and must not be matched verbatim.
+          This block is what makes the two agree.
+        properties:
+          collapse_whitespace:
+            type: boolean
+            description: >
+              Collapse every run of whitespace, newlines included, to a single
+              space. Not a tidy-up — it is what makes the headers addressable.
+          strip:
+            type: boolean
+            description: >
+              Strip leading and trailing whitespace. ' Location of BrM ' has
+              both.
+          casefold_categoricals:
+            type: boolean
+            description: >
+              Compare categorical values casefolded. `Gender` carries a
+              lowercase 'm' beside 'M' and 'F' and the histology strings mix
+              capitalisation freely. Affects comparison only, never the values
+              as reported.
+          missing_tokens:
+            type: array
+            minItems: 1
+            items: {type: string}
+            description: >
+              Every spelling of "missing" that occurs in the deposited file:
+              N/A, NA, n/a, Unspecified and the empty cell. A token OUTSIDE this
+              set is a hard failure rather than a silent pass-through — a sixth
+              spelling that reads as data is the failure this block prevents.
+              The empty string is a legitimate member and minItems does not
+              exclude it.
+
+      columns:
+        type: object
+        required: [patient_id, age_band, endpoints]
+        additionalProperties: false
+        description: >
+          Column names in NORMALISED form. Only the fields the phase cannot
+          proceed without are named; the remaining covariates are carried
+          through as they are found.
+        properties:
+          patient_id:
+            type: string
+            minLength: 1
+            description: The join key, asserted against samples.tsv.
+          age_band:
+            type: string
+            minLength: 1
+            description: >
+              Banded age. Named because it is the one covariate with a handling
+              rule attached — ordered factor, never continuous.
+          endpoints:
+            type: object
+            required: [lung, brain]
+            additionalProperties: false
+            description: >
+              Time-to-event column per arm, assigned BY SITE once, before any
+              curve (ADR 0024 §3). Fixing this here is what stops an endpoint
+              being chosen after seeing which one separates.
+            properties:
+              lung: {type: string, minLength: 1}
+              brain: {type: string, minLength: 1}
+
+      expect:
+        type: object
+        required:
+          [
+            n_cohort,
+            n_geo_patients,
+            patient_id_min,
+            patient_id_max,
+            n_columns,
+            age_bands,
+            censoring_token_lung,
+            censoring_is_blank_brain,
+            censored_patients,
+            n_censored,
+            assert_every_geo_patient_present,
+            assert_aoi_suffix_equals_patient,
+          ]
+        additionalProperties: false
+        properties:
+          n_cohort:
+            type: integer
+            const: 44
+            description: >
+              The table covers the full 44-patient cohort. `const` rather than a
+              bound: this is not a parameter, and a run that finds a different
+              number has found something that must stop the phase.
+          n_geo_patients:
+            type: integer
+            const: 35
+            description: >
+              GEO carries 35 of the 44. Nine supplementary rows have no
+              expression data, which is expected (Q5 constraint 3) rather than a
+              join failure — declared so the shortfall cannot be mistaken for
+              one.
+          patient_id_min:
+            type: integer
+            minimum: 0
+          patient_id_max:
+            type: integer
+            minimum: 1
+            description: >
+              IDs are contiguous between these bounds, so a gap means the footer
+              rows were ingested or a patient row was dropped.
+          n_columns:
+            type: integer
+            minimum: 1
+          age_bands:
+            type: array
+            minItems: 2
+            uniqueItems: true
+            items: {type: string, minLength: 1}
+            description: >
+              The band levels IN ORDER — age is an ordered factor and this is
+              the order. Declared rather than inferred from what appears: there
+              is no 80s in this cohort, the gap is real, and a band that
+              vanishes under a re-fetch must be caught rather than absorbed.
+          censoring_token_lung:
+            type: string
+            minLength: 1
+            description: >
+              The literal value meaning "still alive" in the LUNG endpoint
+              column.
+          censoring_is_blank_brain:
+            type: boolean
+            description: >
+              Whether censoring in the BRAIN endpoint column is an empty cell.
+              It is, and the two columns therefore spell censoring two different
+              ways — measured from the deposited file, not assumed.
+          censored_patients:
+            type: array
+            minItems: 1
+            uniqueItems: true
+            items: {type: integer, minimum: 1}
+            description: >
+              The patient IDs censored in BOTH columns. The lung `Alive` set and
+              the brain blank set must equal this list and each other; that
+              identity is what licenses reading a blank brain value as CENSORED
+              rather than MISSING. Asserted, never trusted — reading them as
+              missing would silently drop the only censored observations in the
+              study.
+          n_censored:
+            type: integer
+            minimum: 0
+            description: >
+              Redundant with len(censored_patients) on purpose, so a hand-edit
+              to one and not the other fails rather than passes.
+          assert_every_geo_patient_present:
+            type: boolean
+            description: >
+              docs/data-provenance.md §Q5's first join assertion. A boolean
+              rather than an implicit always-on, because turning it off must
+              require an edit a reviewer can see.
+          assert_aoi_suffix_equals_patient:
+            type: boolean
+            description: >
+              §Q5's second join assertion: the AOI-code numeric suffix equals
+              the patient number. Together these two are P5-T1's hard gate, and
+              the failure action is to STOP THE PHASE — no fuzzy matching, at
+              all (PROJECT_PLAN §6 P5-T1, ADR 0024 §5).

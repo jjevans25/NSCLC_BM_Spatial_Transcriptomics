@@ -1,0 +1,3 @@
+artifact	file	url	accessed_utc	last_modified	bytes	sha256	stability	pin_status
+expression	TCGA_LUAD_HiSeqV2.gz	https://tcga-xena-hub.s3.us-east-1.amazonaws.com/download/TCGA.LUAD.sampleMap%2FHiSeqV2.gz	2026-09-15T20:53:36+00:00	Thu, 08 Apr 2021 17:30:16 GMT	30884695	5432e5a67fc4c4fd6ca22f76f18494756f0e8409a8969df3157935f39947aa00	fixed	verified
+survival	TCGA_LUAD_survival.txt	https://tcga-xena-hub.s3.us-east-1.amazonaws.com/download/survival%2FLUAD_survival.txt	2026-09-15T20:53:36+00:00	Thu, 08 Apr 2021 17:31:53 GMT	34045	224589c8088c56804e871d91062259afabfab6ceebab952c3837e6209d78e115	fixed	verified

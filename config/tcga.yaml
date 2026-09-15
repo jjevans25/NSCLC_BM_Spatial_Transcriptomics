@@ -1,0 +1,117 @@
+# ---------------------------------------------------------------------------
+# P5-T4 — TCGA LUAD, the external cohort for the Phase 5 prognostic check.
+#
+# PRE-REGISTERED in ADR 0027, committed before any TCGA number was computed.
+#
+# WHY UCSC XENA AND NOT cBIOPORTAL. ADR 0024 section 1 named cBioPortal, because
+# PMID 36216799's own TCGA analyses came from there and a comparator should share
+# provenance with the claim it contextualises. It also pre-authorised this
+# fallback. Measured 2026-09-15, the bulk files are gone:
+#
+#   cbioportal-datahub.s3.amazonaws.com/luad_tcga_pan_can_atlas_2018.tar.gz  403
+#   cbioportal-datahub.s3.amazonaws.com/luad_tcga.tar.gz                     403
+#   media.githubusercontent.com/media/cBioPortal/datahub/.../...tar.gz       404
+#   www.cbioportal.org/api/studies/luad_tcga_pan_can_atlas_2018              200
+#
+# Only the REST API answers, and it is NOT usable under ADR 0005: it serves
+# per-study JSON from a live service, so there is no single artifact to pin a
+# digest to, and a comparator that can drift silently is not a comparator.
+#
+# THIS FILE IS NOT config/config.yaml, deliberately. config.yaml's SHA-256 goes
+# into the .h5ad `uns`, so an edit there rebuilds Phases 1-4. `survival.tcga_yaml`
+# was named at P5-T1 precisely so this task would cost no second rebuild, and the
+# PIN lives here. Same reasoning as clinical.yaml, ligand_receptor.yaml and
+# external_validation.yaml.
+#
+# Fetched into resources/tcga/ under ADR 0005's rules: protected() outputs,
+# pinned digests, `fixed` because both files are static since 2021 with stable
+# ETags. This is the project's SIXTH sanctioned writer, after P0-T2 (GEO), P2-T5
+# (SpatialDecon), P3-T2b (the source publication's supplementary), P4-T2
+# (CellChatDB) and P5-T1 (the clinical table).
+# ---------------------------------------------------------------------------
+tcga:
+
+  cohort: TCGA-LUAD
+  # The Liu et al. 2018 TCGA Clinical Data Resource -- the curated endpoint set
+  # the field uses, rather than raw TCGA follow-up.
+  endpoint_source: "PMID:29625055 (TCGA-CDR, Liu et al. 2018)"
+  provider: "UCSC Xena (tcga-xena-hub)"
+
+  base_url: https://tcga-xena-hub.s3.us-east-1.amazonaws.com/download
+
+  artifacts:
+
+    expression:
+      # 30,884,695 bytes. Genes x samples, log2(RSEM norm_count + 1), gene
+      # SYMBOLS as row keys -- already the orientation gseapy.ssgsea wants, so
+      # score_signatures.py's call shape is reused unchanged.
+      #
+      # The %2F is the literal object key: Xena names the object
+      # "TCGA.LUAD.sampleMap/HiSeqV2.gz" and the slash is percent-encoded in the
+      # path. It must NOT be normalised away or the request 404s.
+      remote: TCGA.LUAD.sampleMap%2FHiSeqV2.gz
+      dest: TCGA_LUAD_HiSeqV2.gz
+      stability: fixed
+      sha256: "5432e5a67fc4c4fd6ca22f76f18494756f0e8409a8969df3157935f39947aa00"
+
+    survival:
+      # 34,045 bytes. Columns: sample, _PATIENT, OS, OS.time, DSS, DSS.time,
+      # DFI, DFI.time, PFI, PFI.time, Redaction.
+      remote: survival%2FLUAD_survival.txt
+      dest: TCGA_LUAD_survival.txt
+      stability: fixed
+      sha256: "224589c8088c56804e871d91062259afabfab6ceebab952c3837e6209d78e115"
+
+  columns:
+    sample: "sample"
+    patient: "_PATIENT"
+    # OS, not DSS (ADR 0027 section 3). OS is the direct analogue of the GeoMx
+    # lung column "Primary lung cancer diagnosis to death (Months)" -- all-cause
+    # death from diagnosis -- and is what the source paper used for its own TCGA
+    # panel. DSS counts only cancer-attributed deaths: cleaner biologically, but
+    # NOT what the GeoMx column measures, and an external check that swaps the
+    # endpoint compares two different questions.
+    event: "OS"
+    time: "OS.time"
+    # Some TCGA cases are redacted upstream. Non-empty means EXCLUDE.
+    redaction: "Redaction"
+
+  expect:
+    # Declared before the join runs. A mismatch is a hard failure: the point of a
+    # pre-registered external check is that it can fail.
+
+    # TCGA barcode positions 14-15 are the sample type. `01` is Primary Solid
+    # Tumor; `11` is Solid Tissue Normal and IS PRESENT in this matrix
+    # (TCGA-50-5931-11 appears in the header). Keeping normals would score
+    # non-tumour tissue as though it were tumour.
+    sample_type_code: "01"
+
+    # OS.time is in DAYS and every GeoMx endpoint is in MONTHS. Declared here
+    # rather than inlined in the script so the factor is reviewable beside the
+    # data it applies to. 365.25 / 12.
+    days_per_month: 30.4375
+
+    # A zero or negative follow-up time is uninformative and cannot be placed on
+    # a time axis -- TCGA-05-4244-01 carries OS.time = 0. Excluded and counted,
+    # the ADR 0025 shape: recorded, never imputed.
+    min_followup_days: 1
+
+    # Asserted, not discovered. TCGA LUAD is ~500 cases; if the joined cohort
+    # falls below this the source changed and the phase stops rather than
+    # quietly running an underpowered "properly powered" comparator.
+    min_patients: 400
+
+    # All six signatures are tested (ADR 0027 section 2). The Phase 2 detection
+    # floor is a property of THIS assay -- q3 above a multiple of NegProbe-WTX
+    # (ADR 0007) -- and TCGA has no negative-probe channel, so nothing in it
+    # corresponds to that threshold. Restricting to the five assessable in the
+    # GeoMx lung arm would import a limitation of this assay into a cohort that
+    # does not have it.
+    n_signatures: 6
+
+    # A signature gene may simply be absent from the Xena matrix. That is
+    # PRESENCE, never detection, and the two are labelled separately so they are
+    # not conflated: "not in this matrix" and "at background in this assay" are
+    # unrelated limitations. A set below this fraction of its genes present is
+    # reported as not scoreable.
+    min_gene_presence: 0.5

@@ -1,0 +1,253 @@
+patient_number	site	aoi_code	arm	signature	method	is_primary_method	score	aggregation	n_aoi	aoi_labels	coverage	assessable	genes_absent	months	event	has_followup	in_primary_fit
+5	brain	TIME-B	brain	antigen_presentation	ssgsea	True	0.6901778833606842	mean	1	TIME-B05	1	True		8	1	True	True
+12	brain	TIME-B	brain	antigen_presentation	ssgsea	True	0.66634605356030807	mean	1	TIME-B12	1	True		2	1	True	True
+14	brain	TIME-B	brain	antigen_presentation	ssgsea	True	0.70123698178014893	mean	1	TIME-B14	1	True		24	1	True	True
+15	brain	TIME-B	brain	antigen_presentation	ssgsea	True	0.6369848624447213	mean	1	TIME-B15	1	True		33	1	True	True
+19	brain	TIME-B	brain	antigen_presentation	ssgsea	True	0.67818006479163118	mean	1	TIME-B19	1	True		22	1	True	True
+20	brain	TIME-B	brain	antigen_presentation	ssgsea	True	0.62579202262082145	mean	1	TIME-B20	1	True		15	1	True	True
+31	brain	TIME-B	brain	antigen_presentation	ssgsea	True	0.59708090598030361	mean	1	TIME-B31	1	True		100	1	True	True
+35	brain	TIME-B	brain	antigen_presentation	ssgsea	True	0.62060154998789818	mean	1	TIME-B35	1	True			0	False	False
+5	brain	TIME-B	brain	antigen_presentation	zscore	False	0.067558639215726857	mean	1	TIME-B05	1	True		8	1	True	True
+12	brain	TIME-B	brain	antigen_presentation	zscore	False	-0.11745330893453575	mean	1	TIME-B12	1	True		2	1	True	True
+14	brain	TIME-B	brain	antigen_presentation	zscore	False	1.3757154939494738	mean	1	TIME-B14	1	True		24	1	True	True
+15	brain	TIME-B	brain	antigen_presentation	zscore	False	-0.62423433662591121	mean	1	TIME-B15	1	True		33	1	True	True
+19	brain	TIME-B	brain	antigen_presentation	zscore	False	-0.15308809314256136	mean	1	TIME-B19	1	True		22	1	True	True
+20	brain	TIME-B	brain	antigen_presentation	zscore	False	-0.97055205499387642	mean	1	TIME-B20	1	True		15	1	True	True
+31	brain	TIME-B	brain	antigen_presentation	zscore	False	-1.0015490730351018	mean	1	TIME-B31	1	True		100	1	True	True
+35	brain	TIME-B	brain	antigen_presentation	zscore	False	-1.1829651159941368	mean	1	TIME-B35	1	True			0	False	False
+5	lung	TIME-L	lung	antigen_presentation	ssgsea	True	0.65831921746423128	mean	1	TIME-L05	1	True		15	1	True	True
+12	lung	TIME-L	lung	antigen_presentation	ssgsea	True	0.70842649263470059	mean	2	TIME-L12a,TIME-L12b	1	True		15	1	True	True
+15	lung	TIME-L	lung	antigen_presentation	ssgsea	True	0.67696118715046028	mean	1	TIME-L15	1	True		43	1	True	True
+18	lung	TIME-L	lung	antigen_presentation	ssgsea	True	0.44525532065683371	mean	1	TIME-L18	1	True		143	1	True	True
+19	lung	TIME-L	lung	antigen_presentation	ssgsea	True	0.69119134884754008	mean	1	TIME-L19	1	True		33	1	True	True
+24	lung	TIME-L	lung	antigen_presentation	ssgsea	True	0.6901565394136624	mean	2	TIME-L24a,TIME-L24b	1	True		13	1	True	True
+26	lung	TIME-L	lung	antigen_presentation	ssgsea	True	0.69443562974906214	mean	1	TIME-L26	1	True		15	1	True	True
+29	lung	TIME-L	lung	antigen_presentation	ssgsea	True	0.68914370588617535	mean	1	TIME-L29	1	True		115	1	True	True
+30	lung	TIME-L	lung	antigen_presentation	ssgsea	True	0.69755763127432879	mean	1	TIME-L30	1	True		115	1	True	True
+32	lung	TIME-L	lung	antigen_presentation	ssgsea	True	0.69358959716283786	mean	1	TIME-L32	1	True		38	1	True	True
+35	lung	TIME-L	lung	antigen_presentation	ssgsea	True	0.67518603104374519	mean	1	TIME-L35	1	True			0	False	False
+40	lung	TIME-L	lung	antigen_presentation	ssgsea	True	0.6783503005880509	mean	1	TIME-L40	1	True		37	1	True	True
+43	lung	TIME-L	lung	antigen_presentation	ssgsea	True	0.68605523205660401	mean	1	TIME-L43	1	True		85	1	True	True
+5	lung	TIME-L	lung	antigen_presentation	zscore	False	-0.065627496203719646	mean	1	TIME-L05	1	True		15	1	True	True
+12	lung	TIME-L	lung	antigen_presentation	zscore	False	1.0442252521058522	mean	2	TIME-L12a,TIME-L12b	1	True		15	1	True	True
+15	lung	TIME-L	lung	antigen_presentation	zscore	False	-0.26503770437066598	mean	1	TIME-L15	1	True		43	1	True	True
+18	lung	TIME-L	lung	antigen_presentation	zscore	False	-2.0055206526513136	mean	1	TIME-L18	1	True		143	1	True	True
+19	lung	TIME-L	lung	antigen_presentation	zscore	False	0.43261161353540317	mean	1	TIME-L19	1	True		33	1	True	True
+24	lung	TIME-L	lung	antigen_presentation	zscore	False	0.55080747539514752	mean	2	TIME-L24a,TIME-L24b	1	True		13	1	True	True
+26	lung	TIME-L	lung	antigen_presentation	zscore	False	0.98002417894547045	mean	1	TIME-L26	1	True		15	1	True	True
+29	lung	TIME-L	lung	antigen_presentation	zscore	False	0.48069817980686225	mean	1	TIME-L29	1	True		115	1	True	True
+30	lung	TIME-L	lung	antigen_presentation	zscore	False	0.56053801729790487	mean	1	TIME-L30	1	True		115	1	True	True
+32	lung	TIME-L	lung	antigen_presentation	zscore	False	0.81324309517694404	mean	1	TIME-L32	1	True		38	1	True	True
+35	lung	TIME-L	lung	antigen_presentation	zscore	False	-0.90748655398272404	mean	1	TIME-L35	1	True			0	False	False
+40	lung	TIME-L	lung	antigen_presentation	zscore	False	-0.34456058262356337	mean	1	TIME-L40	1	True		37	1	True	True
+43	lung	TIME-L	lung	antigen_presentation	zscore	False	-0.26237970037167968	mean	1	TIME-L43	1	True		85	1	True	True
+5	brain	TIME-B	brain	cytotoxicity	ssgsea	True	0.21333104693866956	mean	1	TIME-B05	0.5	True	GNLY,PRF1	8	1	True	True
+12	brain	TIME-B	brain	cytotoxicity	ssgsea	True	-0.064844710407034975	mean	1	TIME-B12	0.5	True	GNLY,PRF1	2	1	True	True
+14	brain	TIME-B	brain	cytotoxicity	ssgsea	True	0.11993273860216129	mean	1	TIME-B14	0.5	True	GNLY,PRF1	24	1	True	True
+15	brain	TIME-B	brain	cytotoxicity	ssgsea	True	0.27154375249618345	mean	1	TIME-B15	0.5	True	GNLY,PRF1	33	1	True	True
+19	brain	TIME-B	brain	cytotoxicity	ssgsea	True	0.060893588204255049	mean	1	TIME-B19	0.5	True	GNLY,PRF1	22	1	True	True
+20	brain	TIME-B	brain	cytotoxicity	ssgsea	True	-0.028236438837014568	mean	1	TIME-B20	0.5	True	GNLY,PRF1	15	1	True	True
+31	brain	TIME-B	brain	cytotoxicity	ssgsea	True	-0.12585719751446456	mean	1	TIME-B31	0.5	True	GNLY,PRF1	100	1	True	True
+35	brain	TIME-B	brain	cytotoxicity	ssgsea	True	0.20944529953702404	mean	1	TIME-B35	0.5	True	GNLY,PRF1		0	False	False
+5	brain	TIME-B	brain	cytotoxicity	zscore	False	-0.36416396496133602	mean	1	TIME-B05	0.5	True	GNLY,PRF1	8	1	True	True
+12	brain	TIME-B	brain	cytotoxicity	zscore	False	-1.118435396954937	mean	1	TIME-B12	0.5	True	GNLY,PRF1	2	1	True	True
+14	brain	TIME-B	brain	cytotoxicity	zscore	False	-0.6798681531845705	mean	1	TIME-B14	0.5	True	GNLY,PRF1	24	1	True	True
+15	brain	TIME-B	brain	cytotoxicity	zscore	False	-0.033832243225222214	mean	1	TIME-B15	0.5	True	GNLY,PRF1	33	1	True	True
+19	brain	TIME-B	brain	cytotoxicity	zscore	False	-0.63761784980023661	mean	1	TIME-B19	0.5	True	GNLY,PRF1	22	1	True	True
+20	brain	TIME-B	brain	cytotoxicity	zscore	False	-0.75542502042893878	mean	1	TIME-B20	0.5	True	GNLY,PRF1	15	1	True	True
+31	brain	TIME-B	brain	cytotoxicity	zscore	False	-1.0817125938061314	mean	1	TIME-B31	0.5	True	GNLY,PRF1	100	1	True	True
+35	brain	TIME-B	brain	cytotoxicity	zscore	False	-0.26473098760478508	mean	1	TIME-B35	0.5	True	GNLY,PRF1		0	False	False
+5	lung	TIME-L	lung	cytotoxicity	ssgsea	True	0.2728932317230095	mean	1	TIME-L05	0.5	True	GNLY,PRF1	15	1	True	True
+12	lung	TIME-L	lung	cytotoxicity	ssgsea	True	0.5576727486165145	mean	2	TIME-L12a,TIME-L12b	0.5	True	GNLY,PRF1	15	1	True	True
+15	lung	TIME-L	lung	cytotoxicity	ssgsea	True	0.38566238457741264	mean	1	TIME-L15	0.5	True	GNLY,PRF1	43	1	True	True
+18	lung	TIME-L	lung	cytotoxicity	ssgsea	True	0.09206579933276339	mean	1	TIME-L18	0.5	True	GNLY,PRF1	143	1	True	True
+19	lung	TIME-L	lung	cytotoxicity	ssgsea	True	0.35329257813749304	mean	1	TIME-L19	0.5	True	GNLY,PRF1	33	1	True	True
+24	lung	TIME-L	lung	cytotoxicity	ssgsea	True	0.28686875334644685	mean	2	TIME-L24a,TIME-L24b	0.5	True	GNLY,PRF1	13	1	True	True
+26	lung	TIME-L	lung	cytotoxicity	ssgsea	True	0.56235901746052364	mean	1	TIME-L26	0.5	True	GNLY,PRF1	15	1	True	True
+29	lung	TIME-L	lung	cytotoxicity	ssgsea	True	0.13835713671263214	mean	1	TIME-L29	0.5	True	GNLY,PRF1	115	1	True	True
+30	lung	TIME-L	lung	cytotoxicity	ssgsea	True	0.27934461504586361	mean	1	TIME-L30	0.5	True	GNLY,PRF1	115	1	True	True
+32	lung	TIME-L	lung	cytotoxicity	ssgsea	True	0.46838806139280231	mean	1	TIME-L32	0.5	True	GNLY,PRF1	38	1	True	True
+35	lung	TIME-L	lung	cytotoxicity	ssgsea	True	0.38059060657163585	mean	1	TIME-L35	0.5	True	GNLY,PRF1		0	False	False
+40	lung	TIME-L	lung	cytotoxicity	ssgsea	True	0.48311540757083499	mean	1	TIME-L40	0.5	True	GNLY,PRF1	37	1	True	True
+43	lung	TIME-L	lung	cytotoxicity	ssgsea	True	0.35847029980716566	mean	1	TIME-L43	0.5	True	GNLY,PRF1	85	1	True	True
+5	lung	TIME-L	lung	cytotoxicity	zscore	False	0.15525227496612792	mean	1	TIME-L05	0.5	True	GNLY,PRF1	15	1	True	True
+12	lung	TIME-L	lung	cytotoxicity	zscore	False	1.6850748522119892	mean	2	TIME-L12a,TIME-L12b	0.5	True	GNLY,PRF1	15	1	True	True
+15	lung	TIME-L	lung	cytotoxicity	zscore	False	0.26285616335522566	mean	1	TIME-L15	0.5	True	GNLY,PRF1	43	1	True	True
+18	lung	TIME-L	lung	cytotoxicity	zscore	False	-0.6603222551376462	mean	1	TIME-L18	0.5	True	GNLY,PRF1	143	1	True	True
+19	lung	TIME-L	lung	cytotoxicity	zscore	False	0.42043362922437849	mean	1	TIME-L19	0.5	True	GNLY,PRF1	33	1	True	True
+24	lung	TIME-L	lung	cytotoxicity	zscore	False	-0.12957956211926755	mean	2	TIME-L24a,TIME-L24b	0.5	True	GNLY,PRF1	13	1	True	True
+26	lung	TIME-L	lung	cytotoxicity	zscore	False	1.1414177554581633	mean	1	TIME-L26	0.5	True	GNLY,PRF1	15	1	True	True
+29	lung	TIME-L	lung	cytotoxicity	zscore	False	-0.6226492655900342	mean	1	TIME-L29	0.5	True	GNLY,PRF1	115	1	True	True
+30	lung	TIME-L	lung	cytotoxicity	zscore	False	-0.17922551298304368	mean	1	TIME-L30	0.5	True	GNLY,PRF1	115	1	True	True
+32	lung	TIME-L	lung	cytotoxicity	zscore	False	0.35641489085781508	mean	1	TIME-L32	0.5	True	GNLY,PRF1	38	1	True	True
+35	lung	TIME-L	lung	cytotoxicity	zscore	False	0.093077756477902646	mean	1	TIME-L35	0.5	True	GNLY,PRF1		0	False	False
+40	lung	TIME-L	lung	cytotoxicity	zscore	False	0.64601103309628871	mean	1	TIME-L40	0.5	True	GNLY,PRF1	37	1	True	True
+43	lung	TIME-L	lung	cytotoxicity	zscore	False	0.21152916005553818	mean	1	TIME-L43	0.5	True	GNLY,PRF1	85	1	True	True
+5	brain	TIME-B	brain	exhaustion	ssgsea	True	0.13442000016946362	mean	1	TIME-B05	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	8	1	True	True
+12	brain	TIME-B	brain	exhaustion	ssgsea	True	0.13235526316962232	mean	1	TIME-B12	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	2	1	True	True
+14	brain	TIME-B	brain	exhaustion	ssgsea	True	0.043990807313309579	mean	1	TIME-B14	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	24	1	True	True
+15	brain	TIME-B	brain	exhaustion	ssgsea	True	0.11463872237485866	mean	1	TIME-B15	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	33	1	True	True
+19	brain	TIME-B	brain	exhaustion	ssgsea	True	0.09551750532364181	mean	1	TIME-B19	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	22	1	True	True
+20	brain	TIME-B	brain	exhaustion	ssgsea	True	-0.19502051577077911	mean	1	TIME-B20	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	15	1	True	True
+31	brain	TIME-B	brain	exhaustion	ssgsea	True	-0.13835724011737652	mean	1	TIME-B31	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	100	1	True	True
+35	brain	TIME-B	brain	exhaustion	ssgsea	True	0.0065524634411979286	mean	1	TIME-B35	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX		0	False	False
+5	brain	TIME-B	brain	exhaustion	zscore	False	-0.094428183462875459	mean	1	TIME-B05	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	8	1	True	True
+12	brain	TIME-B	brain	exhaustion	zscore	False	-0.65599916672001901	mean	1	TIME-B12	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	2	1	True	True
+14	brain	TIME-B	brain	exhaustion	zscore	False	-0.73398010021743521	mean	1	TIME-B14	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	24	1	True	True
+15	brain	TIME-B	brain	exhaustion	zscore	False	-0.29053770013914493	mean	1	TIME-B15	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	33	1	True	True
+19	brain	TIME-B	brain	exhaustion	zscore	False	-0.13420148362403983	mean	1	TIME-B19	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	22	1	True	True
+20	brain	TIME-B	brain	exhaustion	zscore	False	-0.92844225755385856	mean	1	TIME-B20	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	15	1	True	True
+31	brain	TIME-B	brain	exhaustion	zscore	False	-0.82840165300291835	mean	1	TIME-B31	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX	100	1	True	True
+35	brain	TIME-B	brain	exhaustion	zscore	False	-0.12652734992642675	mean	1	TIME-B35	0.16666666666666666	False	CTLA4,LAG3,PDCD1,TIGIT,TOX		0	False	False
+5	lung	TIME-L	lung	exhaustion	ssgsea	True	0.080893201095101952	mean	1	TIME-L05	0.66666666666666663	True	LAG3,TOX	15	1	True	True
+12	lung	TIME-L	lung	exhaustion	ssgsea	True	0.38197450183388215	mean	2	TIME-L12a,TIME-L12b	0.66666666666666663	True	LAG3,TOX	15	1	True	True
+15	lung	TIME-L	lung	exhaustion	ssgsea	True	0.23652485733536041	mean	1	TIME-L15	0.66666666666666663	True	LAG3,TOX	43	1	True	True
+18	lung	TIME-L	lung	exhaustion	ssgsea	True	-0.030518489384942976	mean	1	TIME-L18	0.66666666666666663	True	LAG3,TOX	143	1	True	True
+19	lung	TIME-L	lung	exhaustion	ssgsea	True	0.26918349465410563	mean	1	TIME-L19	0.66666666666666663	True	LAG3,TOX	33	1	True	True
+24	lung	TIME-L	lung	exhaustion	ssgsea	True	0.29215662884219984	mean	2	TIME-L24a,TIME-L24b	0.66666666666666663	True	LAG3,TOX	13	1	True	True
+26	lung	TIME-L	lung	exhaustion	ssgsea	True	0.24766097739744111	mean	1	TIME-L26	0.66666666666666663	True	LAG3,TOX	15	1	True	True
+29	lung	TIME-L	lung	exhaustion	ssgsea	True	0.2554687261049145	mean	1	TIME-L29	0.66666666666666663	True	LAG3,TOX	115	1	True	True
+30	lung	TIME-L	lung	exhaustion	ssgsea	True	0.0316424122756516	mean	1	TIME-L30	0.66666666666666663	True	LAG3,TOX	115	1	True	True
+32	lung	TIME-L	lung	exhaustion	ssgsea	True	0.24932404244879225	mean	1	TIME-L32	0.66666666666666663	True	LAG3,TOX	38	1	True	True
+35	lung	TIME-L	lung	exhaustion	ssgsea	True	0.28143787965895772	mean	1	TIME-L35	0.66666666666666663	True	LAG3,TOX		0	False	False
+40	lung	TIME-L	lung	exhaustion	ssgsea	True	0.031965106176339173	mean	1	TIME-L40	0.66666666666666663	True	LAG3,TOX	37	1	True	True
+43	lung	TIME-L	lung	exhaustion	ssgsea	True	0.24741480321810796	mean	1	TIME-L43	0.66666666666666663	True	LAG3,TOX	85	1	True	True
+5	lung	TIME-L	lung	exhaustion	zscore	False	-0.46920163031591339	mean	1	TIME-L05	0.66666666666666663	True	LAG3,TOX	15	1	True	True
+12	lung	TIME-L	lung	exhaustion	zscore	False	1.0491060096892499	mean	2	TIME-L12a,TIME-L12b	0.66666666666666663	True	LAG3,TOX	15	1	True	True
+15	lung	TIME-L	lung	exhaustion	zscore	False	0.23079334919316705	mean	1	TIME-L15	0.66666666666666663	True	LAG3,TOX	43	1	True	True
+18	lung	TIME-L	lung	exhaustion	zscore	False	-0.48766557567054408	mean	1	TIME-L18	0.66666666666666663	True	LAG3,TOX	143	1	True	True
+19	lung	TIME-L	lung	exhaustion	zscore	False	0.3502401957083438	mean	1	TIME-L19	0.66666666666666663	True	LAG3,TOX	33	1	True	True
+24	lung	TIME-L	lung	exhaustion	zscore	False	0.50773640945814857	mean	2	TIME-L24a,TIME-L24b	0.66666666666666663	True	LAG3,TOX	13	1	True	True
+26	lung	TIME-L	lung	exhaustion	zscore	False	0.12616399765569491	mean	1	TIME-L26	0.66666666666666663	True	LAG3,TOX	15	1	True	True
+29	lung	TIME-L	lung	exhaustion	zscore	False	0.22063036486818088	mean	1	TIME-L29	0.66666666666666663	True	LAG3,TOX	115	1	True	True
+30	lung	TIME-L	lung	exhaustion	zscore	False	-0.39740371011052816	mean	1	TIME-L30	0.66666666666666663	True	LAG3,TOX	115	1	True	True
+32	lung	TIME-L	lung	exhaustion	zscore	False	0.1876340778693312	mean	1	TIME-L32	0.66666666666666663	True	LAG3,TOX	38	1	True	True
+35	lung	TIME-L	lung	exhaustion	zscore	False	0.5922636538604813	mean	1	TIME-L35	0.66666666666666663	True	LAG3,TOX		0	False	False
+40	lung	TIME-L	lung	exhaustion	zscore	False	-0.22137385243048224	mean	1	TIME-L40	0.66666666666666663	True	LAG3,TOX	37	1	True	True
+43	lung	TIME-L	lung	exhaustion	zscore	False	0.54675218572414286	mean	1	TIME-L43	0.66666666666666663	True	LAG3,TOX	85	1	True	True
+5	brain	TIME-B	brain	myeloid_m1	ssgsea	True	-0.0079151616673898209	mean	1	TIME-B05	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	8	1	True	True
+12	brain	TIME-B	brain	myeloid_m1	ssgsea	True	0.0039786062592505117	mean	1	TIME-B12	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	2	1	True	True
+14	brain	TIME-B	brain	myeloid_m1	ssgsea	True	0.20736700295412738	mean	1	TIME-B14	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	24	1	True	True
+15	brain	TIME-B	brain	myeloid_m1	ssgsea	True	-0.03747345588852171	mean	1	TIME-B15	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	33	1	True	True
+19	brain	TIME-B	brain	myeloid_m1	ssgsea	True	0.11610703955896133	mean	1	TIME-B19	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	22	1	True	True
+20	brain	TIME-B	brain	myeloid_m1	ssgsea	True	-0.035570403274257534	mean	1	TIME-B20	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	15	1	True	True
+31	brain	TIME-B	brain	myeloid_m1	ssgsea	True	-0.16776650875209256	mean	1	TIME-B31	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	100	1	True	True
+35	brain	TIME-B	brain	myeloid_m1	ssgsea	True	-0.0044054906662808202	mean	1	TIME-B35	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF		0	False	False
+5	brain	TIME-B	brain	myeloid_m1	zscore	False	-0.246656453213903	mean	1	TIME-B05	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	8	1	True	True
+12	brain	TIME-B	brain	myeloid_m1	zscore	False	-0.67966824783883273	mean	1	TIME-B12	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	2	1	True	True
+14	brain	TIME-B	brain	myeloid_m1	zscore	False	0.49770200843489609	mean	1	TIME-B14	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	24	1	True	True
+15	brain	TIME-B	brain	myeloid_m1	zscore	False	-0.65606528022813204	mean	1	TIME-B15	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	33	1	True	True
+19	brain	TIME-B	brain	myeloid_m1	zscore	False	0.16680211612556695	mean	1	TIME-B19	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	22	1	True	True
+20	brain	TIME-B	brain	myeloid_m1	zscore	False	-0.013275846535723442	mean	1	TIME-B20	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	15	1	True	True
+31	brain	TIME-B	brain	myeloid_m1	zscore	False	-0.45469129865625091	mean	1	TIME-B31	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	100	1	True	True
+35	brain	TIME-B	brain	myeloid_m1	zscore	False	0.00145500982479988	mean	1	TIME-B35	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF		0	False	False
+5	lung	TIME-L	lung	myeloid_m1	ssgsea	True	-0.042606239405366335	mean	1	TIME-L05	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	15	1	True	True
+12	lung	TIME-L	lung	myeloid_m1	ssgsea	True	0.16532462721471536	mean	2	TIME-L12a,TIME-L12b	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	15	1	True	True
+15	lung	TIME-L	lung	myeloid_m1	ssgsea	True	-0.034473358146607791	mean	1	TIME-L15	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	43	1	True	True
+18	lung	TIME-L	lung	myeloid_m1	ssgsea	True	0.049529364039014166	mean	1	TIME-L18	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	143	1	True	True
+19	lung	TIME-L	lung	myeloid_m1	ssgsea	True	0.26338362770897239	mean	1	TIME-L19	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	33	1	True	True
+24	lung	TIME-L	lung	myeloid_m1	ssgsea	True	0.032833526518973297	mean	2	TIME-L24a,TIME-L24b	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	13	1	True	True
+26	lung	TIME-L	lung	myeloid_m1	ssgsea	True	0.15543074862043688	mean	1	TIME-L26	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	15	1	True	True
+29	lung	TIME-L	lung	myeloid_m1	ssgsea	True	0.12280365247543422	mean	1	TIME-L29	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	115	1	True	True
+30	lung	TIME-L	lung	myeloid_m1	ssgsea	True	0.15544060791977601	mean	1	TIME-L30	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	115	1	True	True
+32	lung	TIME-L	lung	myeloid_m1	ssgsea	True	0.1708810997874986	mean	1	TIME-L32	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	38	1	True	True
+35	lung	TIME-L	lung	myeloid_m1	ssgsea	True	0.023622795674173535	mean	1	TIME-L35	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF		0	False	False
+40	lung	TIME-L	lung	myeloid_m1	ssgsea	True	0.06434813862809495	mean	1	TIME-L40	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	37	1	True	True
+43	lung	TIME-L	lung	myeloid_m1	ssgsea	True	0.16995076619165642	mean	1	TIME-L43	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	85	1	True	True
+5	lung	TIME-L	lung	myeloid_m1	zscore	False	-0.44248805033663424	mean	1	TIME-L05	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	15	1	True	True
+12	lung	TIME-L	lung	myeloid_m1	zscore	False	0.20767071212307001	mean	2	TIME-L12a,TIME-L12b	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	15	1	True	True
+15	lung	TIME-L	lung	myeloid_m1	zscore	False	-0.65846007451049571	mean	1	TIME-L15	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	43	1	True	True
+18	lung	TIME-L	lung	myeloid_m1	zscore	False	0.2630598326215946	mean	1	TIME-L18	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	143	1	True	True
+19	lung	TIME-L	lung	myeloid_m1	zscore	False	0.69209136609087474	mean	1	TIME-L19	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	33	1	True	True
+24	lung	TIME-L	lung	myeloid_m1	zscore	False	-0.30873714289636955	mean	2	TIME-L24a,TIME-L24b	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	13	1	True	True
+26	lung	TIME-L	lung	myeloid_m1	zscore	False	-0.042554949298735233	mean	1	TIME-L26	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	15	1	True	True
+29	lung	TIME-L	lung	myeloid_m1	zscore	False	0.23806675774010633	mean	1	TIME-L29	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	115	1	True	True
+30	lung	TIME-L	lung	myeloid_m1	zscore	False	0.36297992683147384	mean	1	TIME-L30	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	115	1	True	True
+32	lung	TIME-L	lung	myeloid_m1	zscore	False	0.28727923390333765	mean	1	TIME-L32	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	38	1	True	True
+35	lung	TIME-L	lung	myeloid_m1	zscore	False	0.17088883219492179	mean	1	TIME-L35	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF		0	False	False
+40	lung	TIME-L	lung	myeloid_m1	zscore	False	0.19098444219716426	mean	1	TIME-L40	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	37	1	True	True
+43	lung	TIME-L	lung	myeloid_m1	zscore	False	0.52468353620055841	mean	1	TIME-L43	0.20000000000000001	False	CD80,CD86,CXCL10,CXCL11,IL12B,IL1B,NOS2,TNF	85	1	True	True
+5	brain	TIME-B	brain	myeloid_m2	ssgsea	True	0.45425015349657366	mean	1	TIME-B05	0.66666666666666663	True	CCL22,CLEC10A,IL10	8	1	True	True
+12	brain	TIME-B	brain	myeloid_m2	ssgsea	True	0.42635221237276727	mean	1	TIME-B12	0.66666666666666663	True	CCL22,CLEC10A,IL10	2	1	True	True
+14	brain	TIME-B	brain	myeloid_m2	ssgsea	True	0.4889670678786473	mean	1	TIME-B14	0.66666666666666663	True	CCL22,CLEC10A,IL10	24	1	True	True
+15	brain	TIME-B	brain	myeloid_m2	ssgsea	True	0.44598422711058633	mean	1	TIME-B15	0.66666666666666663	True	CCL22,CLEC10A,IL10	33	1	True	True
+19	brain	TIME-B	brain	myeloid_m2	ssgsea	True	0.21241488709727979	mean	1	TIME-B19	0.66666666666666663	True	CCL22,CLEC10A,IL10	22	1	True	True
+20	brain	TIME-B	brain	myeloid_m2	ssgsea	True	0.18286862018425157	mean	1	TIME-B20	0.66666666666666663	True	CCL22,CLEC10A,IL10	15	1	True	True
+31	brain	TIME-B	brain	myeloid_m2	ssgsea	True	0.35139927262899451	mean	1	TIME-B31	0.66666666666666663	True	CCL22,CLEC10A,IL10	100	1	True	True
+35	brain	TIME-B	brain	myeloid_m2	ssgsea	True	0.48741220496129023	mean	1	TIME-B35	0.66666666666666663	True	CCL22,CLEC10A,IL10		0	False	False
+5	brain	TIME-B	brain	myeloid_m2	zscore	False	0.23228566559659111	mean	1	TIME-B05	0.66666666666666663	True	CCL22,CLEC10A,IL10	8	1	True	True
+12	brain	TIME-B	brain	myeloid_m2	zscore	False	0.19778504364255761	mean	1	TIME-B12	0.66666666666666663	True	CCL22,CLEC10A,IL10	2	1	True	True
+14	brain	TIME-B	brain	myeloid_m2	zscore	False	0.6253608831915507	mean	1	TIME-B14	0.66666666666666663	True	CCL22,CLEC10A,IL10	24	1	True	True
+15	brain	TIME-B	brain	myeloid_m2	zscore	False	0.29154499184677607	mean	1	TIME-B15	0.66666666666666663	True	CCL22,CLEC10A,IL10	33	1	True	True
+19	brain	TIME-B	brain	myeloid_m2	zscore	False	-0.63096141523519433	mean	1	TIME-B19	0.66666666666666663	True	CCL22,CLEC10A,IL10	22	1	True	True
+20	brain	TIME-B	brain	myeloid_m2	zscore	False	-0.37810558511813575	mean	1	TIME-B20	0.66666666666666663	True	CCL22,CLEC10A,IL10	15	1	True	True
+31	brain	TIME-B	brain	myeloid_m2	zscore	False	-0.089865002711817021	mean	1	TIME-B31	0.66666666666666663	True	CCL22,CLEC10A,IL10	100	1	True	True
+35	brain	TIME-B	brain	myeloid_m2	zscore	False	0.22517479600232537	mean	1	TIME-B35	0.66666666666666663	True	CCL22,CLEC10A,IL10		0	False	False
+5	lung	TIME-L	lung	myeloid_m2	ssgsea	True	0.28429720489954763	mean	1	TIME-L05	0.66666666666666663	True	CCL22,CLEC10A,IL10	15	1	True	True
+12	lung	TIME-L	lung	myeloid_m2	ssgsea	True	0.45882702588731172	mean	2	TIME-L12a,TIME-L12b	0.66666666666666663	True	CCL22,CLEC10A,IL10	15	1	True	True
+15	lung	TIME-L	lung	myeloid_m2	ssgsea	True	0.33381767006305241	mean	1	TIME-L15	0.66666666666666663	True	CCL22,CLEC10A,IL10	43	1	True	True
+18	lung	TIME-L	lung	myeloid_m2	ssgsea	True	0.17424601343001445	mean	1	TIME-L18	0.66666666666666663	True	CCL22,CLEC10A,IL10	143	1	True	True
+19	lung	TIME-L	lung	myeloid_m2	ssgsea	True	0.41667345676501033	mean	1	TIME-L19	0.66666666666666663	True	CCL22,CLEC10A,IL10	33	1	True	True
+24	lung	TIME-L	lung	myeloid_m2	ssgsea	True	0.45982260581151141	mean	2	TIME-L24a,TIME-L24b	0.66666666666666663	True	CCL22,CLEC10A,IL10	13	1	True	True
+26	lung	TIME-L	lung	myeloid_m2	ssgsea	True	0.50463940874129554	mean	1	TIME-L26	0.66666666666666663	True	CCL22,CLEC10A,IL10	15	1	True	True
+29	lung	TIME-L	lung	myeloid_m2	ssgsea	True	0.40692631021203185	mean	1	TIME-L29	0.66666666666666663	True	CCL22,CLEC10A,IL10	115	1	True	True
+30	lung	TIME-L	lung	myeloid_m2	ssgsea	True	0.43192340777499588	mean	1	TIME-L30	0.66666666666666663	True	CCL22,CLEC10A,IL10	115	1	True	True
+32	lung	TIME-L	lung	myeloid_m2	ssgsea	True	0.35571153825300528	mean	1	TIME-L32	0.66666666666666663	True	CCL22,CLEC10A,IL10	38	1	True	True
+35	lung	TIME-L	lung	myeloid_m2	ssgsea	True	0.14856318908035165	mean	1	TIME-L35	0.66666666666666663	True	CCL22,CLEC10A,IL10		0	False	False
+40	lung	TIME-L	lung	myeloid_m2	ssgsea	True	0.27693949418492259	mean	1	TIME-L40	0.66666666666666663	True	CCL22,CLEC10A,IL10	37	1	True	True
+43	lung	TIME-L	lung	myeloid_m2	ssgsea	True	0.38459997487516911	mean	1	TIME-L43	0.66666666666666663	True	CCL22,CLEC10A,IL10	85	1	True	True
+5	lung	TIME-L	lung	myeloid_m2	zscore	False	-0.42111981552995797	mean	1	TIME-L05	0.66666666666666663	True	CCL22,CLEC10A,IL10	15	1	True	True
+12	lung	TIME-L	lung	myeloid_m2	zscore	False	0.33358744411248359	mean	2	TIME-L12a,TIME-L12b	0.66666666666666663	True	CCL22,CLEC10A,IL10	15	1	True	True
+15	lung	TIME-L	lung	myeloid_m2	zscore	False	-0.22521126714651152	mean	1	TIME-L15	0.66666666666666663	True	CCL22,CLEC10A,IL10	43	1	True	True
+18	lung	TIME-L	lung	myeloid_m2	zscore	False	-0.76135279685759139	mean	1	TIME-L18	0.66666666666666663	True	CCL22,CLEC10A,IL10	143	1	True	True
+19	lung	TIME-L	lung	myeloid_m2	zscore	False	0.080575590489675317	mean	1	TIME-L19	0.66666666666666663	True	CCL22,CLEC10A,IL10	33	1	True	True
+24	lung	TIME-L	lung	myeloid_m2	zscore	False	0.48102397839970595	mean	2	TIME-L24a,TIME-L24b	0.66666666666666663	True	CCL22,CLEC10A,IL10	13	1	True	True
+26	lung	TIME-L	lung	myeloid_m2	zscore	False	0.76849703959004723	mean	1	TIME-L26	0.66666666666666663	True	CCL22,CLEC10A,IL10	15	1	True	True
+29	lung	TIME-L	lung	myeloid_m2	zscore	False	-0.13594332528637529	mean	1	TIME-L29	0.66666666666666663	True	CCL22,CLEC10A,IL10	115	1	True	True
+30	lung	TIME-L	lung	myeloid_m2	zscore	False	0.012930239503245036	mean	1	TIME-L30	0.66666666666666663	True	CCL22,CLEC10A,IL10	115	1	True	True
+32	lung	TIME-L	lung	myeloid_m2	zscore	False	-0.1961965188037087	mean	1	TIME-L32	0.66666666666666663	True	CCL22,CLEC10A,IL10	38	1	True	True
+35	lung	TIME-L	lung	myeloid_m2	zscore	False	-0.77959477974056779	mean	1	TIME-L35	0.66666666666666663	True	CCL22,CLEC10A,IL10		0	False	False
+40	lung	TIME-L	lung	myeloid_m2	zscore	False	-0.47817927083976447	mean	1	TIME-L40	0.66666666666666663	True	CCL22,CLEC10A,IL10	37	1	True	True
+43	lung	TIME-L	lung	myeloid_m2	zscore	False	0.033152682382499403	mean	1	TIME-L43	0.66666666666666663	True	CCL22,CLEC10A,IL10	85	1	True	True
+5	brain	TIME-B	brain	tls	ssgsea	True	-0.21017805262344827	mean	1	TIME-B05	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	8	1	True	True
+12	brain	TIME-B	brain	tls	ssgsea	True	0.10528473596953548	mean	1	TIME-B12	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	2	1	True	True
+14	brain	TIME-B	brain	tls	ssgsea	True	-0.28970144927689784	mean	1	TIME-B14	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	24	1	True	True
+15	brain	TIME-B	brain	tls	ssgsea	True	-0.07109762919471907	mean	1	TIME-B15	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	33	1	True	True
+19	brain	TIME-B	brain	tls	ssgsea	True	0.095941262794627488	mean	1	TIME-B19	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	22	1	True	True
+20	brain	TIME-B	brain	tls	ssgsea	True	-0.14024925281793396	mean	1	TIME-B20	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	15	1	True	True
+31	brain	TIME-B	brain	tls	ssgsea	True	-0.2585067571877066	mean	1	TIME-B31	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	100	1	True	True
+35	brain	TIME-B	brain	tls	ssgsea	True	0.11437291584489889	mean	1	TIME-B35	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1		0	False	False
+5	brain	TIME-B	brain	tls	zscore	False	-0.87222151807941073	mean	1	TIME-B05	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	8	1	True	True
+12	brain	TIME-B	brain	tls	zscore	False	-0.58938863144789344	mean	1	TIME-B12	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	2	1	True	True
+14	brain	TIME-B	brain	tls	zscore	False	-1.1114847654738327	mean	1	TIME-B14	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	24	1	True	True
+15	brain	TIME-B	brain	tls	zscore	False	-0.64795406724703741	mean	1	TIME-B15	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	33	1	True	True
+19	brain	TIME-B	brain	tls	zscore	False	-0.18971163465497426	mean	1	TIME-B19	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	22	1	True	True
+20	brain	TIME-B	brain	tls	zscore	False	-0.46220765046254508	mean	1	TIME-B20	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	15	1	True	True
+31	brain	TIME-B	brain	tls	zscore	False	-0.59339332525486665	mean	1	TIME-B31	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1	100	1	True	True
+35	brain	TIME-B	brain	tls	zscore	False	-0.019242617321294918	mean	1	TIME-B35	0.20000000000000001	False	CCL19,CCL21,CR2,MS4A1		0	False	False
+5	lung	TIME-L	lung	tls	ssgsea	True	0.096417636013429203	mean	1	TIME-L05	0.59999999999999998	True	CR2,MS4A1	15	1	True	True
+12	lung	TIME-L	lung	tls	ssgsea	True	0.33341745226461944	mean	2	TIME-L12a,TIME-L12b	0.59999999999999998	True	CR2,MS4A1	15	1	True	True
+15	lung	TIME-L	lung	tls	ssgsea	True	0.55865248198407857	mean	1	TIME-L15	0.59999999999999998	True	CR2,MS4A1	43	1	True	True
+18	lung	TIME-L	lung	tls	ssgsea	True	0.13001767777978948	mean	1	TIME-L18	0.59999999999999998	True	CR2,MS4A1	143	1	True	True
+19	lung	TIME-L	lung	tls	ssgsea	True	0.33302786439723947	mean	1	TIME-L19	0.59999999999999998	True	CR2,MS4A1	33	1	True	True
+24	lung	TIME-L	lung	tls	ssgsea	True	0.41038695040715267	mean	2	TIME-L24a,TIME-L24b	0.59999999999999998	True	CR2,MS4A1	13	1	True	True
+26	lung	TIME-L	lung	tls	ssgsea	True	-0.015107021754412378	mean	1	TIME-L26	0.59999999999999998	True	CR2,MS4A1	15	1	True	True
+29	lung	TIME-L	lung	tls	ssgsea	True	0.20730546622625814	mean	1	TIME-L29	0.59999999999999998	True	CR2,MS4A1	115	1	True	True
+30	lung	TIME-L	lung	tls	ssgsea	True	0.11365075770361287	mean	1	TIME-L30	0.59999999999999998	True	CR2,MS4A1	115	1	True	True
+32	lung	TIME-L	lung	tls	ssgsea	True	0.43654207799536088	mean	1	TIME-L32	0.59999999999999998	True	CR2,MS4A1	38	1	True	True
+35	lung	TIME-L	lung	tls	ssgsea	True	0.42318692430112281	mean	1	TIME-L35	0.59999999999999998	True	CR2,MS4A1		0	False	False
+40	lung	TIME-L	lung	tls	ssgsea	True	0.4094035449409823	mean	1	TIME-L40	0.59999999999999998	True	CR2,MS4A1	37	1	True	True
+43	lung	TIME-L	lung	tls	ssgsea	True	0.17089317840866711	mean	1	TIME-L43	0.59999999999999998	True	CR2,MS4A1	85	1	True	True
+5	lung	TIME-L	lung	tls	zscore	False	-0.06520579261290825	mean	1	TIME-L05	0.59999999999999998	True	CR2,MS4A1	15	1	True	True
+12	lung	TIME-L	lung	tls	zscore	False	0.51412903338623761	mean	2	TIME-L12a,TIME-L12b	0.59999999999999998	True	CR2,MS4A1	15	1	True	True
+15	lung	TIME-L	lung	tls	zscore	False	1.1029447415616915	mean	1	TIME-L15	0.59999999999999998	True	CR2,MS4A1	43	1	True	True
+18	lung	TIME-L	lung	tls	zscore	False	-0.27179155430488111	mean	1	TIME-L18	0.59999999999999998	True	CR2,MS4A1	143	1	True	True
+19	lung	TIME-L	lung	tls	zscore	False	0.41071827779161491	mean	1	TIME-L19	0.59999999999999998	True	CR2,MS4A1	33	1	True	True
+24	lung	TIME-L	lung	tls	zscore	False	0.99343623373582313	mean	2	TIME-L24a,TIME-L24b	0.59999999999999998	True	CR2,MS4A1	13	1	True	True
+26	lung	TIME-L	lung	tls	zscore	False	-0.73117162759693521	mean	1	TIME-L26	0.59999999999999998	True	CR2,MS4A1	15	1	True	True
+29	lung	TIME-L	lung	tls	zscore	False	-0.11459685757239815	mean	1	TIME-L29	0.59999999999999998	True	CR2,MS4A1	115	1	True	True
+30	lung	TIME-L	lung	tls	zscore	False	-0.20732047435612602	mean	1	TIME-L30	0.59999999999999998	True	CR2,MS4A1	115	1	True	True
+32	lung	TIME-L	lung	tls	zscore	False	0.51204319911733709	mean	1	TIME-L32	0.59999999999999998	True	CR2,MS4A1	38	1	True	True
+35	lung	TIME-L	lung	tls	zscore	False	0.34448144682924742	mean	1	TIME-L35	0.59999999999999998	True	CR2,MS4A1		0	False	False
+40	lung	TIME-L	lung	tls	zscore	False	0.33798340867523846	mean	1	TIME-L40	0.59999999999999998	True	CR2,MS4A1	37	1	True	True
+43	lung	TIME-L	lung	tls	zscore	False	0.15238890816584433	mean	1	TIME-L43	0.59999999999999998	True	CR2,MS4A1	85	1	True	True

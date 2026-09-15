@@ -68,7 +68,7 @@ phases:
   contexture: true         # P2-T1..T7
   checkpoints: true       # P3-T1..T7 (ADR 0015, ADR 0016)
   crosstalk: true        # P4-T1..T7 (ADR 0021)
-  survival: false          # gated on Q5 (P0-T4)
+  survival: true           # P5-T1..T5 (ADR 0024); Q5 resolved yes
   fair: false
 
 landscape:
@@ -355,6 +355,120 @@ crosstalk:
     n_matched_draws: 10000
     n_expression_deciles: 10
     fdr_alpha: 0.05
+
+survival:
+  # Phase 5 / prognostic association -- STRETCH, and Gate 5 is "timebox
+  # respected". PROJECT_PLAN calls this a stretch goal on a one-week timebox and
+  # P5-T1's own acceptance criterion permits "a documented abandonment".
+  #
+  # NO PHASE 5 RESULT MAY BE A HEADLINE CLAIM. With 12 events in lung and 7 in
+  # brain this detects only very large hazard ratios, so a null here is
+  # UNINFORMATIVE, NOT NEGATIVE -- the same status the 1.1-1.3 SD power floor
+  # gives a Phase 2 null (P0-T8) and ADR 0022 gives Phase 4's empty nomination
+  # table. A separation at 6 versus 7 patients describes this cohort; it is
+  # never an inferential claim.
+  #
+  # Every threshold in this block was PRE-REGISTERED in ADR 0024 and committed
+  # before any Phase 5 result was computed. A median-split KM at this n is the
+  # easiest quantity in this project to manufacture by choosing a split, an
+  # endpoint or a censoring convention late.
+  #
+  # Both manifests are SEPARATE FILES for the reason signatures.yaml,
+  # checkpoints.yaml and ligand_receptor.yaml are: config.yaml is a declared
+  # input of p0t7_assemble_h5ad, so editing it rebuilds the .h5ad and re-runs
+  # Phases 1-4. Re-pinning a data source has no business costing that. This
+  # block is written complete, including P5-T4's key, so the rebuild is paid
+  # exactly once -- as Phases 3 and 4 each did.
+  clinical_yaml: config/clinical.yaml
+  # P5-T4's TCGA LUAD cohort. NAMED NOW, CREATED AT P5-T4: common.smk guards it
+  # with exists(), so the workflow parses clean while the file is absent, the
+  # same way it does for a checkout that has not fetched the supplementary
+  # files. Source is cBioPortal because PMID 36216799's own TCGA analyses came
+  # from cBioPortal -- a comparator should share provenance with the claim it
+  # contextualises.
+  tcga_yaml: config/tcga.yaml
+
+  # The 23 AOIs Phase 2 scored, and the only ones carrying a signature score.
+  # NOT extended to L/LB to reach PROJECT_PLAN's "~35 patients": 35 is the count
+  # of patients with a TUMOUR AOI, and none of them has a score. Extending is a
+  # stop-and-ask scope change that would also re-open the detection floor where
+  # the panel clears far less (P3-T2: L 2/9 genes, LB 3/9, vs TIME-L 8/9).
+  # ADR 0024 section 2.
+  aoi_codes: ["TIME-L", "TIME-B"]
+
+  aggregation:
+    # P5-T2. Per-AOI scores -> one value per patient per site. PROJECT_PLAN
+    # section 6 requires the rule be specified; this is it.
+    #
+    # Only P12 and P24 contribute duplicate TIME AOIs (both TIME-L), so this
+    # moves 2 of 13 lung patients and 0 of 8 brain ones and cannot be
+    # load-bearing. `mean` matches ADR 0021 section 1's duplicate_rule, so
+    # Phase 5 collapses duplicates the way Phase 4 already does rather than
+    # inventing a second convention.
+    method: mean
+    # Phase 2 ran ssgsea AND zscore and treated their AGREEMENT as the
+    # robustness evidence, neither being the other's tiebreaker. Phase 5 names
+    # one as primary rather than silently pooling them; the other is a declared
+    # sensitivity (ADR 0012's shape).
+    scoring_method: ssgsea
+
+  model:
+    # P5-T3. Median only -- not a tertile, not an optimal cutpoint, not a
+    # maximally-selected rank statistic. Those are the standard routes to a
+    # separation that does not replicate, and at 12 and 7 events they are not
+    # defensible. Computed WITHIN the arm being split, so the arms are as
+    # balanced as an odd n allows: 6/7 lung, 4/4 brain.
+    split: median
+
+    # Assigned BY SITE, once, before any curve. Duplicated from clinical.yaml's
+    # columns.endpoints ON PURPOSE -- the manifest says what the file contains,
+    # this says what the analysis uses, and the rule asserts they agree. A
+    # silent divergence between the two would be an endpoint swap nobody could
+    # see. Names are NORMALISED (whitespace collapsed): the deposited headers
+    # carry embedded newlines, and docs/data-provenance.md Q5 transcribed them
+    # already-normalised.
+    endpoint_by_site:
+      lung: "Primary lung cancer diagnosis to death (Months)"
+      brain: "Brain metastasis diagnosis to death (Months)"
+
+    # The LUNG column's literal "still alive" value. The BRAIN column spells
+    # censoring differently -- an EMPTY CELL -- and that asymmetry is measured
+    # from the deposited file, not assumed: the lung `Alive` set and the brain
+    # blank set are IDENTICAL (patients 6, 11, 35). That identity is what
+    # licenses reading a blank brain value as CENSORED rather than MISSING, and
+    # it is asserted by the rule. Reading those blanks as missing would silently
+    # drop the only censored observations in the study.
+    censoring_token: "Alive"
+
+    # Reported with the hazard ratio and its CI beside it. Hard constraint 7
+    # forbids a p-value without n, effect size and a confidence interval, and a
+    # bare log-rank p is exactly that.
+    test: logrank
+    alpha: 0.05
+    # Below this an arm is "not assessable" rather than tested. At 4 per arm in
+    # brain this is close to binding, which is the point: it makes the limit
+    # explicit rather than letting a two-patient arm produce a number.
+    min_arm_size: 3
+
+  multiplicity:
+    # P5-T5, declared BEFORE the first p-value. PROJECT_PLAN section 6 says
+    # "5 signatures x 2 cohorts"; config/signatures.yaml resolves SIX sets, and
+    # the repository is what will be tested. Asserted against the resolved
+    # signatures, not trusted.
+    #
+    # THREE OF THE SIX FAILED THEIR PHASE 2 DETECTION FLOOR -- exhaustion 1/6
+    # and tls 1/5 in brain, myeloid_m1 2/10 at BOTH sites. They are scored and
+    # corrected within the family, and reported as "not assessable" wherever
+    # they failed, NEVER as a prognostic null. ADR 0008's rule is not suspended
+    # by a change of outcome variable: a score built from genes at background
+    # measures background, whatever it is regressed against.
+    n_signatures: 6
+    # This study and TCGA LUAD -- ONE family, not two. "Does the same signature
+    # stratify an independent cohort" is a single question asked twice, and
+    # correcting each cohort separately would understate the search.
+    n_cohorts: 2
+    method: fdr_bh
+    alpha: 0.05
 
 acquire:
   # P0-T2 source manifest. Fetched into paths.raw; resources/ is read-only

@@ -1,0 +1,82 @@
+{
+  "alpha": 0.05,
+  "cohort": "TCGA-LUAD",
+  "cohort_construction": {
+    "aggregation": "mean",
+    "n_cells_collapsed": 0,
+    "n_events": 182,
+    "n_missing_time_excluded": 9,
+    "n_nonpositive_time_excluded": 4,
+    "n_patients": 502,
+    "n_redacted_excluded": 0,
+    "sample_type_kept": "01",
+    "sample_types_dropped": {
+      "02": 2,
+      "11": 59
+    }
+  },
+  "endpoint": {
+    "days_per_month": 30.4375,
+    "event": "OS",
+    "source": "PMID:29625055 (TCGA-CDR, Liu et al. 2018)",
+    "time": "OS.time",
+    "units_in": "days"
+  },
+  "gene_presence": {
+    "all_genes_present": true,
+    "basis": "presence in the expression matrix, NOT detection above background",
+    "n_scoreable": 6
+  },
+  "limitations": {
+    "no_brain_comparator": "TCGA LUAD is primary lung. The brain arm \u2014 TIME-B n = 8, the binding constraint on the project \u2014 gets NO external check from this task. P5-T4 contextualises the lung null only.",
+    "not_the_same_measurement": "GeoMx TIME-L is the PanCK-negative SEGMENT of an ROI sited in a CD45-rich region (and not a CD45-sorted population, per Q2); TCGA is WHOLE BULK TUMOUR. A disagreement between cohorts is not necessarily a disagreement about biology, and an agreement is not necessarily a replication."
+  },
+  "multiplicity": {
+    "adr": "ADR 0026 \u00a72, ADR 0027 \u00a72",
+    "corrected_here": false,
+    "family_total": 14,
+    "note": "TCGA contributes 6 \u2014 all signatures, because the Phase 2 detection floor is a property of the GeoMx assay and does not transfer. Family = 8 (P5-T3) + 6 = 14, corrected once at P5-T5.",
+    "tcga_contribution": 6
+  },
+  "n_assertions": 7,
+  "n_ci_excluding_one": 1,
+  "n_raw_p_below_alpha": 1,
+  "phase": 5,
+  "pre_registered": "ADR 0027",
+  "provider": "UCSC Xena (tcga-xena-hub)",
+  "reporting_rule": "EVERY p HERE IS RAW AND UNCORRECTED (ADR 0026 \u00a73). Every p carries n, hazard ratio and a confidence interval (hard constraint 7); where the log-rank and the interval disagree, THE INTERVAL GOVERNS. A null in TCGA at this n means something a null in this study does not \u2014 that is the point of the task \u2014 but it is bounded by the two limitations above. myeloid_m1 is TCGA-only and has no GeoMx comparator.",
+  "source_note": "UCSC Xena, not cBioPortal: the datahub bulk files return 403/404 and only the live REST API answers, which cannot be digest-pinned under ADR 0005. ADR 0024 \u00a71 pre-authorised this fallback.",
+  "split_vs_continuous": {
+    "cells": [
+      {
+        "continuous_ci": [
+          0.00977584065005415,
+          1.472669458935468
+        ],
+        "continuous_hr_per_unit": 0.11998575732458669,
+        "signature": "antigen_presentation",
+        "split_ci": [
+          0.5229987499428436,
+          0.9434332402915269
+        ],
+        "split_hr": 0.702434627084254
+      },
+      {
+        "continuous_ci": [
+          0.16101075923761718,
+          0.8880658857332568
+        ],
+        "continuous_hr_per_unit": 0.3781377560029396,
+        "signature": "tls",
+        "split_ci": [
+          0.6057140965583768,
+          1.08833866864296
+        ],
+        "split_hr": 0.8119249185895313
+      }
+    ],
+    "n_disagreeing": 2,
+    "rule": "A disagreement between the median split and the continuous fit is a statement about THE SPLIT, not about the biology (ADR 0027 \u00a74). A median split discards information and at this n the continuous fit is the better powered; neither is the tiebreak, and the split stays primary because comparability with P5-T3 is what this task exists to provide."
+  },
+  "task": "P5-T4"
+}

@@ -1,0 +1,81 @@
+{
+  "alpha": 0.05,
+  "arms": {
+    "brain": {
+      "n_cohort": 8,
+      "n_in_fit": 7,
+      "split": [
+        3,
+        4
+      ]
+    },
+    "lung": {
+      "n_cohort": 13,
+      "n_in_fit": 12,
+      "split": [
+        6,
+        6
+      ]
+    }
+  },
+  "multiplicity": {
+    "adr": "ADR 0026",
+    "corrected_here": false,
+    "family_contribution_this_cohort": 8,
+    "note": "P5-T3 emits RAW p only. The family spans this study and TCGA (P5-T4), so P5-T5 corrects ONCE over the union. A q-value here would be a corrected value that nothing corrected."
+  },
+  "n_assertions": 6,
+  "n_modelled": 8,
+  "n_not_assessable": 4,
+  "n_raw_p_below_alpha": 1,
+  "not_assessable": [
+    {
+      "arm": "brain",
+      "signature": "exhaustion"
+    },
+    {
+      "arm": "brain",
+      "signature": "myeloid_m1"
+    },
+    {
+      "arm": "lung",
+      "signature": "myeloid_m1"
+    },
+    {
+      "arm": "brain",
+      "signature": "tls"
+    }
+  ],
+  "phase": 5,
+  "pre_registered": "ADR 0024 \u00a76 (split, test), ADR 0025 (arms), ADR 0026 (family)",
+  "reporting_rule": "EVERY p-VALUE HERE IS RAW AND UNCORRECTED (ADR 0026 \u00a73). No Phase 5 result may be a headline claim. Brain is TIME-B n = 8 inline in every brain claim (hard constraint 8); 7 enter a fit and both belong in the sentence. Every p carries n, hazard ratio and a confidence interval (hard constraint 7). A null at 6/6 and 3/4 is UNINFORMATIVE, NOT NEGATIVE (ADR 0024 \u00a77), and a separation at 3 versus 4 patients describes this cohort rather than supporting an inference. A cell below the coverage floor is 'not assessable', NEVER a prognostic null (ADR 0008).",
+  "significance_disagreement": {
+    "cells": [
+      {
+        "arm": "lung",
+        "ci": [
+          0.8768682850794116,
+          23.160222368163463
+        ],
+        "hazard_ratio": 4.506491370237973,
+        "p_raw": 0.041552370514014655,
+        "signature": "tls"
+      }
+    ],
+    "n_cells": 1,
+    "rule": "Where the log-rank and the hazard-ratio interval disagree, THE INTERVAL GOVERNS. The log-rank is a score test and the Cox interval a Wald interval; at n = 12 and n = 7 they diverge and the interval is the more conservative. A p below alpha beside an interval spanning 1 is not a detected effect."
+  },
+  "split": {
+    "computed": "within arm",
+    "rule": "median",
+    "tie_side": "high = score > median"
+  },
+  "stretch": true,
+  "task": "P5-T3",
+  "test": {
+    "effect_size": "Cox PHReg on the binary split indicator",
+    "p_agreement_tolerance": 0.1,
+    "primary": "logrank (sksurv.compare_survival)",
+    "worst_p_agreement_delta": 0.04576333465565219
+  }
+}

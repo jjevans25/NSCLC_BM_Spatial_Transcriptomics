@@ -1,0 +1,3 @@
+patient_id	patient_number	site	aoi_code	arm	reason	action	adr
+P35	35	brain	TIME-B	brain	censored with no follow-up time — the brain endpoint cell is blank; Supplementary Data 1 has no last-contact date	excluded_from_fits_retained_in_table	ADR 0025
+P35	35	lung	TIME-L	lung	censored with no follow-up time — the lung endpoint carries `Alive`, a status rather than a duration; Supplementary Data 1 has no last-contact date	excluded_from_fits_retained_in_table	ADR 0025

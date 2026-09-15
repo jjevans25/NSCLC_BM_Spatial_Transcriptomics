@@ -1,0 +1,88 @@
+{
+  "aggregation": {
+    "collapsed_patients": [
+      12,
+      24
+    ],
+    "method": "mean",
+    "n_patient_sites_collapsed": 2,
+    "primary_scoring_method": "ssgsea",
+    "sensitivity_scoring_methods": [
+      "zscore"
+    ]
+  },
+  "arms": {
+    "brain": {
+      "aoi_code": "TIME-B",
+      "clears_min_arm_size": true,
+      "min_arm_size": 3,
+      "n_cohort": 8,
+      "n_excluded": 1,
+      "n_in_fit": 7,
+      "split_sizes": [
+        3,
+        4
+      ]
+    },
+    "lung": {
+      "aoi_code": "TIME-L",
+      "clears_min_arm_size": true,
+      "min_arm_size": 3,
+      "n_cohort": 13,
+      "n_excluded": 1,
+      "n_in_fit": 12,
+      "split_sizes": [
+        6,
+        6
+      ]
+    }
+  },
+  "excluded": {
+    "action": "excluded from fits, retained in the table, never imputed",
+    "adr": "ADR 0025",
+    "n_patient_arms": 2,
+    "patients": [
+      35
+    ]
+  },
+  "methods": [
+    "ssgsea",
+    "zscore"
+  ],
+  "n_assertions": 8,
+  "n_patient_sites": 21,
+  "n_patients": 16,
+  "n_rows": 252,
+  "n_signatures": 6,
+  "not_assessable": [
+    {
+      "signature": "exhaustion",
+      "site": "brain"
+    },
+    {
+      "signature": "myeloid_m1",
+      "site": "brain"
+    },
+    {
+      "signature": "myeloid_m1",
+      "site": "lung"
+    },
+    {
+      "signature": "tls",
+      "site": "brain"
+    }
+  ],
+  "phase": 5,
+  "pre_registered": "ADR 0024 (aggregation), ADR 0025 (the exclusion)",
+  "reporting_rule": "No Phase 5 result may be a headline claim. Brain is TIME-B n = 8 inline in every brain claim (hard constraint 8); 7 is what enters a fit and both belong in the sentence. A null at 6/6 and 3/4 is UNINFORMATIVE, NOT NEGATIVE (ADR 0024 \u00a77), and a separation at 3 versus 4 patients describes this cohort rather than supporting an inference. Every p-value carries n, effect size and a confidence interval (hard constraint 7). Wherever assessable is False the finding is 'not assessable', never a prognostic null (ADR 0008).",
+  "signatures": [
+    "antigen_presentation",
+    "cytotoxicity",
+    "exhaustion",
+    "myeloid_m1",
+    "myeloid_m2",
+    "tls"
+  ],
+  "stretch": true,
+  "task": "P5-T2"
+}

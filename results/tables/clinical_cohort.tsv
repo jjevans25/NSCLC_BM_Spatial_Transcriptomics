@@ -1,0 +1,45 @@
+patient_number	in_geo	in_phase5	Age at NSCLC diagnosis	Gender	Histological type of NSCLC	Grade	Largest dimension (cm)	Visc Pleural Invasion	Margins	Treatment of NSCLC	Metastasis Intervals to the brain (Months)	Location of BrM	Histologic type of metastatic NSCLC/subtype	Treatment of BrMs	Primary lung cancer diagnosis to death (Months)	Brain metastasis diagnosis to death (Months)	lung_months	lung_event	brain_months	brain_event	_sheet_row
+1	True	False	70s	F	Adenocarcinoma/solid	3	4.5	N	N	SR	12	Cerebellum	Adenocarcinoma/solid	SR+Rad	39.0	15	39.0	1	15.0	1	3
+2	True	False	60s	F	Adenocarcinoma/solid	3	7	Y	N	SR+Chemo	15	Cerebellum	Adenocarcinoma/solid	SR+Rad	53.0	50	53.0	1	50.0	1	4
+3	True	False	60s	M	adenocarcinoma/NA	3	2.5	Y	N	SR+Chemo	67	Left-temporal lobe	adenocarcinoma/acinar	SR+Rad	81.0	15	81.0	1	15.0	1	5
+4	True	False	50s	F	Solid adenocarcinoma/solid	3	4.5	N	Y	SR	9	Left frontal lobe	Solid adenocarcinoma/solid	SR+Rad	16.0	3	16.0	1	3.0	1	6
+5	True	True	50s	F	Adenosquamous carcinoma/acinar	2	2.8999999999999999	N	N	SR+Chemo	7	Left frontal lobe	Adenosquamous carcinoma/acinar	SR+Rad+Chemo	15.0	8	15.0	1	8.0	1	7
+6	True	False	60s	M	Adenocarcinoma/NA	2				SR+Rad+Chemo	14	Left frontal lobe	adenocarcinoma/solid	SR+Rad+Chemo	Alive			0		0	8
+7	True	False	60s	F	large cell undifferentiated carcinoma/solid	4	10.300000000000001	Y	N	SR+Chemo	28	Left temporal lobe	large cell undifferentiated carcinoma/solid	SR+Rad	53.0	15	53.0	1	15.0	1	9
+8	True	False	70s	M	Adenocarcinoma, mixed subtype	2	1.6000000000000001	N	N	SR+Chemo	15	Right frontal lobe	adenocarcinoma/acinar and micropapillar	SR+Rad	21.0	5	21.0	1	5.0	1	10
+9	True	False	50s	F	adenocarcinoma/solid	2	4.5	N	Y	SR+Chemo	15	Left frontal lobe	adenocarcinoma/solid	SR+Rad	18.0	2	18.0	1	2.0	1	11
+10	True	False	70s	M	adenocarcinoma/solid	3				SR+Rad+Chemo	18	Cerebellum	adenocarcinoma/solid	SR	24.0	6	24.0	1	6.0	1	12
+11	True	False	50s	M	adenocarcinoma/solid	2	3.5	N	N	SR+Rad+Chemo	120	left frontal lobe	adenocarcinoma/solid	SR+Rad	Alive			0		0	13
+12	True	True	50s	F	large cell carcinoma/solid	4	5	N	N	SR+Rad	14	right temporal lobe	large cell carcinoma/solid	SR+Rad	15.0	2	15.0	1	2.0	1	14
+13	True	False	70s	F	adenocarcinoma/acinar and solid	3	3	Y	N	SR	44		adenocarcinoma/acinar	SR+Rad	47.0	2	47.0	1	2.0	1	15
+14	True	True	70s	F	adenocarcinoma/acinar	3	2	Y	N		75		adenocarcinoma/acinar	SR+Rad	99.0	24	99.0	1	24.0	1	16
+15	True	True	50s	F	adenocarcinoma/acinar	2	7.5	Y	N	SR+Chemo	10		adenocarcinoma/acinar	SR+Rad+Chemo	43.0	33	43.0	1	33.0	1	17
+16	True	False	60s	F	adenocarcinoma/acinar	2	0.90000000000000002	N	N	SR+Chemo	9	left frontal lobe	adenocarcinoma/acinar	SR+Rad+TKIs	64.0	57	64.0	1	57.0	1	18
+17	True	False	60s	F	adenocarcinoma/solid	3	8.5	N	N	SR	19		adenocarcinoma/solid		20.0	1	20.0	1	1.0	1	19
+18	True	True	50s	F	adenocarcinoma/micropapillary	2	3	Y	N	SR+Chemo	65	right frontal lobe	adenocarcinoma/acinar	SR+Rad	143.0	77	143.0	1	77.0	1	20
+19	True	True	70s	F	adenocarcinoma/acinar	2	2.5	N	N		10		adenocarcinoma/acinar		33.0	22	33.0	1	22.0	1	21
+20	True	True	40s	F	adenocarcinoma/micropapillary	2	4.4000000000000004	N	N	SR+Chemo	14		adenocarcinoma/micropapillary	SR+Rad	29.0	15	29.0	1	15.0	1	22
+21	True	False	50s	F	adenocarcinoma/solid	3	9.5	Y	N	SR+Chemo	4	Left frontal lobe	adenocarcinoma/solid	SR+Rad	13.0	7	13.0	1	7.0	1	23
+22	True	False	50s	m	adenocarcinoma/acinar	2	2	Y	N	SR	28	Cerebellum	adenocarcinoma/acinar	SR+Rad	38.0	10	38.0	1	10.0	1	24
+23	False	False	50s	F	Adenocarcinoma, mixed subtype (acinar (90%) and micropapillary (10%)	2	3.5	Y	N	SR+Chemo	0	Left parietal lobe	adenocarcinoma/acinar	SR+Rad	57.0	57	57.0	1	57.0	1	25
+24	True	True	60s	M	adenocarcinoma/acinar	2	2	N	N	SR+Rad+Chemo	3	Cerebellum	adenocarcinoma/acinar	SR+Rad	13.0	8	13.0	1	8.0	1	26
+25	False	False	70s	M	adenocarcinoma/solid					SR+Rad+Chemo	8	Left frontal lobe	adenocarcinoma/acinar	SR+Rad	18.0	9	18.0	1	9.0	1	27
+26	True	True	60s	M	adenocarcinoma/acinar	3	2.2999999999999998	Y	N	SR+Rad	0	Left occipital lobe	adenocarcinoma/solid	SR+Rad+Chemo	15.0	25	15.0	1	25.0	1	28
+27	True	False	70s	F	adenocarcinoma/acinar	2	3.5	Y	N	SR	11	Left frontal lobe	adenocarcinoma/acinar		7.0	1	7.0	1	1.0	1	29
+28	False	False	60s	F	adenocarcinoma/solid	3				SR+Rad	33	Cerebellum	adenocarcinoma/acinar	SR+Rad	4.0	4	4.0	1	4.0	1	30
+29	True	True	60s	M	adenocarcinoma/acinar	2	4.0999999999999996	Y	N	SR+Rad	30	Right frontal lobe	adenocarcinoma/solid	SR+Rad	115.0	100	115.0	1	100.0	1	31
+30	True	True	60s	M	adenocarcinoma/acinar	2	5.2000000000000002	Y	N	SR+Rad	15		adenocarcinoma/acinar		115.0	100	115.0	1	100.0	1	32
+31	True	True	60s	F	adenocarcinoma/solid					SR+Rad+Chemo	16	Right frontal lobe	adenocarcinoma/acinar	SR+Rad	116.0	100	116.0	1	100.0	1	33
+32	True	True	60s	F	adenocarcinoma/micropapillary	2	1.5	Y	N	SR+Rad	35		adenocarcinoma/solid	SR+Rad	38.0	2	38.0	1	2.0	1	34
+33	False	False	60s	M	Adenocarcinoma/NA	2				SR+Rad	0	Left temporal lobe	adenocarcinoma/NA	SR+Rad	5.0	4	5.0	1	4.0	1	35
+34	True	False	70s	F	adenocarcinoma/acinar	2				SR+Rad	1		adenocarcinoma/acinar	SR+Rad	3.0	1	3.0	1	1.0	1	36
+35	True	True	50s	F	adenocarcinoma/acinar	1	8	N	N	SR+Rad+Chemo	39		adenocarcinoma/acinar	SR+Rad	Alive			0		0	37
+36	False	False	60s	M	adenocarcinoma/NA	2	9	N	N	SR+Rad	10		adenocarcinoma/NA	SR+Rad	39.0	29	39.0	1	29.0	1	38
+37	True	False	90s	M	adenocarcinoma/acinar	2	2.8999999999999999	Y	N	SR+Rad	44		adenocarcinoma/acinar	SR+Rad	85.0	13	85.0	1	13.0	1	39
+38	False	False	70s	F	large cell carcinoma/Solid	3	3.5	N	N	SR+Rad	10		large cell carcinoma/Solid	SR+Rad	19.0	8	19.0	1	8.0	1	40
+39	False	False	50s	F	non-small cell carcinoma/NA	2				SR+Rad	4		Adenocarcinoma/NA	SR+Rad	11.0	7	11.0	1	7.0	1	41
+40	True	True	60s	F	adenocarcinoma/acinar	2	5	N	N	SR+Rad	14	Right occipital lobe	adenocarcinoma/acinar	SR+Rad	37.0	19	37.0	1	19.0	1	42
+41	False	False	60s	M	adenocarcinoma/acinar	2	3.2000000000000002	N	N	SR+Rad	32	Cerebellum	adenocarcinoma/acinar	SR+Rad	36.0	4	36.0	1	4.0	1	43
+42	False	False	50s	M	poorly-differentiated adenocarcinoma/na	2				SR+Rad	0	Cerebellum	adenocarcinoma/NA	SR+Rad	2.0	2	2.0	1	2.0	1	44
+43	True	True	50s	M	adenocarcinoma/micropapillary and acinar	2	2.5	N	N	SR+Rad	43	Cerebellum	adenocarcinoma/acinar	SR+Rad	85.0	59	85.0	1	59.0	1	45
+44	True	False	60s	M	adenocarcinoma/solid	2				SR+Rad	10	Cerebellum	adenocarcinoma/solid	SR+Rad	11.0	2	11.0	1	2.0	1	46
