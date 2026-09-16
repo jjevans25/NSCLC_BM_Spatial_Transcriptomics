@@ -1,0 +1,30 @@
+{
+  "all_resolved": true,
+  "matching": "exact primary label, restricted to the declared ontology and to hits where it is the defining ontology; the resolved CURIE must equal the pinned one",
+  "n_by_field": {
+    "assay": 1,
+    "compartment": 4,
+    "disease": 2,
+    "organism": 1,
+    "readout": 1,
+    "site": 3,
+    "specimen": 1,
+    "tumour_context": 2
+  },
+  "n_by_relation": {
+    "enriched_for": 3,
+    "is_a": 12
+  },
+  "n_terms": 15,
+  "ontologies": [
+    "cl",
+    "efo",
+    "mondo",
+    "ncbitaxon",
+    "ncit",
+    "uberon"
+  ],
+  "relation_rule": "A compartment label is never a cell-type label (Q2). PanCK was the only collection mask and CD45/GFAP guided ROI placement only, so a compartment mapped to a CL term is `enriched_for`, never `is_a` \u2014 enforced in common.smk at parse time.",
+  "service": "https://www.ebi.ac.uk/ols4/api/search",
+  "task": "P6-T2a"
+}

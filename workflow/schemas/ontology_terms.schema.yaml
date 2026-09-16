@@ -1,0 +1,86 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: >
+  config/ontology_terms.yaml — the FAIR I2 ontology mapping (PROJECT_PLAN §7.2),
+  consumed by p6t2a_resolve_ontology_terms and then by the RO-Crate (P6-T2).
+
+  The file is a PIN, in the same sense ADR 0005 gives a downloaded artifact: it
+  records the label that was searched and the CURIE that search returned, and
+  the rule re-runs the search against EBI OLS4 on every build and asserts the
+  answer is unchanged. §7.2 forbids hand-typing IDs from memory; this is how
+  that is enforced rather than promised.
+
+  As with every other manifest schema here, the schema is a FLOOR. It can
+  enforce that a CURIE is well-formed and that its prefix matches the declared
+  ontology; it cannot enforce that the term is the right term, or that it still
+  exists. Only the live resolution can, and only on every run.
+
+  `relation` is the field that carries scientific weight. `enriched_for` exists
+  because a compartment label is never a cell-type label (Q2): PanCK was the
+  only collection mask, and CD45 and GFAP guided ROI placement only. An `is_a`
+  on a compartment would encode into machine-readable metadata the same
+  overclaim hard constraint 6 forbids in prose — and a JSON-LD graph is read by
+  machines that cannot be sceptical. The enum has exactly two members so that
+  widening it is a visible edit.
+type: object
+required: [ontology_terms]
+additionalProperties: false
+properties:
+  ontology_terms:
+    type: array
+    minItems: 1
+    description: One entry per (field, value) pair appearing in project metadata.
+    items:
+      type: object
+      required: [field, value, label, ontology, curie, relation, notes]
+      additionalProperties: false
+      properties:
+        field:
+          type: string
+          minLength: 1
+          description: >
+            The metadata field being mapped — a samples.tsv column (site,
+            compartment) or a study-level descriptor (organism, disease, assay,
+            readout, specimen, tumour_context).
+        value:
+          type: string
+          minLength: 1
+          description: >
+            The value as this project writes it, e.g. `glial_stroma`. Verbatim:
+            the mapping is worthless if the key has to be guessed at.
+        label:
+          type: string
+          minLength: 1
+          description: >
+            The ontology term's primary label, searched with exact matching. Not
+            a synonym and not a paraphrase — the rule asserts the resolved
+            label equals this string.
+        ontology:
+          type: string
+          enum: [ncbitaxon, uberon, cl, ncit, mondo, efo, obi]
+          description: >
+            OLS4 ontology id, lowercase. §7.2 names UBERON, CL, NCIT, EFO and
+            OBI; NCBITaxon and MONDO are added because organism and disease
+            have no defensible term in the five.
+        curie:
+          type: string
+          pattern: "^[A-Za-z]+:[A-Za-z0-9]+$"
+          description: >
+            The pinned CURIE, obtained from OLS4 and re-verified on every run.
+            A mismatch between this and the live resolution FAILS THE BUILD —
+            ontology drift is reported, never absorbed.
+        relation:
+          type: string
+          enum: [is_a, enriched_for]
+          description: >
+            is_a — the value IS the term (sites, organism, disease, assay,
+            specimen, tumour context). enriched_for — the compartment is
+            enriched for this cell type BY ROI PLACEMENT, which is not a sorted
+            population, not a purity claim and not evidence of composition
+            (Q2). Every compartment mapped to a CL term must be enriched_for.
+        notes:
+          type: string
+          minLength: 1
+          description: >
+            Why this term and not another, plus the AOI count it covers.
+            Required, not optional: a mapping nobody justified is a mapping
+            nobody can check.

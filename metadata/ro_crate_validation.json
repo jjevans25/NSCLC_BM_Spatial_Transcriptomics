@@ -1,0 +1,136 @@
+{
+  "checks": [
+    {
+      "check": "filename_is_ro_crate_metadata_json",
+      "detail": "named ro-crate-metadata.json",
+      "passed": true
+    },
+    {
+      "check": "context_is_1_1",
+      "detail": "@context is ['https://w3id.org/ro/crate/1.1/context', {'sha256': 'http://schema.org/sha256'}], expected 'https://w3id.org/ro/crate/1.1/context' first",
+      "passed": true
+    },
+    {
+      "check": "sha256_is_declared_in_the_context",
+      "detail": "284 entities carry `sha256`, which RO-Crate 1.1's context does not define. Declare it in an extra term map rather than dropping the checksums.",
+      "passed": true
+    },
+    {
+      "check": "ids_are_unique",
+      "detail": "two entities share an @id",
+      "passed": true
+    },
+    {
+      "check": "every_entity_has_id_and_type",
+      "detail": "0 entities lack one",
+      "passed": true
+    },
+    {
+      "check": "descriptor_present",
+      "detail": "no entity with @id 'ro-crate-metadata.json'",
+      "passed": true
+    },
+    {
+      "check": "descriptor_is_creative_work",
+      "detail": "@type is 'CreativeWork'",
+      "passed": true
+    },
+    {
+      "check": "descriptor_conforms_to_1_1",
+      "detail": "conformsTo is {'@id': 'https://w3id.org/ro/crate/1.1'}",
+      "passed": true
+    },
+    {
+      "check": "descriptor_is_about_root",
+      "detail": "about is {'@id': './'}",
+      "passed": true
+    },
+    {
+      "check": "root_present",
+      "detail": "no entity with @id './'",
+      "passed": true
+    },
+    {
+      "check": "root_is_dataset",
+      "detail": "@type is 'Dataset'",
+      "passed": true
+    },
+    {
+      "check": "root_has_name",
+      "detail": "root data entity has no name",
+      "passed": true
+    },
+    {
+      "check": "root_has_description",
+      "detail": "root data entity has no description",
+      "passed": true
+    },
+    {
+      "check": "root_has_datePublished",
+      "detail": "root data entity has no datePublished",
+      "passed": true
+    },
+    {
+      "check": "root_has_license",
+      "detail": "root data entity has no license",
+      "passed": true
+    },
+    {
+      "check": "date_published_is_iso_8601",
+      "detail": "datePublished is '2026-09-16'",
+      "passed": true
+    },
+    {
+      "check": "no_dangling_references",
+      "detail": "0 unresolved: []",
+      "passed": true
+    },
+    {
+      "check": "web_based_data_entities_are_parts",
+      "detail": "[] is a Dataset at an absolute URI \u2014 a WEB-BASED DATA ENTITY \u2014 and RO-Crate 1.1 REQUIRED 14.1 says every data entity MUST be linked from the root through hasPart.",
+      "passed": true
+    },
+    {
+      "check": "every_haspart_is_described",
+      "detail": "0 hasPart ids have no entity: []",
+      "passed": true
+    },
+    {
+      "check": "every_local_haspart_exists_on_disk",
+      "detail": "0 described files are absent: []",
+      "passed": true
+    },
+    {
+      "check": "every_file_entity_matches_disk",
+      "detail": "0 mismatched: []",
+      "passed": true
+    },
+    {
+      "check": "every_file_entity_is_complete",
+      "detail": "a File entity lacks sha256, contentSize or encodingFormat",
+      "passed": true
+    },
+    {
+      "check": "compartment_cell_type_terms_are_enriched_for",
+      "detail": "0 compartment(s) assert a cell type as fact: []. PanCK was the only collection mask; CD45 and GFAP guided ROI placement only.",
+      "passed": true
+    },
+    {
+      "check": "round_trip_reads_back",
+      "detail": "read back 287 data entities, crate lists 287",
+      "passed": true
+    }
+  ],
+  "crate": "ro-crate-metadata.json",
+  "n_checks": 24,
+  "n_compartment_cell_type_annotations": 3,
+  "n_failed": 0,
+  "n_file_entities": 284,
+  "n_graph_entities": 330,
+  "n_parts": 287,
+  "n_passed": 24,
+  "note": "Internal validation. The crate is also checked out of band against an external validator (P6-T2, ADR 0030) \u2014 this project's standing lesson from ADR 0017 is that checking yourself against yourself measures consistency, not correctness.",
+  "profile": "https://w3id.org/ro/crate/1.1",
+  "task": "P6-T2b",
+  "valid": true
+}

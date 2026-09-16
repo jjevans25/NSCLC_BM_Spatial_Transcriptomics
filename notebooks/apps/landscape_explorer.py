@@ -259,7 +259,17 @@ def _(
     levels = landscape[key].astype(str)
     flagged = landscape["qc_flag"].astype(str).isin(["True", "true"]).to_numpy()
 
-    fig, ax = plt.subplots(figsize=(8.2, 6.2))
+    # PIN THE STYLE (P6-T4b). The WASM export sandbox renders under a DARK
+    # matplotlib theme, which is why results/reports/landscape_explorer came
+    # back on a black background: the theme is applied to the kernel, not to
+    # this module, so resetting at import time would not reach it.
+    # checkpoint_explorer.py carries the same reset and the same comment; that
+    # notebook found the problem and P1-T5 was left alone at the time because
+    # editing it fires this rule's rerun trigger. P6-T4b is the pass where that
+    # rerun is being paid anyway.
+    plt.rcParams.update(plt.rcParamsDefault)
+
+    fig, ax = plt.subplots(figsize=(8.2, 6.2), facecolor="white")
 
     # Computed unconditionally: a name defined in only one branch becomes a
     # conditionally defined cell output, which marimo cannot cache.

@@ -1,3 +1,10 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "marimo",
+# ]
+# ///
+
 import marimo
 
 __generated_with = "0.24.0"
@@ -34,7 +41,31 @@ def _(mo):
     by **P0-T4** and drives `normalisation.method` in `config/config.yaml`. The
     conclusion lives there; this notebook is only how it was reached.
 
-    **Status: stub.** The matrix arrives with P0-T2 — nothing to inspect yet.
+    ---
+
+    ## SCRATCH. Nothing here is a result, and nothing here is unfinished work.
+
+    **This notebook is a stub and stays one.** It was written before the matrix
+    had been downloaded, as a place to answer Q1 by hand. Q1 was then answered
+    by a RULE instead — `p0t4_normalisation_check` — because hard constraint 3
+    says no reported number may originate in a notebook, and the answer to Q1
+    drives `normalisation.method` in `config/config.yaml`.
+
+    **Q1 IS RESOLVED: the GEO matrix arrives already Q3-normalised.** Column-wise
+    Q3 varies at CV 0.059% while library size varies at CV 13.4%, and there are
+    no zeros at all (minimum 2.12), so detection is necessarily
+    background-relative. The evidence is
+    `results/tables/normalisation_check.tsv` and
+    `results/figures/normalisation_check.png`; the write-up is
+    `docs/data-provenance.md` §Q1.
+
+    So the TODO at the bottom is **not** an open task — it is what P0-T4 did, in
+    the place it belonged. The notebook is kept rather than deleted because it
+    records where the question was first asked, which is the only thing an
+    explore-tier notebook is for (PROJECT_PLAN §4.5).
+
+    It is included in the archive (P6-T4b) and runs standalone under
+    `uvx marimo edit --sandbox notebooks/explore/00_first_look.py`.
     """)
     return
 

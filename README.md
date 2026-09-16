@@ -10,8 +10,8 @@ NanoString GeoMx DSP whole-transcriptome profiles.
 | **Source publication** | PMID [36216799](https://pubmed.ncbi.nlm.nih.gov/36216799/) |
 | **Orchestration** | Snakemake 8.x |
 | **Notebooks** | [marimo](https://marimo.io) only — no `.ipynb` anywhere |
-| **Compliance target** | FAIR (F1–F4, A1–A2, I1–I3, R1.1–R1.3) |
-| **Status** | **Phases 0–5 complete, Gates 0–5 all passed.** Phase 6 (FAIR packaging, reproduction, write-up) is next |
+| **Compliance target** | FAIR (F1–F4, A1–A2, I1–I3, R1.1–R1.3) — RO-Crate 1.1 at [`ro-crate-metadata.json`](ro-crate-metadata.json) |
+| **Status** | **Complete.** Phases 0–6 done, Gates 0–6 all passed. No DOI — P6-T5 was abandoned deliberately ([ADR 0032](docs/decisions/0032-no-doi-p6t5-is-abandoned.md)) |
 | **Licence** | MIT (code) · CC-BY-4.0 (derived data and figures) |
 
 > **This is a learning and methods project, not a publication.** Every analytical
@@ -132,7 +132,11 @@ genes clear it is not a threshold.
 conda env create -f environment.yml
 conda activate nsclc_bm_spatial
 
-# 2. Point the per-rule conda envs at a fixed prefix (once per machine)
+# 2. Point the per-rule conda envs at a fixed prefix (once per machine).
+#    mkdir FIRST: on a fresh clone .snakemake/ does not exist, the symlink
+#    dangles, and Snakemake dies with a bare "FileExistsError" naming the
+#    symlink rather than the missing target. Found by the P6-T1 clean-room run.
+mkdir -p .snakemake/conda
 ln -sfn "$PWD/.snakemake/conda" "$HOME/nsclc-envs"
 
 # 3. Check the workflow parses and the DAG is sane
@@ -146,6 +150,13 @@ snakemake --use-conda --conda-prefix "$HOME/nsclc-envs" --cores 4
 snakemake --use-conda --conda-prefix "$HOME/nsclc-envs" \
   --report results/reports/workflow-report.html
 ```
+
+> **Why the symlink at all?** conda embeds the prefix string it is given, and
+> three separate conda/bioconda scripts interpolate it unquoted — so a prefix
+> containing a space makes `r-geomx` impossible to create. This repository's own
+> path contains one. The symlink gives conda a space-free string that points at
+> the same directory. See
+> [ADR 0013](docs/decisions/0013-r-on-a-path-with-spaces-and-the-float-boundary.md).
 
 > **`--use-conda` and `--conda-prefix` are not optional.** Without them the
 > software-environment rerun trigger fires, Snakemake tries to re-run the
@@ -199,9 +210,31 @@ It has **six sanctioned writers**, each with a pinned digest and a
 
 ## Status
 
-**Phases 0–5 are complete and Gates 0–5 have all passed.** Phase 6 — FAIR
-packaging, clean-room reproduction and write-up — is next; PROJECT_PLAN calls it
-the primary deliverable.
+**The project is complete. Phases 0–6 are done and Gates 0–6 have all passed,**
+and nothing is outstanding.
+
+**There is no DOI, and that is a decision rather than an omission**
+([ADR 0032](docs/decisions/0032-no-doi-p6t5-is-abandoned.md)). P6-T5 — the
+Zenodo release — was abandoned rather than deferred, so cite this workflow by
+repository URL and version. `CITATION.cff` and `codemeta.json` claim **no DOI**,
+permanently and by construction: a persistent identifier that does not resolve is
+worse than none, and `p6t3_citation_audit` fails the build if either file claims
+one that `config/config.yaml` does not have. The mechanism stays wired, so
+minting one later is a one-line edit plus a re-run.
+
+What Phase 6 produced, and what checks it:
+
+| Artifact | Checked by |
+|---|---|
+| [`ro-crate-metadata.json`](ro-crate-metadata.json) — RO-Crate 1.1, 281 entries, 327 entities | `p6t2b_validate_ro_crate` (24/24) **and** an external `rocrate-validator` run (38/38 REQUIRED) |
+| [`metadata/ontology-terms.tsv`](metadata/ontology-terms.tsv) — 15 terms, UBERON / CL / NCIT / MONDO / EFO / NCBITaxon | `p6t2a_resolve_ontology_terms`, live against EBI OLS4 on every build, asserted against the pinned CURIE |
+| [`CITATION.cff`](CITATION.cff) + [`codemeta.json`](codemeta.json) | `p6t3_citation_audit` (27/27), including every cited version against the environment pin that installs it |
+| `results/reports/workflow-report.html` | `p6t4_report_audit` (9/9) — 17 figures, each captioned, categorised and asked for by a target |
+
+**Three of the 15 ontology terms are `enriched_for`, never `is_a`.** A
+compartment label is not a cell-type label (Q2), and that distinction has to
+survive into RDF: a JSON-LD graph is read by machines that cannot be sceptical
+about it.
 
 All five open questions from the plan are **resolved**, with citations, in
 [`docs/data-provenance.md`](docs/data-provenance.md): the GEO matrix is
@@ -215,10 +248,17 @@ results.
 
 ## Citing
 
-Cite this workflow via [`CITATION.cff`](CITATION.cff). Cite the **data**
-separately: GEO GSE200563, and PMID 36216799 for the original study. This
-repository makes no claim over the upstream data — see
-[`LICENSE-DATA`](LICENSE-DATA).
+Cite this workflow via [`CITATION.cff`](CITATION.cff), which also lists every
+package at the version the environment pin installs, the external databases the
+analysis draws on, and the agent skills used. Cite the **data** separately: GEO
+GSE200563, and PMID 36216799 for the original study. This repository makes no
+claim over the upstream data — see [`LICENSE-DATA`](LICENSE-DATA).
+
+**There is no DOI**, by decision rather than by omission — see
+[ADR 0032](docs/decisions/0032-no-doi-p6t5-is-abandoned.md). Cite the workflow by
+its repository URL and version. Two FAIR indicators stay partial as a result
+(**F1** persistent identifiers, **F4** archival indexing) and the CHANGELOG says
+so; the other twelve pass.
 
 ## Plan and decision record
 

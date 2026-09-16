@@ -1,0 +1,136 @@
+{
+  "categories": {
+    "Interactive": 2,
+    "Phase 0 \u2014 acquisition, annotation, QC": 4,
+    "Phase 1 \u2014 variance landscape": 4,
+    "Phase 2 \u2014 immune contexture": 2,
+    "Phase 3 \u2014 checkpoint landscape": 1,
+    "Phase 4 \u2014 inferred crosstalk": 2,
+    "Phase 5 \u2014 prognostic association": 2
+  },
+  "checks": [
+    {
+      "check": "every_figure_is_reported",
+      "detail": "0 figure output(s) not wrapped in report(): []",
+      "passed": true
+    },
+    {
+      "check": "every_figure_has_a_caption",
+      "detail": "[]",
+      "passed": true
+    },
+    {
+      "check": "every_caption_file_exists",
+      "detail": "[]",
+      "passed": true
+    },
+    {
+      "check": "no_caption_is_empty",
+      "detail": "[]",
+      "passed": true
+    },
+    {
+      "check": "no_orphaned_caption_files",
+      "detail": "[] are referenced by no report(): a caption written for a figure that has since been renamed never appears in the report.",
+      "passed": true
+    },
+    {
+      "check": "every_category_is_phase_shaped",
+      "detail": "[]",
+      "passed": true
+    },
+    {
+      "check": "interactive_category_is_used",
+      "detail": "no figure is categorised Interactive \u2014 \u00a76 asks for the app notebooks to appear there",
+      "passed": true
+    },
+    {
+      "check": "every_reported_figure_is_a_target",
+      "detail": "[] are wrapped in report() but no TARGETS list asks for them, so the report would have a hole where each one should be.",
+      "passed": true
+    },
+    {
+      "check": "every_figure_has_labels",
+      "detail": "a report() call carries no labels=, so the report's table view cannot group it by task",
+      "passed": true
+    }
+  ],
+  "figures": {
+    "results/figures/checkpoint_dotplot.png": {
+      "caption": "../report/checkpoint_dotplot.rst",
+      "category": "Phase 3 \u2014 checkpoint landscape"
+    },
+    "results/figures/contexture_heatmap.png": {
+      "caption": "../report/contexture_heatmap.rst",
+      "category": "Phase 2 \u2014 immune contexture"
+    },
+    "results/figures/crosstalk_network.png": {
+      "caption": "../report/crosstalk_network.rst",
+      "category": "Phase 4 \u2014 inferred crosstalk"
+    },
+    "results/figures/crosstalk_null.png": {
+      "caption": "../report/crosstalk_null.rst",
+      "category": "Phase 4 \u2014 inferred crosstalk"
+    },
+    "results/figures/decon_composition.png": {
+      "caption": "../report/decon_composition.rst",
+      "category": "Phase 2 \u2014 immune contexture"
+    },
+    "results/figures/marker_sanity.png": {
+      "caption": "../report/marker_sanity.rst",
+      "category": "Phase 0 \u2014 acquisition, annotation, QC"
+    },
+    "results/figures/normalisation_check.png": {
+      "caption": "../report/normalisation_check.rst",
+      "category": "Phase 0 \u2014 acquisition, annotation, QC"
+    },
+    "results/figures/pca_ordination.png": {
+      "caption": "../report/pca_ordination.rst",
+      "category": "Phase 1 \u2014 variance landscape"
+    },
+    "results/figures/pca_scree.png": {
+      "caption": "../report/pca_scree.rst",
+      "category": "Phase 1 \u2014 variance landscape"
+    },
+    "results/figures/power_curves.png": {
+      "caption": "../report/power_check.rst",
+      "category": "Phase 0 \u2014 acquisition, annotation, QC"
+    },
+    "results/figures/qc_metrics.png": {
+      "caption": "../report/qc_metrics.rst",
+      "category": "Phase 0 \u2014 acquisition, annotation, QC"
+    },
+    "results/figures/sample_correlation_heatmap.png": {
+      "caption": "../report/sample_clustering.rst",
+      "category": "Phase 1 \u2014 variance landscape"
+    },
+    "results/figures/survival_km.png": {
+      "caption": "../report/survival_km.rst",
+      "category": "Phase 5 \u2014 prognostic association"
+    },
+    "results/figures/tcga_km.png": {
+      "caption": "../report/tcga_km.rst",
+      "category": "Phase 5 \u2014 prognostic association"
+    },
+    "results/figures/variance_partition.png": {
+      "caption": "../report/variance_partition.rst",
+      "category": "Phase 1 \u2014 variance landscape"
+    },
+    "results/reports/checkpoint_explorer": {
+      "caption": "../report/checkpoint_explorer.rst",
+      "category": "Interactive"
+    },
+    "results/reports/landscape_explorer": {
+      "caption": "../report/landscape_explorer.rst",
+      "category": "Interactive"
+    }
+  },
+  "n_caption_files": 17,
+  "n_checks": 9,
+  "n_failed": 0,
+  "n_passed": 9,
+  "n_reported_figures": 17,
+  "note": "`snakemake --report` is a command, not a rule (ADR 0030 \u00a73): it consumes the completed DAG. This audit is the part of P6-T4 that can be a rule, and it fails the build.",
+  "task": "P6-T4",
+  "valid": true
+}

@@ -1,0 +1,24 @@
+{
+  "built_from_commit": "9f8d36258e369b06407418a17149bde25a235569",
+  "conforms_to": "https://w3id.org/ro/crate/1.1",
+  "date_published": "2026-09-16",
+  "doi": null,
+  "licence_code": "https://spdx.org/licenses/MIT",
+  "licence_data": "https://creativecommons.org/licenses/by/4.0/",
+  "n_bytes": 126275255,
+  "n_directories": 2,
+  "n_files_by_group": {
+    "configuration": 12,
+    "documentation": 46,
+    "fetched_inputs": 13,
+    "inputs": 12,
+    "notebooks": 5,
+    "results": 120,
+    "workflow": 76
+  },
+  "n_graph_entities": 330,
+  "n_ontology_terms": 15,
+  "n_parts": 284,
+  "note": "datePublished is the HEAD commit date, not the run date: the crate describes a commit, and a wall-clock stamp would make this the one workflow output that never reproduces byte-for-byte.",
+  "task": "P6-T2"
+}

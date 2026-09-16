@@ -5,6 +5,219 @@ All notable changes to this project are recorded here. Format loosely follows
 
 ## [Unreleased]
 
+### Decided — P6-T5 is abandoned: no DOI (ADR 0032) (2026-09-16)
+- **There is no DOI, and that is a decision rather than an omission.** Minting
+  one needs a Zenodo account, the integration enabled in a browser **before** a
+  release is published, and a published GitHub release. The owner declined.
+  **Abandoned, not deferred** — a deferred task is an open item that accrues; an
+  abandoned one is closed, and closing it is what lets the next reader stop
+  looking for it. The same move ADR 0014 made for Aim A5 and ADR 0024 permitted
+  for Phase 5.
+- **The mechanism stays, fully wired.** `fair.identifiers.doi` remains in
+  `config/config.yaml` at `null`; `build_ro_crate.py` still writes the crate's
+  `sameAs` the moment it is populated; `p6t3_citation_audit` still enforces the
+  policy **in both directions**. Minting one later is a one-line edit plus a
+  re-run, and a half-finished backfill still cannot ship. **The capability is
+  not the artifact**, and only the artifact was declined.
+- **No placeholder, permanently.** A persistent identifier that does not resolve
+  is worse than an absent one: it looks like provenance, survives copy-paste into
+  someone else's bibliography, and fails silently years later.
+- **Two FAIR indicators become permanently partial rather than pending** — F1
+  (persistent identifiers) and F4 (archival indexing). **The score is unchanged
+  at 12 pass / 3 partial / 0 fail**, because both were already partial. The
+  honest reading: the *data* is FAIR at source, and the reanalysis is
+  reproducible, documented and openly licensed but **not archivally citable**.
+- `docs/NEXT_STEPS.md` now opens with "there are none" and becomes a map of the
+  finished repository rather than a handoff.
+
+
+### GATE 6 PASSED — Phase 6 complete except the DOI (ADR 0031) (2026-09-16)
+
+**The clean room was green, and it found four defects.** 72 of 72 jobs, exit 0,
+from a fresh clone on a path containing a space (without which
+`p2t0_repair_r_env` is never exercised and the run reports a false pass).
+
+| | |
+|---|---|
+| three environments from the pins | **62 s**, 3.4 GB (warm package cache) |
+| pipeline, `--cores 4` | **19 min 24 s** |
+| clone to finished | **20 min 26 s** |
+| compute across all rules | **21.4 min**, 15.8 of it one variance partition |
+| **figures byte-identical** to the original run | **15 of 15** |
+| **committed tables byte-identical** | **100 of 102** |
+
+**11 of 109 re-derived tracked files differ and every one is a provenance
+field** — six access timestamps, a git SHA, a prose digest, a git-remote string,
+a built-from commit and the crate's byte count. **No estimate, interval, q-value
+or count moved.**
+
+#### The defects it found, and the one shape they share
+1. The crate's `inputs` group globbed three **gitignored** directories, so the
+   workflow **did not parse** on a clean checkout. `expect_min` did its job; the
+   group was wrong in kind. The fetched artifacts are read from the six
+   manifests now, as the results are read from the phase TARGETS.
+2. `p6t3_citation_audit` compared the declared repository URL against `git remote
+   get-url origin` — **a property of the checkout, not of the project**. Any
+   fork, mirror, local clone or tarball failed it. The three declarations are now
+   checked against each other unconditionally and against git only where origin
+   is a web URL; otherwise the log says "not checkable here", which is a real
+   answer rather than a pass rounded up.
+3. The README's own setup instruction made a **dangling symlink** on a fresh
+   clone, and Snakemake died with a `FileExistsError` naming the symlink rather
+   than the missing target. Fixed with `mkdir -p`.
+4. `rocrate` was declared under a `pip:` section and **absent from the pin**
+   (ADR 0029): it existed here and would not have existed there.
+
+**Three of the four were written during Phase 6 itself**, by an author who had
+just finished writing the argument for why that class of error matters. A check
+can only be trusted where it has run, and until P6-T1 every check in this
+repository had only ever run in one directory. **"It passes here" is a statement
+about here.**
+
+5. **The language audit and the RO-Crate chased each other forever.** The
+   audit's rerun trigger is a digest of every tracked text file;
+   `ro-crate-metadata.json` is tracked, generated, and produced by a rule
+   **downstream of the audit**. Rebuild the crate → the digest changes → the
+   audit re-runs → its output is a crate input → rebuild the crate. **A
+   completed run left four jobs pending, every time**, so `snakemake -n` could
+   never come back clean — the standard every gate here is checked against.
+   **It took three attempts.** Excluding the crate alone missed two more tracked
+   files under `metadata/`; excluding those settled the working directory but
+   **not the clean room**, where the fetch rules rewrite
+   `resources/*_provenance.tsv` with a fresh timestamp *during* the run, after
+   the digest was computed at parse time. The digest now excludes **every
+   committed rule output** — `results/`, `metadata/`, the provenance TSVs and
+   the crate. **The exclusion has to name the category, not the file that
+   revealed it.** A residual remains and is recorded rather than claimed away:
+   in the working directory the DAG settles in one pass, while **a first-ever
+   run in a clean room needs a second `snakemake` invocation** before
+   `snakemake -n` reports "Nothing to be done" — the digest is computed at parse
+   time, and a first run is the only one that creates most of the tracked
+   outputs. After that second pass it is stable, and zero digest inputs change.
+
+A sixth: `p4t7_language_audit` scans every tracked file, and
+`ro-crate-metadata.json` is both tracked and generated by a rule **downstream of
+the audit** — so it was scanned in one run and not the other. **A check whose
+scanned set depends on scheduling gives different answers on different runs.**
+The crate is now excluded on the principle the audit already stated for
+`results/`: its prose lives in `config/ro_crate.yaml`, which is scanned.
+
+#### FAIR self-assessment (PROJECT_PLAN §7.3) — **12 pass, 3 partial, 0 fail**
+
+| | Verdict | Evidence |
+|---|---|---|
+| **F1** globally unique PIDs | partial | GEO accession and PMID are in the crate and in `CITATION.cff`; git SHA is in the `.h5ad` `uns`. **No DOI** — `null` by decision (ADR 0032), never a placeholder |
+| **F2** rich metadata | pass | `config/samples.tsv` (120 AOIs × 12 fields), `metadata/ontology-terms.tsv`, `docs/data-provenance.md`, the crate |
+| **F3** metadata names the data | pass | 281 entities, each with `sha256` and `contentSize`, re-verified against disk by `p6t2b_validate_ro_crate` |
+| **F4** indexed and searchable | partial | public GitHub repository; **no archival record** (ADR 0032) |
+| **A1** retrievable by PID, open protocol | pass | HTTPS throughout; six fetch manifests with pinned digests |
+| **A1.2** auth where needed | pass | N/A **stated in words** in the crate's `conditionsOfAccess`, not abbreviated |
+| **A2** metadata persists beyond the data | pass | crate, checksums and provenance TSVs are committed and independent of `results/` |
+| **I1** formal shared representation | pass | `.h5ad`, TSV, JSON-LD, marimo `.py`. No pickles, no `.RData` output, no `.ipynb` (hook-enforced) |
+| **I2** FAIR vocabularies | pass | 15 terms across NCBITaxon, UBERON, CL, NCIT, MONDO, EFO — **resolved live against OLS4 every build** and asserted against the pinned CURIE |
+| **I3** qualified references | pass | `CITATION.cff` cites the data, the publication, 25 packages **at the version the pin installs**, four external databases and the agent skills; `p6t3_citation_audit` checks the versions |
+| **R1** rich provenance | pass | rules, logs, benchmarks, pins, the report, and notebooks that are re-runnable `.py` with inlined PEP 723 dependencies |
+| **R1.1** clear licence | pass | MIT for code, CC-BY-4.0 for derived data, distinct in the crate per file group |
+| **R1.2** provenance | pass | `docs/data-provenance.md`, six checksum/provenance pairs, access dates |
+| **R1.3** domain standards | pass | MIAME-aligned descriptors, GeoMx-conventional QC and normalisation, `.h5ad` |
+| **Reproducibility** (beyond the F/A/I/R list) | partial | `osx-arm64` pins reproduce byte-for-byte; **`linux-64` is unpinned** and solves the YAMLs fresh (`docs/limitations.md` §11) |
+
+**No partial is closable inside Phase 6**: two need the DOI and one needs a
+second platform. The DOI was then declined outright (ADR 0032), so those two are
+**permanently** partial rather than pending.
+
+#### Also in this release
+- **`docs/limitations.md` gains §10–§12 and is renumbered** — Phase 5's two nulls
+  and the structural bound on the TCGA comparison, the `osx-arm64`-only pins, and
+  what retrofitting the ontology mapping five phases late cannot undo.
+- **`docs/substack-draft.md` (P6-T7)** — process-forward, every number traceable
+  to a rule, and it states explicitly that hands-on hours were **not tracked**
+  rather than inventing a figure for them.
+- **`docs/NEXT_STEPS.md` hands off to P6-T5** and nothing else. (Superseded
+  the same day by ADR 0032, which closes that item too.)
+
+
+### Added — P6-T2a/T2/T3/T4/T4b: FAIR packaging (ADR 0030) (2026-09-16)
+- **The RO-Crate is manifest-driven, rule-generated, and validates** —
+  `ro-crate-metadata.json` at the repository root, **284 files in 6 groups,
+  126 MB, 329 graph entities**. Internal validator **24/24**; external
+  `rocrate-validator` **38/38 REQUIRED, valid ro-crate-1.1**.
+- **The external validator earned its keep on the first run.** The internal one
+  passed the crate 23/23 and the external one failed it on two REQUIRED checks:
+  `sha256` is not in RO-Crate 1.1's `@context` (284 entities carried one), and
+  the GEO dataset was not reachable from the root through `hasPart` — where
+  **this project's own check asserted the opposite rule**. ADR 0017's lesson
+  demonstrated rather than asserted. Both are now checked internally too.
+- **`metadata/ontology-terms.tsv` exists at last** (PROJECT_PLAN §7.2, five
+  phases late). **15 terms resolved live against EBI OLS4** and asserted against
+  the CURIE pinned in `config/ontology_terms.yaml`, so **ontology drift fails
+  the build**. No fuzzy matching and no fallback path — it rejected four labels
+  on the first run over **case alone** (`RNA-seq` vs `RNA-Seq`), which is the
+  check working: OLS4's exact search matches synonyms too.
+- **Three of the 15 are `enriched_for`, never `is_a`.** A compartment label is
+  never a cell-type label (Q2), and `p4t7_language_audit` cannot stop a JSON-LD
+  graph from asserting one in RDF. Enforced at parse time in `common.smk` and
+  re-checked in the crate.
+- **`CITATION.cff` and `codemeta.json` pointed at a URL that 404s** — the
+  project *code*, not the repository name — through five phases and five gates,
+  because nothing compared them to `git remote`. Fixed, bumped to 1.0.0, and
+  `p6t3_citation_audit` now checks it, **27/27**. It also caught `2.0_6` being
+  read by YAML as the float **2.06** (underscore is a digit separator), which
+  had silently rewritten two cited R versions.
+- **ADR 0029 is now enforced rather than remembered**: no env YAML may declare a
+  `pip:` section and every env must have a pin, asserted on every build.
+- **`p6t4_report_audit`: 9/9, 17 figures**, each captioned from a file that
+  exists, categorised by phase, labelled, and asked for by a target; no orphaned
+  captions. `snakemake --report` is a **command, not a rule** — the one
+  sanctioned exception to hard constraint 5 (ADR 0030 §6), because it consumes
+  the completed DAG. The rendered report is **14 MB with zero external
+  references**: it opens standalone.
+- **The crate sits at the repository root, and PROJECT_PLAN §4.2's tree is wrong
+  about that** (ADR 0030 §7): RO-Crate 1.1 resolves every `@id` relative to the
+  metadata file, so under `metadata/` the crate describes the wrong directory.
+- **P6-T4b:** `notebooks/explore/00_first_look.py` gains PEP 723 metadata and an
+  explicit SCRATCH header saying Q1 was answered by a rule, not by it;
+  `landscape_explorer.py`'s **black-background WASM render is fixed** (the
+  `plt.rcParams` reset `checkpoint_explorer.py` already carried) — verified by
+  decoding the figure out of the built `index.html`. `marimo check` clean on all
+  five notebooks.
+- **`phases.fair: true` and the whole `fair:` block landed in one config.yaml
+  edit**, paying the Phases 1-5 rebuild exactly once as Phases 3, 4 and 5 each
+  did. **117 of 119 tables and figures byte-identical**; the two that moved are
+  `h5ad_summary.json` (git SHA + config hash) and `crosstalk_language_audit.json`
+  (its tracked-prose digest) — both provenance fields, no number changed.
+- **A Snakemake trap worth not relearning:** a module-level `_pattern` in an
+  included `.smk` collides with `snakemake.utils.format`'s own argument and
+  kills **every shell-using rule** in the workflow with "format() got multiple
+  values for argument '_pattern'", nowhere near the file that caused it.
+
+
+### Fixed — P6-T0: a pin must carry every dependency (ADR 0029) (2026-09-16)
+- **`rocrate` was declared under a `pip:` section, and `conda list --explicit`
+  records conda packages only** — so `py-analysis.osx-arm64.pin.txt` did not
+  carry it, and Snakemake installs from the pin and ignores the YAML. It worked
+  here because the environment already existed; **it would have failed in the
+  clean room**, in the run whose purpose is to prove the pipeline works for
+  someone else. The same failure shape ADR 0023 closed, one level down.
+- **The `pip:` section is deleted and `rocrate` comes from conda-forge** at the
+  identical version (0.15.1). `py-analysis` now has **zero** PyPI packages and
+  neither R environment ever had any, so **no dependency in this project can
+  escape a pin**.
+- **The pin was regenerated by adding to the environment that ran, not by
+  re-solving** (ADR 0023 §2). The pin diff is **exactly two lines** — `arcp`
+  and `rocrate` — out of 250; `openssl` was held at 3.6.3 to refuse an
+  unrelated patch bump.
+- `r-geomx.yaml`'s stale "Phase 0" header is corrected in the same commit, since
+  the environment transition was being paid anyway (`p4t2c_export_lr_database`
+  runs in it too).
+- **Verified the ADR 0023 way:** full transition
+  (`--conda-create-envs-only` → scoped `-f` on both `env_repair` sentinels →
+  `--touch`, 65/65), then one rule forced per environment —
+  `p3t3_carrier_models` (r-stats, the mixed-model fit),
+  `p4t2c_export_lr_database` (r-geomx), `p4t7_language_audit` (py-analysis).
+  **All 119 tables and figures byte-identical.** Dry run clean, `--lint` clean.
+
+
 ### Added — P5-T5: multiplicity honesty, and GATE 5 PASSED (ADR 0028) (2026-09-15)
 - **GATE 5 PASSED.** Gate 5 is *"timebox respected"*, not "a result was found".
   Phase 5 ran P5-T1 through P5-T5, produced every output through a rule, and

@@ -1,0 +1,204 @@
+# ---------------------------------------------------------------------------
+# Ontology mapping for every metadata field (PROJECT_PLAN §7.2, FAIR I2).
+#
+# P6-T2a, and §7.2 is explicit that this should have been Phase 0 work:
+# "retrofitting ontology terms at the end is miserable". It is being retrofitted
+# anyway, because it never landed — `metadata/` held nothing but a .gitkeep
+# until now, and `config/compartment_map.yaml`'s header still promises that
+# "ontology_* fields are filled in during P0-T3/§7.2".
+#
+# THIS FILE IS A PIN, NOT A LOOKUP TABLE. Each entry carries the label that was
+# searched AND the CURIE that search returned. p6t2a_resolve_ontology_terms
+# re-runs the search against EBI OLS4 on every build and asserts the answer
+# still equals the `curie` recorded here. So:
+#
+#   * nothing is hand-typed from memory, which §7.2 forbids by name — every
+#     CURIE below was obtained from OLS4 and is re-obtained on each run;
+#   * ontology drift FAILS THE BUILD rather than being absorbed silently. If a
+#     term is obsoleted or its primary label changes, the rule stops and says
+#     so. That is the same contract ADR 0005 gives a downloaded file: pin the
+#     digest, verify it every time.
+#
+# RELATION IS LOAD-BEARING, AND IT IS THE REASON THIS FILE IS NOT A FLAT MAP.
+# A compartment label is NEVER a cell-type label (Q2): PanCK was the only
+# collection mask, and CD45 and GFAP merely guided where a pathologist placed
+# an ROI. A `TIME` AOI is the PanCK-negative segment of an ROI sited in a
+# CD45-rich region, not a CD45-sorted population. Writing
+# `immune -> CL:0000738` as an `is_a` would encode into machine-readable
+# metadata exactly the overclaim CLAUDE.md hard constraint 6 and
+# p4t7_language_audit exist to prevent — and unlike prose, nobody reads a
+# JSON-LD graph sceptically. So the compartments are `enriched_for`:
+#
+#   is_a          the value IS the term. Sites, organism, disease, assay,
+#                 specimen — measured or documented facts.
+#   enriched_for  the compartment is ENRICHED FOR this cell type by ROI
+#                 placement. Not a sorted population, not a purity claim, and
+#                 not evidence of composition. P0-T6's marker sanity check
+#                 (4/4) is what supports even this weaker statement.
+#
+# Adding or changing a term here is a STOP-AND-ASK: it is a claim about what a
+# compartment means, not an implementation detail.
+#
+# LABELS ARE CASE-SENSITIVE AND THAT IS NOT PEDANTRY. Four entries were written
+# lowercase on the first pass -- `RNA-seq`, `formalin-fixed paraffin-embedded`,
+# `primary neoplasm`, `metastatic malignant neoplasm in the brain` -- and the
+# rule rejected all four on the first run even though every CURIE was right.
+# OLS4's `exact=true` matches SYNONYMS as well as primary labels, so accepting a
+# case-insensitive hit would have meant accepting a synonym silently, and a
+# synonym can be shared between terms. The NCIT labels below are Title Case
+# because NCIT writes them that way.
+# ---------------------------------------------------------------------------
+
+ontology_terms:
+  # --- study-level facts ---------------------------------------------------
+  - field: organism
+    value: Homo sapiens
+    label: Homo sapiens
+    ontology: ncbitaxon
+    curie: NCBITaxon:9606
+    relation: is_a
+    notes: All 120 AOIs; GEO GSE200563.
+
+  - field: disease
+    value: nsclc
+    label: non-small cell lung carcinoma
+    ontology: mondo
+    curie: MONDO:0005233
+    relation: is_a
+    notes: >-
+      The cohort's disease. 35 patients; histology subtypes are not in the GEO
+      metadata, so nothing narrower than NSCLC is assertable here.
+
+  - field: disease
+    value: tcga_luad
+    label: lung adenocarcinoma
+    ontology: mondo
+    curie: MONDO:0005061
+    relation: is_a
+    notes: >-
+      P5-T4's EXTERNAL cohort only (TCGA-LUAD via UCSC Xena), never this study.
+      Recorded separately because the two cohorts are not interchangeable:
+      ADR 0027 §5 bounds the comparison structurally, and LUAD is narrower than
+      the NSCLC above.
+
+  - field: assay
+    value: geomx_dsp_wta
+    label: spatial transcriptomics
+    ontology: efo
+    curie: EFO:0008994
+    relation: is_a
+    notes: >-
+      NanoString GeoMx DSP Whole Transcriptome Atlas. The term is the closest
+      defensible one: this assay profiles pathologist-placed regions and
+      carries NO coordinates, so it is spatial in the sense of "region
+      resolved", never spot-gridded.
+
+  - field: readout
+    value: ngs
+    label: RNA-Seq
+    ontology: efo
+    curie: EFO:0008896
+    relation: is_a
+    notes: >-
+      The WTA readout is sequencing of released oligo barcodes, counted per
+      AOI. Recorded because "spatial transcriptomics" alone does not say how
+      the signal was measured.
+
+  - field: specimen
+    value: ffpe
+    label: Formalin-Fixed Paraffin-Embedded
+    ontology: ncit
+    curie: NCIT:C143028
+    relation: is_a
+    notes: Archival FFPE sections; the preservation the assay was designed for.
+
+  # --- site (samples.tsv `site`) ------------------------------------------
+  - field: site
+    value: lung
+    label: lung
+    ontology: uberon
+    curie: UBERON:0002048
+    relation: is_a
+    notes: 45 AOIs (L 30, TIME-L 15).
+
+  - field: site
+    value: brain
+    label: brain
+    ontology: uberon
+    curie: UBERON:0000955
+    relation: is_a
+    notes: 62 AOIs (LB 27, TBME 20, TIME-B 8, BC 7).
+
+  - field: site
+    value: lymph_node
+    label: lymph node
+    ontology: uberon
+    curie: UBERON:0000029
+    relation: is_a
+    notes: 13 AOIs (mLN), out of scope for the core lung-vs-brain comparison.
+
+  # --- compartment (samples.tsv `compartment`) ----------------------------
+  # Every one of these is `enriched_for`. See the header.
+  - field: compartment
+    value: tumour
+    label: neoplastic cell
+    ontology: cl
+    curie: CL:0001063
+    relation: enriched_for
+    notes: >-
+      70 AOIs (L, LB, mLN). The PanCK-POSITIVE segment — the only compartment
+      here that was actually collected on an antibody mask, and still an
+      enrichment rather than a sorted population.
+
+  - field: compartment
+    value: immune
+    label: leukocyte
+    ontology: cl
+    curie: CL:0000738
+    relation: enriched_for
+    notes: >-
+      23 AOIs (TIME-L 15, TIME-B 8). PanCK-negative segment of an ROI sited in
+      a CD45-rich region. NOT a CD45-sorted population, and `TIME-B` n = 8 is
+      the binding constraint on the project.
+
+  - field: compartment
+    value: glial_stroma
+    label: astrocyte
+    ontology: cl
+    curie: CL:0000127
+    relation: enriched_for
+    notes: >-
+      20 AOIs (TBME). PanCK-negative segment of an ROI sited in GFAP-rich
+      tumour-adjacent brain. NOT a GFAP-sorted population.
+
+  - field: compartment
+    value: normal_control
+    label: brain
+    ontology: uberon
+    curie: UBERON:0000955
+    relation: is_a
+    notes: >-
+      7 AOIs (BC). The ONLY compartment mapped to a tissue rather than a cell
+      type, and deliberately: nothing was sorted, no tumour is present, and
+      there is no cell population this control is enriched for. An honest
+      absence beats a plausible CL term.
+
+  # --- tumour context (compartment_map `tumour_present` + AOI code) --------
+  - field: tumour_context
+    value: primary
+    label: Primary Neoplasm
+    ontology: ncit
+    curie: NCIT:C8509
+    relation: is_a
+    notes: The `L` and `TIME-L` AOIs — primary lung tumour and its immune compartment.
+
+  - field: tumour_context
+    value: brain_metastasis
+    label: Metastatic Malignant Neoplasm in the Brain
+    ontology: ncit
+    curie: NCIT:C3813
+    relation: is_a
+    notes: >-
+      The `LB`, `TBME` and `TIME-B` AOIs. The exact-label term; MONDO:1040026
+      carries the same label and either would do, and NCIT is recorded because
+      §7.2 names it for disease-context fields.

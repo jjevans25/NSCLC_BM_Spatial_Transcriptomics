@@ -1,4 +1,11 @@
-# Phase 0: GeoMx QC + normalisation (PROJECT_PLAN.md §4.4).
+# The assay-specific R environment (PROJECT_PLAN.md §4.4).
+#
+# NOT Phase 0 only, which is what this header said until P6-T0: Phase 0
+# uses it for GeoMx QC and normalisation, and p4t2c_export_lr_database
+# (Phase 4) reads CellChatDB's .rda with base R `load()` in it too.
+# Correcting one line of prose here costs a full rebuild of every rule in
+# this env plus a pin regeneration (ADR 0023), which is why it waited for a
+# commit where paying that was the point.
 # Created by Snakemake via --software-deployment-method conda. Do not install by hand.
 #
 # NOTE: zellkonverter is deliberately absent. It pulls basilisk + reticulate,

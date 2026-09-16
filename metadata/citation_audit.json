@@ -1,0 +1,160 @@
+{
+  "checks": [
+    {
+      "check": "cff_has_cff_version",
+      "detail": "CITATION.cff has no cff-version",
+      "passed": true
+    },
+    {
+      "check": "cff_has_title",
+      "detail": "CITATION.cff has no title",
+      "passed": true
+    },
+    {
+      "check": "cff_has_message",
+      "detail": "CITATION.cff has no message",
+      "passed": true
+    },
+    {
+      "check": "cff_has_type",
+      "detail": "CITATION.cff has no type",
+      "passed": true
+    },
+    {
+      "check": "cff_has_authors",
+      "detail": "CITATION.cff has no authors",
+      "passed": true
+    },
+    {
+      "check": "cff_has_license",
+      "detail": "CITATION.cff has no license",
+      "passed": true
+    },
+    {
+      "check": "cff_has_repository_code",
+      "detail": "CITATION.cff has no repository-code",
+      "passed": true
+    },
+    {
+      "check": "cff_has_version",
+      "detail": "CITATION.cff has no version",
+      "passed": true
+    },
+    {
+      "check": "cff_has_date_released",
+      "detail": "CITATION.cff has no date-released",
+      "passed": true
+    },
+    {
+      "check": "cff_version_is_1_2_0",
+      "detail": "cff-version is '1.2.0'",
+      "passed": true
+    },
+    {
+      "check": "codemeta_has_context",
+      "detail": "codemeta.json has no @context",
+      "passed": true
+    },
+    {
+      "check": "codemeta_has_type",
+      "detail": "codemeta.json has no @type",
+      "passed": true
+    },
+    {
+      "check": "codemeta_has_name",
+      "detail": "codemeta.json has no name",
+      "passed": true
+    },
+    {
+      "check": "codemeta_has_version",
+      "detail": "codemeta.json has no version",
+      "passed": true
+    },
+    {
+      "check": "codemeta_has_license",
+      "detail": "codemeta.json has no license",
+      "passed": true
+    },
+    {
+      "check": "codemeta_has_codeRepository",
+      "detail": "codemeta.json has no codeRepository",
+      "passed": true
+    },
+    {
+      "check": "codemeta_has_author",
+      "detail": "codemeta.json has no author",
+      "passed": true
+    },
+    {
+      "check": "codemeta_context_is_codemeta_2_0",
+      "detail": "@context is 'https://doi.org/10.5063/schema/codemeta-2.0'",
+      "passed": true
+    },
+    {
+      "check": "version_agrees_between_files",
+      "detail": "CITATION.cff '1.0.0' vs codemeta.json '1.0.0'",
+      "passed": true
+    },
+    {
+      "check": "repository_agrees_across_all_three_declarations",
+      "detail": "CITATION.cff, codemeta.json and config.yaml disagree: {'cff': 'https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics', 'codemeta': 'https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics', 'config': 'https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics'}",
+      "passed": true
+    },
+    {
+      "check": "cff_repository_matches_git_remote",
+      "detail": "cff says 'https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics', git remote is 'https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics.git'",
+      "passed": true
+    },
+    {
+      "check": "codemeta_repository_matches_git_remote",
+      "detail": "codemeta says 'https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics', git remote is 'https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics.git'",
+      "passed": true
+    },
+    {
+      "check": "config_repository_matches_git_remote",
+      "detail": "config says 'https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics', git remote is 'https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics.git'",
+      "passed": true
+    },
+    {
+      "check": "cited_versions_match_pins",
+      "detail": "0: []",
+      "passed": true
+    },
+    {
+      "check": "snakemake_version_satisfies_environment_yml",
+      "detail": "cited '8.30.0' against environment.yml 'snakemake=8.*'",
+      "passed": true
+    },
+    {
+      "check": "no_placeholder_doi",
+      "detail": "config.yaml has no DOI but a citation file carries one \u2014 a persistent identifier that does not resolve is worse than none",
+      "passed": true
+    },
+    {
+      "check": "no_pip_section_in_any_env",
+      "detail": "[] declare a `pip:` section. `conda list --explicit` records conda packages only, so a pip dependency is invisible to the pin and absent from a clean-room environment (ADR 0029).",
+      "passed": true
+    },
+    {
+      "check": "every_env_has_a_pin",
+      "detail": "[] have no .pin.txt \u2014 the clean room would solve them fresh against whatever the channel serves that day.",
+      "passed": true
+    }
+  ],
+  "cited_but_not_pinned": [
+    "Snakemake (Snakemake)"
+  ],
+  "doi": null,
+  "git_remote": "https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics.git",
+  "git_remote_checked": true,
+  "n_checks": 28,
+  "n_failed": 0,
+  "n_passed": 28,
+  "n_references": 34,
+  "n_software_cited": 28,
+  "n_versions_checked_against_pins": 23,
+  "repository": "https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics",
+  "task": "P6-T3",
+  "valid": true,
+  "version": "1.0.0"
+}

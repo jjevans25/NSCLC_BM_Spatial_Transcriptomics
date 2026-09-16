@@ -1,0 +1,161 @@
+# ---------------------------------------------------------------------------
+# RO-Crate manifest — what the crate describes (P6-T2, ADR 0030).
+#
+# The crate is MANIFEST-DRIVEN. Every group below resolves to concrete paths at
+# parse time and those paths become declared inputs of p6t2_build_ro_crate, so
+# the DAG knows what the crate depends on and a described file that no rule
+# produces fails the build. A crate built by walking results/ would describe
+# whatever happened to be on disk that afternoon, and would still look valid.
+#
+# TWO KINDS OF GROUP, because the two kinds of file fail differently:
+#
+#   include       committed source, expanded from globs against the working
+#                 tree. git decides what is there, so it is deterministic.
+#   derived: true the workflow's own TARGETS. A glob over results/figures/
+#                 returns NOTHING on a clean checkout — which is exactly what
+#                 P6-T1 creates — so the crate would describe zero figures and
+#                 pass. Sourcing from the targets makes the described outputs
+#                 identical to the promised outputs by construction.
+#
+# `expect_min` guards the failure a glob cannot see: a pattern that stops
+# matching returns an empty list rather than an error.
+#
+# Phase 6's own outputs are NOT described. The crate cannot be a part of itself,
+# and RO-Crate 1.1 keeps its metadata descriptor outside the root dataset's
+# hasPart for the same reason.
+# ---------------------------------------------------------------------------
+
+ro_crate:
+  dataset:
+    name: >-
+      Compartment-resolved spatial transcriptomics of the NSCLC tumour immune
+      microenvironment: primary lung tumour versus brain metastasis
+    description: >-
+      A reproducible Snakemake workflow reanalysing NanoString GeoMx DSP whole
+      transcriptome profiles from GEO GSE200563 (120 AOIs; 35 NSCLC patients
+      plus 7 non-tumour brain controls; source publication PMID 36216799) to ask
+      how the tumour immune microenvironment differs between a primary lung
+      tumour and a brain metastasis, resolved by tissue compartment.
+
+      WHAT THE DESIGN CANNOT SUPPORT, stated here because a crate is read by
+      people who will never open docs/limitations.md. The brain immune
+      compartment is n = 8 AOIs, which detects roughly 1.1-1.3 SD at 80% power,
+      so a null result in this study is UNINFORMATIVE, NOT NEGATIVE. Detection
+      is the dominant limitation ahead of even that: three of six immune
+      signatures and 40 of 63 checkpoint gene x compartment cells sit below the
+      pre-registered detection floor. The assay carries NO COORDINATES — an AOI
+      is a region a pathologist placed — so cross-compartment results are
+      inferred crosstalk between adjacent compartments, never colocalisation.
+      PanCK was the only collection mask, so a compartment label is never a
+      cell-type label. This is a learning and methods project, not a
+      publication.
+    geo_accession: GSE200563
+    source_pmid: "36216799"
+    keywords:
+      - spatial transcriptomics
+      - GeoMx DSP
+      - non-small cell lung cancer
+      - brain metastasis
+      - tumour immune microenvironment
+      - Snakemake
+      - FAIR
+      - reproducible research
+
+  authors:
+    - name: Jarrett Evans
+      email: jevans2532@gmail.com
+      # Null, not invented. An ORCID is to an author what a DOI is to the work.
+      orcid: null
+
+  parts:
+    - group: workflow
+      description: >-
+        The Snakemake workflow itself — the target rules, one .smk per phase,
+        the analysis scripts in both languages, the conda environment
+        specifications with their osx-arm64 pins, and the schemas every manifest
+        is validated against at parse time.
+      include:
+        - workflow/Snakefile
+        - workflow/rules/*.smk
+        - workflow/scripts/*.py
+        - workflow/scripts/*.R
+        - workflow/scripts/*.sh
+        - workflow/envs/*.yaml
+        - workflow/envs/*.pin.txt
+        - workflow/schemas/*.schema.yaml
+      expect_min: 60
+
+    - group: configuration
+      description: >-
+        Every threshold, gene set, panel and pinned digest the workflow reads.
+        The design table (samples.tsv) and the compartment vocabulary live here
+        too, so the crate carries the study design and not only its code.
+      include:
+        - config/*.yaml
+        - config/*.tsv
+        - environment.yml
+      expect_min: 10
+
+    - group: inputs
+      description: >-
+        The read-only inputs and their provenance. resources/ has six sanctioned
+        writers — raw/ (GEO), reference/ (SpatialDecon cell profiles),
+        supplementary/ (the source publication's own deposited files),
+        ligand_receptor/ (CellChatDB v2), clinical/ (Supplementary Data 1) and
+        tcga/ (the TCGA-LUAD external cohort) — and each carries a
+        *_checksums.sha256 and *_provenance.tsv pair recording what was fetched,
+        from where, when, and at which digest.
+      include:
+        - resources/*.sha256
+        - resources/*.tsv
+      expect_min: 11
+
+    - group: fetched_inputs
+      description: >-
+        The pinned input artifacts themselves, taken from the six fetch
+        manifests rather than from a glob. raw/, reference/ and supplementary/
+        are gitignored — the digests are the provenance record and the bytes are
+        re-fetchable — so on a fresh clone a glob over them matches nothing and
+        the crate would describe no inputs at all while still validating. P6-T1
+        found precisely that, at parse time, before anything could run.
+      from_manifests: true
+      expect_min: 12
+
+    - group: notebooks
+      description: >-
+        marimo notebooks (.py, never .ipynb), each with PEP 723 dependencies
+        inlined so it runs standalone under uv. Review-tier notebooks are where
+        a threshold was chosen; app-tier notebooks are the interactive
+        artifacts. No reported number originates in any of them.
+      include:
+        - notebooks/*/*.py
+      expect_min: 5
+
+    - group: documentation
+      description: >-
+        The provenance record, the limitations, the analysis notes, the decision
+        record (every ADR), the licences, the changelog and the citation
+        metadata. The ADRs are the durable record of this project: the planning
+        document is not committed, so a threshold without an ADR is a number
+        someone made up.
+      include:
+        - README.md
+        - CHANGELOG.md
+        - CITATION.cff
+        - codemeta.json
+        - CLAUDE.md
+        - LICENSE
+        - LICENSE-DATA
+        - docs/*.md
+        - docs/decisions/*.md
+        - metadata/ontology-terms.tsv
+      expect_min: 35
+
+    - group: results
+      description: >-
+        Everything the workflow declares it produces: the tables, the figures,
+        the interactive WASM exports and the intermediate AnnData object. Taken
+        from the phase TARGETS lists rather than from a glob over results/, so
+        the described outputs and the promised outputs cannot diverge.
+      derived: true
+      expect_min: 100

@@ -377,6 +377,226 @@ if TCGA_YAML.exists():
         )
 
 
+# --- ontology_terms.yaml ---------------------------------------------------
+# P6-T2a. The FAIR I2 mapping PROJECT_PLAN §7.2 puts in Phase 0 and that never
+# landed — `metadata/` held nothing but a .gitkeep, and compartment_map.yaml's
+# header still promises the fields would be filled in at P0-T3.
+#
+# Same contract as CLINICAL and LIGAND_RECEPTOR above, and one addition that
+# matters more here than anywhere else: the checks below are the only place the
+# Q2 caveat can be enforced STRUCTURALLY. Prose can say "a compartment label is
+# never a cell-type label" and p4t7_language_audit can catch the phrase, but
+# neither can stop a machine-readable graph from asserting it in RDF. These can.
+ONTOLOGY_TERMS = None
+ONTOLOGY_YAML = Path(config["fair"]["ontology_yaml"])
+
+if ONTOLOGY_YAML.exists():
+    import yaml
+
+    with open(ONTOLOGY_YAML, encoding="utf-8") as _handle:
+        _ontology_doc = yaml.safe_load(_handle)
+
+    validate(_ontology_doc, "../schemas/ontology_terms.schema.yaml")
+    ONTOLOGY_TERMS = _ontology_doc["ontology_terms"]
+
+    # The CURIE prefix each OLS4 ontology id is expected to mint. The schema
+    # enforces the shape `PREFIX:LOCAL`; only this can enforce that the prefix
+    # belongs to the ontology the entry declares. A UBERON id filed under `cl`
+    # would resolve fine and mean something else.
+    ONTOLOGY_PREFIX = {
+        "ncbitaxon": "NCBITaxon",
+        "uberon": "UBERON",
+        "cl": "CL",
+        "ncit": "NCIT",
+        "mondo": "MONDO",
+        "efo": "EFO",
+        "obi": "OBI",
+    }
+
+    _seen_terms = set()
+    for _entry in ONTOLOGY_TERMS:
+        _key = (_entry["field"], _entry["value"])
+        if _key in _seen_terms:
+            raise ValueError(
+                f"config ontology_terms: {_key} is mapped twice. One value "
+                "cannot have two terms — decide which, in an ADR."
+            )
+        _seen_terms.add(_key)
+
+        _expected = ONTOLOGY_PREFIX[_entry["ontology"]]
+        if not _entry["curie"].startswith(f"{_expected}:"):
+            raise ValueError(
+                f"config ontology_terms: {_key} declares ontology "
+                f"'{_entry['ontology']}' but its curie is {_entry['curie']}, "
+                f"which is not a {_expected} identifier."
+            )
+
+        # THE Q2 RULE, MADE STRUCTURAL. PanCK was the only collection mask; CD45
+        # and GFAP guided where a pathologist placed an ROI and nothing was
+        # collected on either. A compartment mapped to a CELL TYPE may therefore
+        # only ever be `enriched_for`. Writing `is_a` would encode into the
+        # RO-Crate exactly the overclaim CLAUDE.md hard constraint 6 forbids in
+        # prose — and a JSON-LD graph is consumed by machines that cannot be
+        # sceptical about it. Changing this is a stop-and-ask, not an edit.
+        if (
+            _entry["field"] == "compartment"
+            and _entry["ontology"] == "cl"
+            and _entry["relation"] != "enriched_for"
+        ):
+            raise ValueError(
+                f"config ontology_terms: compartment '{_entry['value']}' maps "
+                f"to the cell-type term {_entry['curie']} with relation "
+                f"'{_entry['relation']}'. A compartment label is NEVER a "
+                "cell-type label (Q2) — PanCK was the only collection mask, so "
+                "a CL term on a compartment must be `enriched_for`."
+            )
+
+    # Every value the design actually carries must be mapped. An unmapped field
+    # is a FAIR I2 failure (/fairscan grades it as one), and catching it here
+    # costs a parse rather than an RO-Crate with a hole in it.
+    if SAMPLES is not None:
+        for _column in ("site", "compartment"):
+            _mapped = {
+                _e["value"] for _e in ONTOLOGY_TERMS if _e["field"] == _column
+            }
+            _unmapped = sorted(set(SAMPLES[_column]) - _mapped)
+            if _unmapped:
+                raise ValueError(
+                    f"config ontology_terms: samples.tsv column '{_column}' "
+                    f"carries {_unmapped}, which no entry maps. §7.2 requires "
+                    "every metadata field to carry an ontology term; an "
+                    "unmapped value is a FAIR I2 failure."
+                )
+
+
+# --- ro_crate.yaml ---------------------------------------------------------
+# P6-T2. The manifest of entities the RO-Crate describes.
+#
+# MANIFEST-DRIVEN RATHER THAN WALK-THE-FILESYSTEM (ADR 0030). A crate built by
+# walking `results/` would describe whatever happened to be on disk when it ran,
+# which is neither declarable as rule inputs nor reproducible — and hard
+# constraint 5 asks for the opposite. Listing the entities makes each one a
+# declared input, so the DAG knows what the crate depends on and a described
+# file that no rule produces fails the build.
+#
+# Guarded by exists() like every manifest above, so the workflow parses cleanly
+# on a checkout that predates it.
+RO_CRATE = None
+RO_CRATE_YAML = Path(config["fair"]["ro_crate_yaml"])
+
+if RO_CRATE_YAML.exists():
+    import yaml
+
+    with open(RO_CRATE_YAML, encoding="utf-8") as _handle:
+        _ro_crate_doc = yaml.safe_load(_handle)
+
+    validate(_ro_crate_doc, "../schemas/ro_crate.schema.yaml")
+    RO_CRATE = _ro_crate_doc["ro_crate"]
+
+    # The crate's identifiers are duplicated into config.yaml's fair.identifiers
+    # on purpose (ADR 0030). Checked here, at parse, for the same reason
+    # survival.model.endpoint_by_site is checked against clinical.yaml: a
+    # divergence between the workflow's configuration and its machine-readable
+    # description is invisible to every reader of either one.
+    _ids = config["fair"]["identifiers"]
+    if RO_CRATE["dataset"]["geo_accession"] != _ids["geo_accession"]:
+        raise ValueError(
+            "config ro_crate.dataset.geo_accession "
+            f"({RO_CRATE['dataset']['geo_accession']}) does not match "
+            f"fair.identifiers.geo_accession ({_ids['geo_accession']}). These "
+            "are duplicated deliberately so a mismatch fails loudly."
+        )
+    if RO_CRATE["dataset"]["source_pmid"] != _ids["source_pmid"]:
+        raise ValueError(
+            "config ro_crate.dataset.source_pmid "
+            f"({RO_CRATE['dataset']['source_pmid']}) does not match "
+            f"fair.identifiers.source_pmid ({_ids['source_pmid']})."
+        )
+
+    # config.yaml's project block is the third copy, and the one every other
+    # phase already reads. All three must agree or the crate describes a
+    # different study from the one that ran.
+    if RO_CRATE["dataset"]["geo_accession"] != config["project"]["geo_accession"]:
+        raise ValueError(
+            "config ro_crate.dataset.geo_accession does not match "
+            f"project.geo_accession ({config['project']['geo_accession']})."
+        )
+
+    # Expand the SOURCE groups at parse time. Sorted, so the crate's part
+    # order is stable across machines and the JSON-LD is byte-comparable
+    # between the working tree and P6-T1's clean room.
+    #
+    # `derived` groups are NOT expanded here: they come from the phase TARGETS
+    # lists, which 99_fair.smk composes because it is included last and is the
+    # only place where all of them exist. A glob over results/ would return
+    # nothing on a clean checkout and the crate would describe no outputs at
+    # all — valid-looking, and wrong in exactly the situation P6-T1 creates.
+    RO_CRATE_SOURCE_PARTS = []
+    RO_CRATE_DERIVED_GROUPS = []
+    RO_CRATE_MANIFEST_GROUPS = []
+
+    for _group in RO_CRATE["parts"]:
+        if _group.get("derived"):
+            RO_CRATE_DERIVED_GROUPS.append(_group)
+            continue
+        # The fetched inputs, for the same reason: three of the six resources/
+        # subdirectories are gitignored, so a glob over them matches nothing on
+        # a fresh clone. 99_fair.smk resolves these from the six manifests,
+        # because that is where all six are in scope.
+        if _group.get("from_manifests"):
+            RO_CRATE_MANIFEST_GROUPS.append(_group)
+            continue
+
+        # A LITERAL path is taken verbatim; only a PATTERN is globbed. The
+        # difference matters on a clean checkout: metadata/ontology-terms.tsv is
+        # named explicitly and is produced by p6t2a, so on a fresh clone it does
+        # not exist yet and a glob would silently drop it from the crate — the
+        # same failure `derived` groups exist to avoid, one level down. Naming a
+        # file means the crate must describe it; Snakemake then produces it or
+        # fails, which is the honest outcome either way.
+        #
+        # The loop variable is `_glob`, NOT `_pattern`, and that is not a style
+        # choice. An include file's globals are the namespace Snakemake formats
+        # `shell:` strings against, and `snakemake.utils.format` takes its own
+        # positional argument named `_pattern` — a module-level `_pattern` here
+        # collides with it and every shell-using rule in the workflow dies with
+        # "format() got multiple values for argument '_pattern'", nowhere near
+        # this file. p1t5_landscape_explorer found it.
+        _matched = set()
+        for _glob in _group["include"]:
+            if any(_char in _glob for _char in "*?["):
+                _matched |= {
+                    str(_path) for _path in Path().glob(_glob) if _path.is_file()
+                }
+            else:
+                _matched.add(_glob)
+        _matched = sorted(_matched)
+
+        # A glob that stops matching returns an empty list rather than an
+        # error, so a renamed directory would produce a crate that describes
+        # nothing and still validates. This is the only thing standing between
+        # that and a green build.
+        if len(_matched) < _group["expect_min"]:
+            raise ValueError(
+                f"config ro_crate.parts[{_group['group']}]: matched "
+                f"{len(_matched)} files, expected at least "
+                f"{_group['expect_min']}. Either a pattern has gone stale or "
+                "files have been removed — a crate that silently describes "
+                "nothing is the failure this check exists for."
+            )
+
+        for _path in _matched:
+            RO_CRATE_SOURCE_PARTS.append({"path": _path, "group": _group["group"]})
+
+    _paths = [_part["path"] for _part in RO_CRATE_SOURCE_PARTS]
+    if len(_paths) != len(set(_paths)):
+        _dupes = sorted({_p for _p in _paths if _paths.count(_p) > 1})
+        raise ValueError(
+            f"config ro_crate.parts: {_dupes} matched by more than one group. "
+            "A crate with two entities for one file has two @ids for one thing."
+        )
+
+
 # The language audit scans every tracked file, which Snakemake cannot express as
 # an `input:` list without enumerating the repository into the DAG. Without a
 # trigger it would run once and then never again — and a check that goes stale
@@ -403,6 +623,35 @@ def _tracked_text_digest():
     h = hashlib.sha256()
     for f in sorted(tracked):
         if not f or Path(f).suffix in skip or f.startswith("results/"):
+            continue
+        # EVERY GENERATED FILE IS EXCLUDED, not only those under results/.
+        # `metadata/` and `ro-crate-metadata.json` are committed rule OUTPUTS,
+        # and they are produced by rules DOWNSTREAM of the audit this digest
+        # triggers — so including them makes the two chase each other forever:
+        # the crate is rebuilt, the digest changes, the audit re-runs, its
+        # output is a crate input, the crate is rebuilt. A completed run left
+        # four jobs pending every time, which is how the loop announced itself.
+        # Excluding only the crate was not enough: ro_crate_summary.json and
+        # ro_crate_validation.json are rewritten by the same rules.
+        #
+        # `resources/*_provenance.tsv` belongs to the same category and is the
+        # reason this rule has to be stated as a CATEGORY. Those files are
+        # committed rule outputs too, and the fetch rules rewrite them with a
+        # fresh access timestamp DURING the run — after the digest was computed
+        # at parse time. So a first-ever run always left the audit one pass
+        # behind, and `snakemake -n` needed a second invocation to come back
+        # clean. Found in the clean room, where every artifact is fetched for
+        # the first time; invisible here, where nothing is re-fetched.
+        #
+        # Nothing is lost. The provenance TSVs are URLs and digests, not prose,
+        # and the crate and the metadata summaries are generated copies of text
+        # that lives in config/ro_crate.yaml and in the scripts — all of which
+        # ARE covered. The same reasoning the results/ exclusion rests on.
+        if (
+            f.startswith("metadata/")
+            or f == "ro-crate-metadata.json"
+            or f.endswith("_provenance.tsv")
+        ):
             continue
         h.update(f.encode())
         try:

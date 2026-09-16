@@ -3,18 +3,20 @@
   "@type": "SoftwareSourceCode",
   "identifier": "nsclc-brainmet-time",
   "name": "Compartment-Resolved Spatial Transcriptomics of the NSCLC Tumour Immune Microenvironment",
-  "description": "A reproducible Snakemake workflow reanalysing NanoString GeoMx DSP WTA profiles (GEO GSE200563) to compare the tumour immune microenvironment of primary NSCLC lung tumours with matched brain metastases, resolved by tissue compartment.",
-  "version": "0.1.0",
+  "description": "A reproducible Snakemake workflow reanalysing NanoString GeoMx DSP WTA profiles (GEO GSE200563; 120 AOIs, 35 NSCLC patients plus 7 non-tumour brain controls) to compare the tumour immune microenvironment of primary NSCLC lung tumours with matched brain metastases, resolved by tissue compartment. The brain immune compartment is n = 8 AOIs, which detects roughly 1.1-1.3 SD at 80% power, so a null result is uninformative rather than negative. The assay carries no coordinates, so cross-compartment findings are inferred crosstalk between adjacent compartments, never colocalisation. A learning and methods project, not intended for peer-reviewed publication.",
+  "version": "1.0.0",
   "dateCreated": "2026-08-22",
-  "dateModified": "2026-08-23",
+  "dateModified": "2026-09-16",
+  "datePublished": "2026-09-16",
   "license": "https://spdx.org/licenses/MIT",
-  "codeRepository": "https://github.com/jjevans25/nsclc-brainmet-time",
+  "codeRepository": "https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics",
   "programmingLanguage": [
     { "@type": "ComputerLanguage", "name": "Python" },
     { "@type": "ComputerLanguage", "name": "R" }
   ],
-  "runtimePlatform": ["Snakemake 8.x", "conda"],
-  "developmentStatus": "wip",
+  "runtimePlatform": ["Snakemake 8.30", "conda"],
+  "operatingSystem": ["macOS (osx-arm64, pinned)", "Linux (linux-64, unpinned — the environment YAMLs are solved fresh)"],
+  "developmentStatus": "active",
   "author": [
     {
       "@type": "Person",
@@ -30,15 +32,48 @@
     "brain metastasis",
     "tumour immune microenvironment",
     "Snakemake",
-    "FAIR"
+    "FAIR",
+    "reproducible research"
   ],
   "referencePublication": {
     "@type": "ScholarlyArticle",
-    "identifier": "PMID:36216799"
+    "identifier": "PMID:36216799",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/36216799/"
   },
   "isBasedOn": {
     "@type": "Dataset",
     "identifier": "GEO:GSE200563",
     "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE200563"
-  }
+  },
+  "readme": "https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics/blob/main/README.md",
+  "buildInstructions": "https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics/blob/main/README.md#how-to-run",
+  "contIntegration": "Not used. The acceptance test is a clean-room reproduction (P6-T1): a fresh clone, fresh conda environments from workflow/envs/*.osx-arm64.pin.txt, and `snakemake --cores 4 all` from nothing.",
+  "softwareRequirements": [
+    { "@type": "SoftwareApplication", "name": "Snakemake", "version": "8.30.0", "url": "https://snakemake.readthedocs.io/" },
+    { "@type": "SoftwareApplication", "name": "conda", "url": "https://docs.conda.io/" },
+    { "@type": "SoftwareApplication", "name": "R", "version": "4.4.3", "url": "https://www.r-project.org/" },
+    { "@type": "SoftwareApplication", "name": "GeomxTools", "version": "3.10.0", "url": "https://bioconductor.org/packages/GeomxTools" },
+    { "@type": "SoftwareApplication", "name": "standR", "version": "1.10.0", "url": "https://bioconductor.org/packages/standR" },
+    { "@type": "SoftwareApplication", "name": "SpatialDecon", "version": "1.16.0", "url": "https://bioconductor.org/packages/SpatialDecon" },
+    { "@type": "SoftwareApplication", "name": "limma", "version": "3.62.1", "url": "https://bioconductor.org/packages/limma" },
+    { "@type": "SoftwareApplication", "name": "edgeR", "version": "4.4.0", "url": "https://bioconductor.org/packages/edgeR" },
+    { "@type": "SoftwareApplication", "name": "lme4", "version": "2.0_6", "url": "https://cran.r-project.org/package=lme4" },
+    { "@type": "SoftwareApplication", "name": "lmerTest", "version": "3.2_1", "url": "https://cran.r-project.org/package=lmerTest" },
+    { "@type": "SoftwareApplication", "name": "emmeans", "version": "2.0.4", "url": "https://cran.r-project.org/package=emmeans" },
+    { "@type": "SoftwareApplication", "name": "anndata", "version": "0.13.2", "url": "https://anndata.readthedocs.io/" },
+    { "@type": "SoftwareApplication", "name": "scanpy", "version": "1.12.3", "url": "https://scanpy.readthedocs.io/" },
+    { "@type": "SoftwareApplication", "name": "statsmodels", "version": "0.14.6", "url": "https://www.statsmodels.org/" },
+    { "@type": "SoftwareApplication", "name": "scikit-survival", "version": "0.28.0", "url": "https://scikit-survival.readthedocs.io/" },
+    { "@type": "SoftwareApplication", "name": "gseapy", "version": "1.3.1", "url": "https://gseapy.readthedocs.io/" },
+    { "@type": "SoftwareApplication", "name": "numpy", "version": "2.5.2", "url": "https://numpy.org/" },
+    { "@type": "SoftwareApplication", "name": "scipy", "version": "1.18.0", "url": "https://scipy.org/" },
+    { "@type": "SoftwareApplication", "name": "pandas", "version": "3.0.5", "url": "https://pandas.pydata.org/" },
+    { "@type": "SoftwareApplication", "name": "matplotlib", "version": "3.11.1", "url": "https://matplotlib.org/" },
+    { "@type": "SoftwareApplication", "name": "seaborn", "version": "0.13.2", "url": "https://seaborn.pydata.org/" },
+    { "@type": "SoftwareApplication", "name": "networkx", "version": "3.6.1", "url": "https://networkx.org/" },
+    { "@type": "SoftwareApplication", "name": "umap-learn", "version": "0.5.12", "url": "https://umap-learn.readthedocs.io/" },
+    { "@type": "SoftwareApplication", "name": "marimo", "version": "0.24.0", "url": "https://marimo.io/" },
+    { "@type": "SoftwareApplication", "name": "ro-crate-py", "version": "0.15.1", "url": "https://github.com/ResearchObject/ro-crate-py" }
+  ],
+  "citation": "See CITATION.cff, which carries the full reference list including the data sources, the external resources and the agent skills this project used."
 }

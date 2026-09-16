@@ -1,8 +1,8 @@
 {
   "classification_rule": "A match inside a prohibition \u2014 the line, or the one before it, carrying never / not / forbid / avoid / rather than / instead of / cannot \u2014 is the rule being STATED and is counted separately. Everything else fails the build. PROJECT_PLAN \u00a76's literal 'fix every hit' would fail on CLAUDE.md's own hard constraint 6: the files that state a rule have to name what they forbid. A match inside a declared quotation field is a third category: the P4-T6 comparator's own sentence says 'colocalized', and editing a quotation to satisfy this project's style rule would falsify the source (ADR 0021 \u00a72).",
   "clean": true,
-  "n_files_scanned": 171,
-  "n_prohibitions": 24,
+  "n_files_scanned": 178,
+  "n_prohibitions": 28,
   "n_quotations": 5,
   "n_violations": 0,
   "patterns": [
@@ -17,6 +17,15 @@
       "match": "colocalis",
       "pattern": "spatial_claim",
       "text": "- Adjacent compartments profiled separately do not show **colocalisation**.",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
+      "file": "CITATION.cff",
+      "line": 26,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "crosstalk between adjacent compartments, never colocalisation. A learning and",
       "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
     },
     {
@@ -66,6 +75,15 @@
     },
     {
       "category": "prohibition",
+      "file": "codemeta.json",
+      "line": 6,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "\"description\": \"A reproducible Snakemake workflow reanalysing NanoString GeoMx DSP WTA profiles (GEO GSE200563; 120 AOIs, 35 NSCLC patients plus 7 non-tumour brain controls) to compare the tumour immu",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
       "file": "config/compartment_map.yaml",
       "line": 14,
       "match": "CD45+ AOI",
@@ -93,6 +111,15 @@
     },
     {
       "category": "prohibition",
+      "file": "config/ro_crate.yaml",
+      "line": 48,
+      "match": "colocalis",
+      "pattern": "spatial_claim",
+      "text": "inferred crosstalk between adjacent compartments, never colocalisation.",
+      "why": "no coordinates \u2014 say 'inferred crosstalk between adjacent compartments'"
+    },
+    {
+      "category": "prohibition",
       "file": "docs/data-provenance.md",
       "line": 138,
       "match": "colocalis",
@@ -103,10 +130,19 @@
     {
       "category": "prohibition",
       "file": "docs/limitations.md",
-      "line": 69,
+      "line": 78,
       "match": "CD45+ AOI",
       "pattern": "cell_type_label",
       "text": "\"CD45+ AOI\", and never treat a compartment label as a cell-type label. Cell-type",
+      "why": "PanCK was the only collection mask (Q2) \u2014 a compartment label is not a cell-type label"
+    },
+    {
+      "category": "prohibition",
+      "file": "docs/substack-draft.md",
+      "line": 90,
+      "match": "CD45+ AOI",
+      "pattern": "cell_type_label",
+      "text": "forbids writing \"CD45+ AOI\" anywhere, and a build rule greps for it.",
       "why": "PanCK was the only collection mask (Q2) \u2014 a compartment label is not a cell-type label"
     },
     {
@@ -258,7 +294,7 @@
     {
       "category": "quotation",
       "file": "workflow/scripts/language_audit.py",
-      "line": 106,
+      "line": 118,
       "match": "colocaliz",
       "pattern": "spatial_claim",
       "text": "# P4-T6 comparator's own sentence says \"colocalized\"; editing it to satisfy this",
@@ -267,7 +303,7 @@
     {
       "category": "quotation",
       "file": "workflow/scripts/language_audit.py",
-      "line": 248,
+      "line": 275,
       "match": "colocaliz",
       "pattern": "spatial_claim",
       "text": "\"comparator's own sentence says 'colocalized', and editing a \"",
@@ -275,7 +311,7 @@
     }
   ],
   "rule": "This assay carries no coordinates. The supported phrase is 'inferred crosstalk between adjacent compartments' (hard constraint 6). PanCK was the only collection mask, so a compartment label is never a cell-type label (Q2).",
-  "scope": "git ls-files, excluding binary/generated suffixes and results/. What is committed is what makes a claim.",
+  "scope": "git ls-files, excluding binary/generated suffixes and every committed rule output: results/, metadata/, resources/*_provenance.tsv and ro-crate-metadata.json. What is committed is what makes a claim.",
   "task": "P4-T7",
   "violations": []
 }

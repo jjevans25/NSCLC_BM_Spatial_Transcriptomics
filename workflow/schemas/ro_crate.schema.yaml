@@ -1,0 +1,144 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: >
+  config/ro_crate.yaml — the manifest of entities the RO-Crate describes
+  (P6-T2, ADR 0030).
+
+  THE CRATE IS MANIFEST-DRIVEN, NOT A FILESYSTEM WALK. A crate built by walking
+  results/ would describe whatever happened to be on disk when it ran, could not
+  declare its own inputs, and would quietly shrink on a fresh checkout. Every
+  group here resolves to concrete paths at parse time, and those paths become
+  declared inputs of p6t2_build_ro_crate — so the DAG knows what the crate
+  depends on, and a described file that no rule produces fails the build.
+
+  THE TWO KINDS OF GROUP EXIST BECAUSE THE TWO KINDS OF FILE FAIL DIFFERENTLY.
+
+    from_manifests     The fetched inputs, taken from the six fetch manifests.
+                       Three of the six resources/ subdirectories are gitignored
+                       and a glob over them matches nothing on a fresh clone.
+
+    include (source)   Committed files, listed as globs and expanded against the
+                       working tree. Deterministic because git decides what is
+                       there. `expect_min` guards the failure that a glob cannot
+                       see by itself: a pattern that stops matching returns
+                       nothing rather than erroring, and a crate silently
+                       describing zero scripts is worse than one that fails.
+
+    derived: true      Everything the workflow declares it produces, taken from
+                       the phase TARGETS lists rather than from a glob. A glob
+                       over results/figures/ returns NOTHING on a clean checkout
+                       — the exact situation P6-T1 creates — so the crate would
+                       describe no figures and still look valid. Sourcing from
+                       the targets makes the set of described outputs identical
+                       to the set of promised outputs, by construction.
+
+  Nothing in Phase 6's own TARGETS is described: the crate cannot be a part of
+  itself, and RO-Crate 1.1 keeps its metadata descriptor outside the root
+  dataset's hasPart for the same reason.
+type: object
+required: [ro_crate]
+additionalProperties: false
+properties:
+  ro_crate:
+    type: object
+    required: [dataset, authors, parts]
+    additionalProperties: false
+    properties:
+      dataset:
+        type: object
+        required: [name, description, geo_accession, source_pmid, keywords]
+        additionalProperties: false
+        properties:
+          name: {type: string, minLength: 1}
+          description:
+            type: string
+            minLength: 1
+            description: >
+              The root data entity's description. It states what the workflow
+              analysed AND what the design cannot support — `TIME-B` n = 8 in
+              particular — because a crate is read by people who will never open
+              docs/limitations.md.
+          geo_accession:
+            type: string
+            pattern: "^GSE[0-9]+$"
+            description: >
+              Duplicated from config.yaml's fair.identifiers and project blocks
+              on purpose; common.smk asserts all three agree at parse time.
+          source_pmid: {type: string, pattern: "^[0-9]+$"}
+          keywords:
+            type: array
+            minItems: 1
+            items: {type: string, minLength: 1}
+      authors:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required: [name, email]
+          additionalProperties: false
+          properties:
+            name: {type: string, minLength: 1}
+            email: {type: string, minLength: 3}
+            orcid:
+              type: [string, "null"]
+              description: >
+                Null rather than absent when there is none. An ORCID is the
+                author half of what a DOI is for the work, and a fabricated one
+                would be worse than no identifier at all.
+      parts:
+        type: array
+        minItems: 1
+        items:
+          type: object
+          required: [group, description, expect_min]
+          additionalProperties: false
+          oneOf:
+            - required: [include]
+            - required: [derived]
+            - required: [from_manifests]
+          properties:
+            group:
+              type: string
+              minLength: 1
+              description: >
+                Short slug, used as the crate's grouping and in the build log.
+            description:
+              type: string
+              minLength: 1
+              description: What this group is, in the crate and to a reader.
+            include:
+              type: array
+              minItems: 1
+              items: {type: string, minLength: 1}
+              description: >
+                Glob patterns relative to the repository root, expanded at parse
+                time and sorted. Source files only.
+            derived:
+              type: boolean
+              const: true
+              description: >
+                Take the paths from the phase TARGETS lists instead of a glob.
+                See the schema description for why a glob is wrong here.
+            from_manifests:
+              type: boolean
+              const: true
+              description: >
+                Take the paths from the SIX fetch manifests — the `acquire` and
+                `reference` blocks of config.yaml plus external_validation.yaml,
+                ligand_receptor.yaml, clinical.yaml and tcga.yaml.
+
+                Three of the six resources/ subdirectories are gitignored, so on
+                a fresh clone a glob over them matches NOTHING and the crate
+                would describe no raw inputs at all. P6-T1 found exactly that:
+                the workflow did not even parse, because `expect_min` refused
+                the empty match. Reading the manifests instead makes the
+                described inputs identical to the DECLARED inputs, existence
+                notwithstanding — the same reasoning `derived` applies to
+                outputs.
+            expect_min:
+              type: integer
+              minimum: 1
+              description: >
+                The smallest number of files this group may contain. A glob that
+                stops matching returns an empty list rather than an error, so
+                without this a renamed directory produces a valid-looking crate
+                describing nothing.

@@ -30,6 +30,13 @@ dependencies:
   # marimo: app-tier notebooks are exported headlessly by a rule (§4.5),
   # so marimo must be inside the analysis env, not just on the dev PATH.
   - marimo
-  - pip
-  - pip:
-      - rocrate
+  # rocrate (P6-T2): the RO-Crate 1.1 builder. It sat under a `pip:` section
+  # until P6-T0, and that was a hermeticity hole of exactly the kind ADR 0023
+  # exists to close: Snakemake installs from <env>.<platform>.pin.txt when one
+  # is present and ignores this file entirely, and the pin is
+  # `conda list --explicit` output, which records CONDA packages only. A pip
+  # dependency is therefore invisible to the pin -- it worked here and would
+  # have failed in the clean room. conda-forge carries it, so there is no
+  # reason for this project to have a `pip:` section at all, and it no longer
+  # does. See docs/decisions/0029-a-pin-must-carry-every-dependency.md
+  - rocrate

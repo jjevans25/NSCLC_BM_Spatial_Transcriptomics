@@ -4,7 +4,11 @@ title: >-
   Microenvironment: Primary Lung Tumour vs. Brain Metastasis
 message: >-
   If you use this workflow or its derived outputs, please cite it as below, and
-  cite the primary data separately (GEO GSE200563; PMID 36216799).
+  cite the primary data separately (GEO GSE200563; PMID 36216799). The software
+  this workflow depends on is listed under `references`, each at the version
+  recorded in workflow/envs/*.osx-arm64.pin.txt — p6t3_citation_audit asserts
+  that agreement on every build, because a hand-typed version goes stale
+  silently.
 type: software
 authors:
   - given-names: Jarrett
@@ -15,8 +19,12 @@ abstract: >-
   transcriptome atlas profiles (GEO GSE200563; 120 AOIs, 35 NSCLC patients plus
   7 non-tumour brain controls) to compare the tumour immune microenvironment of
   primary lung tumours with that of matched brain metastases, resolved by
-  tissue compartment. A learning and methods project, not intended for
-  peer-reviewed publication.
+  tissue compartment. The brain immune compartment is n = 8 AOIs, which detects
+  roughly 1.1-1.3 SD at 80% power, so a null result is uninformative rather
+  than negative; detection is the dominant limitation ahead of even that. The
+  assay carries no coordinates, so cross-compartment findings are inferred
+  crosstalk between adjacent compartments, never colocalisation. A learning and
+  methods project, not intended for peer-reviewed publication.
 keywords:
   - spatial transcriptomics
   - GeoMx DSP
@@ -27,17 +35,275 @@ keywords:
   - FAIR
   - reproducible research
 license: MIT
-repository-code: "https://github.com/jjevans25/nsclc-brainmet-time"
-version: 0.1.0
-date-released: "2026-08-23"
+repository-code: "https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics"
+version: "1.0.0"
+date-released: "2026-09-16"
+# NO DOI, BY DECISION (ADR 0032). P6-T5 -- the Zenodo release -- is abandoned
+# rather than deferred, so cite this workflow by repository URL and version,
+# which is what a citation of it can honestly be.
+#
+# The field is ABSENT rather than a placeholder string, permanently: a DOI that
+# does not resolve is worse than no DOI. p6t3_citation_audit fails the build if
+# this file claims one while config.yaml has none, and fails it the other way
+# round too, so minting one later is a config edit plus a `doi:` line here.
 references:
-  - type: article
+  # EVERY `version:` BELOW IS QUOTED, and that is not style. YAML reads `2.0_6`
+  # as the FLOAT 2.06 — an underscore is a digit separator — so lme4 and
+  # lmerTest were silently rewritten to 2.06 and 3.21 on the first pass, and
+  # p6t3_citation_audit caught both against the pins. R versions use that
+  # underscore form throughout.
+  # --- the data and the study that produced it -----------------------------
+  - type: database
     title: >-
-      Primary data source (NanoString GeoMx DSP WTA, GEO GSE200563)
+      Spatial transcriptomic profiling of matched primary NSCLC and brain
+      metastasis (NanoString GeoMx DSP WTA)
     authors:
       - name: "See PMID 36216799"
+    url: "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE200563"
+    identifiers:
+      - type: other
+        value: "GEO:GSE200563"
+    notes: >-
+      The primary data. Retrieved and verified against pinned SHA-256 digests by
+      P0-T2; P3-T2b checks this project's inputs against the article's own
+      deposited Source Data and finds all 2,243,280 normalised values identical.
+  - type: article
+    title: >-
+      Source publication for GEO GSE200563
+    authors:
+      - name: "See PMID 36216799"
+    url: "https://pubmed.ncbi.nlm.nih.gov/36216799/"
     identifiers:
       - type: other
         value: "PMID:36216799"
-      - type: other
-        value: "GEO:GSE200563"
+    notes: >-
+      This workflow is an independent reanalysis, not a reproduction of the
+      published pipeline. Gate 2 reproduced the published direction.
+
+  # --- orchestration -------------------------------------------------------
+  - type: software
+    title: Snakemake
+    version: "8.30.0"
+    url: "https://snakemake.readthedocs.io/"
+    authors:
+      - name: "Snakemake developers"
+  - type: software
+    title: marimo
+    version: "0.24.0"
+    url: "https://marimo.io/"
+    authors:
+      - name: "marimo developers"
+
+  # --- the assay-specific R stack (workflow/envs/r-geomx.yaml) -------------
+  - type: software
+    title: R
+    version: "4.4.3"
+    url: "https://www.r-project.org/"
+    authors:
+      - name: "R Core Team"
+  - type: software
+    title: GeomxTools
+    version: "3.10.0"
+    url: "https://bioconductor.org/packages/GeomxTools"
+    authors:
+      - name: "NanoString Biostatistics"
+  - type: software
+    title: standR
+    version: "1.10.0"
+    url: "https://bioconductor.org/packages/standR"
+    authors:
+      - name: "standR authors"
+  - type: software
+    title: SpatialDecon
+    version: "1.16.0"
+    url: "https://bioconductor.org/packages/SpatialDecon"
+    authors:
+      - name: "NanoString Biostatistics"
+  - type: software
+    title: limma
+    version: "3.62.1"
+    url: "https://bioconductor.org/packages/limma"
+    authors:
+      - name: "limma authors"
+  - type: software
+    title: edgeR
+    version: "4.4.0"
+    url: "https://bioconductor.org/packages/edgeR"
+    authors:
+      - name: "edgeR authors"
+
+  # --- the mixed models (workflow/envs/r-stats.yaml) -----------------------
+  - type: software
+    title: lme4
+    version: "2.0_6"
+    url: "https://cran.r-project.org/package=lme4"
+    authors:
+      - name: "Douglas Bates and others"
+  - type: software
+    title: lmerTest
+    version: "3.2_1"
+    url: "https://cran.r-project.org/package=lmerTest"
+    authors:
+      - name: "lmerTest authors"
+  - type: software
+    title: emmeans
+    version: "2.0.4"
+    url: "https://cran.r-project.org/package=emmeans"
+    authors:
+      - name: "Russell Lenth"
+
+  # --- the Python analysis stack (workflow/envs/py-analysis.yaml) ----------
+  - type: software
+    title: anndata
+    version: "0.13.2"
+    url: "https://anndata.readthedocs.io/"
+    authors:
+      - name: "scverse"
+  - type: software
+    title: scanpy
+    version: "1.12.3"
+    url: "https://scanpy.readthedocs.io/"
+    authors:
+      - name: "scverse"
+  - type: software
+    title: statsmodels
+    version: "0.14.6"
+    url: "https://www.statsmodels.org/"
+    authors:
+      - name: "statsmodels developers"
+  - type: software
+    title: scikit-survival
+    version: "0.28.0"
+    url: "https://scikit-survival.readthedocs.io/"
+    authors:
+      - name: "Sebastian Pölsterl"
+  - type: software
+    title: gseapy
+    version: "1.3.1"
+    url: "https://gseapy.readthedocs.io/"
+    authors:
+      - name: "gseapy authors"
+  - type: software
+    title: numpy
+    version: "2.5.2"
+    url: "https://numpy.org/"
+    authors:
+      - name: "NumPy developers"
+  - type: software
+    title: scipy
+    version: "1.18.0"
+    url: "https://scipy.org/"
+    authors:
+      - name: "SciPy developers"
+  - type: software
+    title: pandas
+    version: "3.0.5"
+    url: "https://pandas.pydata.org/"
+    authors:
+      - name: "pandas development team"
+  - type: software
+    title: matplotlib
+    version: "3.11.1"
+    url: "https://matplotlib.org/"
+    authors:
+      - name: "Matplotlib development team"
+  - type: software
+    title: seaborn
+    version: "0.13.2"
+    url: "https://seaborn.pydata.org/"
+    authors:
+      - name: "Michael Waskom"
+  - type: software
+    title: networkx
+    version: "3.6.1"
+    url: "https://networkx.org/"
+    authors:
+      - name: "NetworkX developers"
+  - type: software
+    title: umap-learn
+    version: "0.5.12"
+    url: "https://umap-learn.readthedocs.io/"
+    authors:
+      - name: "Leland McInnes"
+  - type: software
+    title: ro-crate-py
+    version: "0.15.1"
+    url: "https://github.com/ResearchObject/ro-crate-py"
+    authors:
+      - name: "ro-crate-py authors"
+
+  # --- external resources the analysis draws on ---------------------------
+  - type: database
+    title: "CellChatDB v2 (human ligand-receptor interactions)"
+    url: "https://github.com/jinworks/CellChat"
+    authors:
+      - name: "Suoqin Jin and others"
+    notes: >-
+      Pinned at a commit in config/ligand_receptor.yaml; P4-T2 reads the .rda
+      with base R load() in the existing r-geomx environment.
+  - type: database
+    title: "NanoString CellProfileLibrary (SpatialDecon reference matrices)"
+    url: "https://github.com/Nanostring-Biostats/CellProfileLibrary"
+    authors:
+      - name: "NanoString Biostatistics"
+    notes: >-
+      Lung_HCA and Brain_Darmanis, pinned at a commit SHA in config/config.yaml.
+  - type: database
+    title: "TCGA-LUAD expression and survival (UCSC Xena)"
+    url: "https://xenabrowser.net/"
+    authors:
+      - name: "UCSC Xena"
+    notes: >-
+      P5-T4's external cohort, n = 502 with 182 events. ADR 0027 §5 bounds the
+      comparison: GeoMx measures the PanCK-negative segment and TCGA whole bulk
+      tumour, and there is no brain comparator at all.
+  - type: database
+    title: "EMBL-EBI Ontology Lookup Service (OLS4)"
+    url: "https://www.ebi.ac.uk/ols4/"
+    authors:
+      - name: "EMBL-EBI"
+    notes: >-
+      Every ontology term in metadata/ontology-terms.tsv is resolved live
+      against OLS4 on each build and asserted against the CURIE pinned in
+      config/ontology_terms.yaml (P6-T2a).
+
+  # --- agent skills, per PROJECT_PLAN §6 P6-T3 ----------------------------
+  # The collection is cited as a whole AND the individual skills this project
+  # actually used are named. 168 skills are installed and pinned by
+  # skills-lock.json; naming all of them as "used" would be a citation of an
+  # inventory rather than of a dependency.
+  - type: software
+    title: "scientific-agent-skills (K-Dense collection)"
+    url: "https://github.com/K-Dense-AI/scientific-agent-skills"
+    authors:
+      - name: "K-Dense AI"
+    notes: >-
+      163 of the 168 skills pinned in skills-lock.json come from this
+      collection. Restore with `npx skills experimental_install`.
+  - type: software
+    title: "marimo-team/skills — marimo-notebook, jupyter-to-marimo, wasm-compatibility"
+    url: "https://github.com/marimo-team/skills"
+    authors:
+      - name: "marimo team"
+    notes: >-
+      Notebook authoring, the §4.5 conversion route for incoming Jupyter
+      material, and the WASM export check for app-tier notebooks.
+  - type: software
+    title: "marimo-team/marimo-pair — marimo-pair, retro-marimo-pair"
+    url: "https://github.com/marimo-team/marimo-pair"
+    authors:
+      - name: "marimo team"
+    notes: >-
+      Live-kernel pairing. Nothing found in a pairing session is a result until
+      a Snakemake rule produces it (CLAUDE.md hard constraint 5).
+  - type: software
+    title: "geomx-dsp-analysis (project-local skill)"
+    url: "https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics"
+    authors:
+      - given-names: Jarrett
+        family-names: Evans
+    notes: >-
+      Written for this project and committed with it: GeoMx assay vocabulary,
+      Q3 normalisation, detection filtering and the SpatialDecon reference-matrix
+      caveat. Source rather than an installed dependency, so skills-lock.json
+      cannot restore it.

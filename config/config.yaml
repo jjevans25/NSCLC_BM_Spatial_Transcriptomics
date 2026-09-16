@@ -69,7 +69,7 @@ phases:
   checkpoints: true       # P3-T1..T7 (ADR 0015, ADR 0016)
   crosstalk: true        # P4-T1..T7 (ADR 0021)
   survival: true           # P5-T1..T5 (ADR 0024); Q5 resolved yes
-  fair: false
+  fair: true            # P6-T2..T4 (ADR 0030)
 
 landscape:
   # Phase 1 / A2. PROJECT_PLAN §6 says "top ~2000 variable genes"; the number
@@ -528,3 +528,70 @@ reference:
       dest: Brain_Darmanis.RData
       stability: fixed
       sha256: "0f97e62ac2430c39259c3946ec229a3ffe09cdecc70df194fbdbad7bcadd75ed"
+
+fair:
+  # Phase 6 / FAIR packaging. PROJECT_PLAN §6 calls this phase "arguably the
+  # primary deliverable" -- the artifact someone else can actually run.
+  #
+  # WRITTEN COMPLETE IN ONE EDIT, ON PURPOSE. config.yaml is a declared input of
+  # p0t7_assemble_h5ad, so touching it rebuilds the .h5ad and re-runs Phases
+  # 1-5. Phases 3, 4 and 5 each paid that rebuild exactly once by landing every
+  # key they would ever need in a single commit, and this block does the same:
+  # the switch above, both manifest paths, and the identifiers the crate needs.
+  # Verified the same way -- every table and figure byte-identical afterwards.
+  #
+  # Both manifests are SEPARATE FILES for the reason signatures.yaml,
+  # checkpoints.yaml, ligand_receptor.yaml and clinical.yaml are: re-pinning an
+  # ontology term or adding a described file has no business costing a Phase 1-5
+  # rebuild.
+  ontology_yaml: config/ontology_terms.yaml
+  ro_crate_yaml: config/ro_crate.yaml
+
+  # EBI OLS4, queried by p6t2a_resolve_ontology_terms. The URL is here rather
+  # than in the script because it is a service this project depends on, and a
+  # dependency that only exists inside a script is one nobody can audit.
+  # Exact-label search only: no fuzzy matching anywhere in this project, and
+  # §7.2 forbids hand-typing an ID from memory, so live resolution is the only
+  # honest source. The manifest pins what that resolution returned; drift fails
+  # the build (ADR 0030).
+  ols:
+    api: https://www.ebi.ac.uk/ols4/api/search
+    timeout_seconds: 30
+    # Retries exist for a flaky network, NOT for a term that does not resolve.
+    # A failed resolution after these attempts stops the phase; there is no
+    # fallback path and no near-match acceptance -- the shape lr_nominations.py
+    # and p5t1_clinical_join have.
+    max_attempts: 3
+    retry_wait_seconds: 5
+
+  # Identifiers the RO-Crate carries as PIDs (FAIR F1). Duplicated from
+  # project: above ON PURPOSE, the way survival.model.endpoint_by_site is
+  # duplicated from clinical.yaml: the crate is the machine-readable claim about
+  # what this workflow analysed, and a silent divergence between it and the
+  # workflow's own configuration is exactly the error nobody would see.
+  # common.smk asserts they agree at parse time.
+  identifiers:
+    geo_accession: GSE200563
+    source_pmid: "36216799"
+    geo_url: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE200563
+    pubmed_url: https://pubmed.ncbi.nlm.nih.gov/36216799/
+    repository: https://github.com/jjevans25/NSCLC_BM_Spatial_Transcriptomics
+    # NO DOI, BY DECISION (ADR 0032). P6-T5 is abandoned rather than deferred:
+    # minting one needs a Zenodo account and a browser, and the owner declined.
+    #
+    # The field stays, and so does everything wired to it. build_ro_crate.py
+    # writes the crate's `sameAs` the moment this is populated, and
+    # p6t3_citation_audit enforces the policy in BOTH directions -- null here
+    # and a DOI in either citation file is a failure, and so is the reverse. So
+    # minting one later is this one line plus a re-run.
+    #
+    # Null rather than a plausible-looking string, permanently: a persistent
+    # identifier that does not resolve is worse than an absent one. It looks
+    # like provenance, survives copy-paste into someone else's bibliography, and
+    # fails silently years later.
+    doi: null
+
+  licences:
+    # R1.1 -- both files are present at the repository root (P0-T1).
+    code: https://spdx.org/licenses/MIT
+    data: https://creativecommons.org/licenses/by/4.0/

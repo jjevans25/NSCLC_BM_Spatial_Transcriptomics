@@ -5,7 +5,7 @@ description: >
   breaks the contract fails at parse rather than three rules later.
 type: object
 required: [project, paths, samples, seed, qc, normalisation, phases, acquire, landscape,
-           contexture, checkpoints, crosstalk, survival, reference]
+           contexture, checkpoints, crosstalk, survival, fair, reference]
 additionalProperties: false
 properties:
   project:
@@ -690,6 +690,74 @@ properties:
             type: number
             exclusiveMinimum: 0
             maximum: 1
+  fair:
+    type: object
+    description: >
+      Phase 6 / FAIR packaging (P6-T2..T4). Paths to the two manifests, the OLS4
+      service the ontology resolver queries, the identifiers the RO-Crate
+      carries as PIDs, and the two licence URLs.
+
+      The identifiers are DUPLICATED from `project:` deliberately, the way
+      survival.model.endpoint_by_site is duplicated from clinical.yaml: the
+      crate is the machine-readable claim about what this workflow analysed, and
+      a divergence between it and the workflow's own configuration is the kind
+      of error nobody reads a JSON-LD graph carefully enough to catch.
+      common.smk asserts the two agree at parse time, so the duplication fails
+      loudly instead of drifting.
+    required: [ontology_yaml, ro_crate_yaml, ols, identifiers, licences]
+    additionalProperties: false
+    properties:
+      ontology_yaml:
+        type: string
+        description: config/ontology_terms.yaml — the FAIR I2 mapping (§7.2).
+      ro_crate_yaml:
+        type: string
+        description: >
+          config/ro_crate.yaml — the manifest of described entities. Guarded by
+          exists() in common.smk, so the workflow parses clean before it lands.
+      ols:
+        type: object
+        required: [api, timeout_seconds, max_attempts, retry_wait_seconds]
+        additionalProperties: false
+        properties:
+          api: {type: string, format: uri}
+          timeout_seconds: {type: integer, minimum: 1}
+          max_attempts:
+            type: integer
+            minimum: 1
+            description: >
+              Retries are for a flaky network, NOT for a term that does not
+              resolve. There is no fallback path and no near-match acceptance.
+          retry_wait_seconds: {type: integer, minimum: 0}
+      identifiers:
+        type: object
+        required: [geo_accession, source_pmid, geo_url, pubmed_url, repository, doi]
+        additionalProperties: false
+        properties:
+          geo_accession: {type: string, pattern: "^GSE[0-9]+$"}
+          source_pmid: {type: string, pattern: "^[0-9]+$"}
+          geo_url: {type: string, format: uri}
+          pubmed_url: {type: string, format: uri}
+          repository:
+            type: string
+            format: uri
+            description: >
+              The real remote, asserted against `git remote get-url origin` by
+              p6t3_citation_audit. CITATION.cff and codemeta.json both carried a
+              URL that 404s until P6-T3.
+          doi:
+            type: [string, "null"]
+            description: >
+              Minted by P6-T5, null until then. Null rather than a placeholder
+              string: a DOI that does not resolve is worse than an absent one,
+              and the crate builder emits the field only when it is populated.
+      licences:
+        type: object
+        required: [code, data]
+        additionalProperties: false
+        properties:
+          code: {type: string, format: uri}
+          data: {type: string, format: uri}
   reference:
     type: object
     description: >

@@ -1,8 +1,17 @@
 # Limitations
 
-What this reanalysis cannot support, and why. Written at the end of Phase 0;
-every entry cites the rule output that establishes it. Provenance and the
-answers to Q1–Q5 live in `docs/data-provenance.md`.
+What this reanalysis cannot support, and why. Started at the end of Phase 0 and
+extended at every gate since; every entry cites the rule output that establishes
+it. Provenance and the answers to Q1–Q5 live in `docs/data-provenance.md`.
+
+**Read §9 before §1.** Power was the limitation this project expected, and it is
+real. Detection is the one it *found*, it is larger, and the two are routinely
+confused: a gene that was never measured produces the same empty table as a gene
+whose effect is too small to see, and only one of those is about statistics.
+
+Sections §10–§12 were added at P6-T6. §12 is a limitation of this repository
+rather than of the assay, and it is here because the distinction is invisible to
+someone trying to re-run the work.
 
 ---
 
@@ -163,7 +172,7 @@ brain column — for the same three patients (6, 11, 35). Treating the brain bla
 as missing rather than censored would silently drop every censored observation in
 the study. P5-T1 asserts the two sets are identical rather than assuming it.
 
-## 10. Detection is the dominant limitation, ahead of power (P2-T2)
+## 9. Detection is the dominant limitation, ahead of power (P2-T2)
 
 Sections 4–6 anticipated this; Phase 2 measured it, and the result is larger in
 scope than "`TBME` detects less than the tumour cores". **Three of six immune
@@ -290,7 +299,107 @@ biological reason. P3-T4 found the *site* gradient negligible; **that is a
 different gradient**, and any future cross-patient analysis in this project must
 measure its own rather than inherit either verdict.
 
-## 9. Scope
+## 10. Phase 5's two nulls are not the same kind of null (P5-T5, ADR 0028)
+
+**0 of 14 pre-registered tests survive Benjamini–Hochberg at FDR 0.05.** The
+smallest is TCGA `antigen_presentation`, q = **0.2563** (HR 0.70 [0.52, 0.94],
+raw p 0.018, n = 502 with 182 events). Only q is reportable; a raw p from P5-T3
+or P5-T4 is not, which is the entire reason P5-T5 exists.
+
+**The asymmetry is the deliverable, not any q-value.** Writing "no signature was
+prognostic" collapses two findings that mean opposite things:
+
+| | this study | TCGA-LUAD |
+|---|---|---|
+| patients fitted | **12 lung, 7 brain** (`TIME-B` n = 8) | 502 |
+| events | 12 and 7 | 182 |
+| median split | 6/6 and 4/3 | n/a (continuous and split) |
+| HR interval width | **11- to 37-fold** | ~0.5–1.2 |
+| what a null means | **uninformative, not negative** | a much stronger statement, though still not proof of absence |
+
+At an interval spanning thirty-seven-fold, failing to detect an effect is the
+expected outcome whether or not one exists — the same status the 1.1–1.3 SD
+power floor (§1) gives a Phase 2 null and ADR 0022 gives Phase 4's empty
+nomination table. Fixed in ADR 0024 §7 **before the first curve**, so it cannot
+be softened if something happens to separate.
+
+**The cross-cohort comparison is bounded structurally, not only statistically**
+(ADR 0027 §5). GeoMx measures the **PanCK-negative segment** of an ROI; TCGA
+measures **whole bulk tumour**. A disagreement between them is therefore not
+necessarily about biology, and **there is no brain comparator at all** — nothing
+in Phase 5 externally checks `TIME-B` n = 8.
+
+One live example, because it is the easy error: the two cohorts' `antigen
+presentation` point estimates point **opposite ways** — GeoMx HR 2.19
+[0.65, 7.35] against TCGA 0.70 [0.52, 0.94]. That is **not a contradiction**.
+The GeoMx interval spans 1 and is consistent with both directions, on a
+different measurement of a different compartment. "The cohorts disagree" would
+be wrong twice over.
+
+**Three of six signatures are "not assessable", never a prognostic null** —
+`exhaustion` and `tls` in brain, `myeloid_m1` at both sites. ADR 0008's rule is
+not suspended by a change of outcome variable: a score built from genes at
+background measures background, whatever it is regressed against. They are kept
+**out of the FDR denominator** for the same reason, which makes every q larger
+rather than smaller.
+
+## 11. The pins are `osx-arm64` only (ADR 0023, ADR 0029)
+
+`workflow/envs/<env>.osx-arm64.pin.txt` records the exact packages that produced
+every committed result, and Snakemake installs from it. **On any other platform
+there is no pin**: Snakemake says so and solves the environment YAML against
+whatever the channels serve that day.
+
+So this workflow is *reproducible* on `osx-arm64` and *runnable* on `linux-64`,
+and those are different claims. `conda list --explicit` can only describe an
+environment that exists, and these three exist for one platform. A multi-platform
+lock rendered to `linux-64.pin.txt` is the obvious fix; `conda-lock` is still in
+`environment.yml` for it, and it is not done here because **a pin that cannot be
+verified on the machine writing it is a provenance claim nobody checked** — the
+thing ADR 0023 §2 exists to refuse.
+
+Two operational constraints follow, and both are load-bearing:
+
+- **Regenerating a pin after any environment YAML edit is mandatory.** A stale
+  pin installs the wrong environment *silently* rather than failing.
+- **No environment may declare a `pip:` section** (ADR 0029). `conda list
+  --explicit` records conda packages only, so a pip dependency is invisible to
+  the pin — it worked here and would have failed in the clean room.
+  `p6t3_citation_audit` enforces both on every build, because a decision that
+  lives only in an ADR is a decision that gets re-made.
+
+One further wrinkle that is a limitation of the *environment*, not the code: R
+in this project must be repaired for a path containing a space (ADR 0013), which
+`p2t0_repair_r_env` does. **A clean-room reproduction on a path without a space
+never exercises that rule and reports a false pass.**
+
+## 12. The ontology mapping was retrofitted, five phases late (P6-T2a)
+
+PROJECT_PLAN §7.2 puts `metadata/ontology-terms.tsv` in **Phase 0** — "retrofitting
+ontology terms at the end is miserable" — and it did not land there.
+`metadata/` held nothing but a `.gitkeep` through five phases and five gates,
+and `config/compartment_map.yaml` still carries a header promising the fields
+would be filled in at P0-T3.
+
+It is now produced by `p6t2a_resolve_ontology_terms`, resolved live against EBI
+OLS4 and pinned, so **ontology drift fails the build**. What the retrofit cannot
+undo:
+
+- The vocabulary was **designed without ontology terms in view**. It happens to
+  map cleanly — the same seven AOI codes, three sites and four compartments from
+  the start — but that is luck rather than design, and a project whose
+  vocabulary had drifted would have had nothing to map.
+- **`normal_control` maps to a tissue (UBERON:0000955, brain), not a cell type**,
+  and deliberately: nothing was sorted, no tumour is present, and there is no
+  cell population the 7 `BC` AOIs are enriched for. An honest absence beats a
+  plausible CL term.
+- **Every compartment→cell-type term is `enriched_for`, never `is_a`** (ADR 0030
+  §5). A `TIME` AOI is the PanCK-negative segment of an ROI sited in a CD45-rich
+  region, not a CD45-sorted population (§3, Q2). The relation is enforced at
+  parse time in `common.smk` and re-checked in the crate, because prose can be
+  read sceptically and an RDF triple cannot.
+
+## 13. Scope
 
 - **`mLN` is out of scope** for the core comparison by design (§A.2), and is
   carried only so the design table is complete.

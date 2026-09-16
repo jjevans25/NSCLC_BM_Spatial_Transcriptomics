@@ -65,6 +65,18 @@ scratchpad-quoted terms in the report are split the same way.
 Scope is `git ls-files`: what is committed is what makes a claim. Generated
 output under `results/` is excluded because it is derived from code this audit
 already covers, and a phrase there is a symptom whose cause is in a script.
+
+**`ro-crate-metadata.json` is excluded on the same principle, and the clean-room
+run is what showed why it has to be.** It is generated, its prose is copied
+verbatim from `config/ro_crate.yaml` — which this audit *does* scan, so the
+claim is checked at its source — and it lives at the repository root rather than
+under `results/`, so the existing prefix rule did not catch it. Worse, it is
+produced by a rule that consumes this audit's own output, so Snakemake may run
+the audit before the crate exists: in the working directory the audit read the
+crate and reported a match, in the clean room the file was not there yet and it
+did not. **A check whose scanned set depends on scheduling reports a different
+answer on different runs**, which is the same defect class as a check with no
+rerun trigger, arriving from the other direction.
 """
 
 import json
@@ -114,6 +126,16 @@ QUOTATION_CUES = re.compile(
 )
 QUOTATION_LOOKBACK = 6
 
+# Generated at the repository ROOT, so the `results/` prefix rule misses it, and
+# produced by a rule downstream of this one — see the module docstring. Its prose
+# comes from config/ro_crate.yaml, which IS scanned.
+GENERATED_METADATA = {"ro-crate-metadata.json"}
+
+# `metadata/` is committed rule OUTPUT, not source — the ontology mapping and
+# the three audit summaries. So are `resources/*_provenance.tsv`, which the fetch
+# rules rewrite with a fresh access timestamp on every fetch, and which carry
+# URLs and digests rather than prose. Excluded with it, for the same reason.
+
 # Binary and generated paths carry no prose claims.
 SKIP_SUFFIX = {
     ".png", ".pdf", ".h5ad", ".rda", ".RData", ".gz", ".tar", ".xlsx",
@@ -145,10 +167,15 @@ with open(log_path, "w", encoding="utf-8") as log:
         if f
         and Path(f).suffix not in SKIP_SUFFIX
         and not f.startswith("results/")
+        and not f.startswith("metadata/")
+        and not f.endswith("_provenance.tsv")
+        and f not in GENERATED_METADATA
     ]
     emit(f"tracked files scanned: {len(files)} "
          f"(of {len([f for f in tracked if f])} tracked)")
-    emit("  excluded: binary/generated suffixes, and results/ — a phrase there")
+    emit("  excluded: binary/generated suffixes and every committed rule")
+    emit("            output — results/, metadata/, the provenance TSVs and the")
+    emit("            generated RO-Crate. A phrase there")
     emit("  is a symptom whose cause is in a script this audit already covers.")
     emit()
 
@@ -250,7 +277,9 @@ with open(log_path, "w", encoding="utf-8") as log:
             "source (ADR 0021 §2)."
         ),
         "scope": (
-            "git ls-files, excluding binary/generated suffixes and results/. "
+            "git ls-files, excluding binary/generated suffixes and every "
+            "committed rule output: results/, metadata/, "
+            "resources/*_provenance.tsv and ro-crate-metadata.json. "
             "What is committed is what makes a claim."
         ),
         "rule": (
